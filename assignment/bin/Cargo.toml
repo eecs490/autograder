@@ -8,4 +8,4 @@ edition = "2018"
 
 [dependencies]
 lib = { path = "../lib" }
-submission = { path = "../../../submission" }
+submission = { path = "../../submission" }
