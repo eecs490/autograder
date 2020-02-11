@@ -1,4 +1,2 @@
 #! /usr/bin/env bash
-results_path=${1:-"/autograder/results/results.json"}
-source /usr/local/cargo/env
-cargo run --manifest-path='/autograder/assignment/bin/Cargo.toml' $results_path
+bash submission/main.sh

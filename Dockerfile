@@ -35,8 +35,7 @@ RUN set -eux; \
         ; \
     rm -rf /var/lib/apt/lists/*;
 WORKDIR /autograder
-COPY assignment assignment
 RUN mkdir results
-RUN cargo build --manifest-path 'assignment/lib/Cargo.toml'
 COPY run_autograder run_autograder
-CMD ["/bin/bash"]
+COPY ../assignment assignment
+RUN cargo build --manifest-path 'assignment/lib/Cargo.toml'
