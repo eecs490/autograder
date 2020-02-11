@@ -8,4 +8,4 @@ edition = "2018"
 
 [dependencies]
 json = "0.12.1"
-submission = { path = "../submission" }
+submission = { path = "../../submission" }
