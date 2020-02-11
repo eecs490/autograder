@@ -1,0 +1,5 @@
+#! /usr/bin/env bash
+
+cd submission/
+source $HOME/.cargo/env
+cargo run
