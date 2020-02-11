@@ -1,7 +1,6 @@
 .DS_Store
 Archive.zip
 results/
-source/
 liblib.rlib
 main
 autograder.zip

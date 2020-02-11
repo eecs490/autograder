@@ -1,3 +1,5 @@
 #! /usr/bin/env bash
 
-zip -r autograder.zip ./setup.sh ./run_autograder 'source/assignment/' -x '*/\target/*'
+cp setup.sh /tmp
+echo 'cargo build --manifest-path source/assignment/lib/Cargo.toml' >> /tmp/setup.sh
+zip -r autograder.zip /tmp/setup.sh ./run_autograder 'source/assignment/' -x '*/\target/*'

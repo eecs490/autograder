@@ -9,7 +9,11 @@ COPY source/assignment/ /autograder/source/assignment/
 RUN cp /autograder/source/run_autograder /autograder/run_autograder
 RUN dos2unix /autograder/run_autograder /autograder/source/setup.sh
 RUN chmod +x /autograder/run_autograder
-RUN apt-get update &&     bash /autograder/source/setup.sh &&     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+RUN echo 'cargo build --manifest-path /autograder/source/assignment/lib/Cargo.toml' >> /autograder/source/setup.sh
+RUN apt-get update \
+      && bash /autograder/source/setup.sh \
+      && apt-get clean \
+      && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 COPY submission/ /autograder/submission
 WORKDIR /autograder
