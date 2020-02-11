@@ -1,6 +1,8 @@
 #! /usr/bin/env bash
 
+results_path=${1:-"/autograder/results/results.json"}
+
 source $HOME/.cargo/env
 rustc --crate-type=lib submission/src/lib.rs
-rustc source/src/main.rs --extern submission=liblib.rlib
-./main /autograder/results/results.json
+rustc "source/assignment/src/main.rs" --extern submission=liblib.rlib
+./main $results_path
