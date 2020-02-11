@@ -8,8 +8,7 @@ const JSON_STRING: &str = r#"{
   "visibility": "after_due_date",
   "stdout_visibility": "visible",
   "extra_data": {},
-  "tests":
-    [
+  "tests": [
         {
             "score": 2.0,
             "max_score": 2.0,
@@ -20,10 +19,10 @@ const JSON_STRING: &str = r#"{
             "visibility": "visible",
             "extra_data": {}
         },
-    ],
+    ]
   "leaderboard":
     [
-      {"name": "Accuracy", "value": .926},
+      {"name": "Accuracy", "value": 0.926},
       {"name": "Time", "value": 15.1, "order": "asc"},
       {"name": "Stars", "value": "*****"}
     ]
