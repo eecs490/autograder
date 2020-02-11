@@ -1,5 +1,6 @@
 [package]
 name = "submission"
+crate-type = ["lib"]
 version = "0.1.0"
 authors = ["Ethan Brooks <ethanabrooks@gmail.com>"]
 edition = "2018"
