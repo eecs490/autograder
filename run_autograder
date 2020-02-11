@@ -1,5 +1,6 @@
 #! /usr/bin/env bash
 
-cd submission/
 source $HOME/.cargo/env
-cargo run
+rustc --crate-type=lib submission/src/lib.rs
+rustc source/src/main.rs --extern submission=liblib.rlib
+./main /autograder/results/results.json

@@ -12,5 +12,6 @@ RUN chmod +x /autograder/run_autograder
 RUN apt-get update &&     bash /autograder/source/setup.sh &&     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 COPY submission/ /autograder/submission
+COPY source /autograder/source/
 WORKDIR /autograder
 CMD ["/bin/bash"]
