@@ -18,8 +18,8 @@ const JSON_STRING: &str = r#"{
             "tags": ["tag1", "tag2", "tag3"],
             "visibility": "visible",
             "extra_data": {}
-        },
-    ]
+        }
+    ],
   "leaderboard":
     [
       {"name": "Accuracy", "value": 0.926},
