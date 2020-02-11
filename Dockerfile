@@ -5,7 +5,7 @@ RUN mkdir -p /autograder/source
 #RUN unzip -d /autograder/source /tmp/autograder.zip
 COPY run_autograder /autograder/source/run_autograder
 COPY setup.sh /autograder/source/setup.sh
-COPY assignment/ /autograder/source/assignment/
+COPY source/assignment/ /autograder/source/assignment/
 RUN cp /autograder/source/run_autograder /autograder/run_autograder
 RUN dos2unix /autograder/run_autograder /autograder/source/setup.sh
 RUN chmod +x /autograder/run_autograder
