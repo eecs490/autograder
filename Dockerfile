@@ -39,4 +39,4 @@ RUN mkdir results
 RUN mkdir submission
 COPY run_autograder run_autograder
 COPY submission/assignment submission/assignment
-RUN cargo build --manifest-path 'submission/assignment/results/Cargo.toml'
+RUN cargo build --manifest-path 'submission/assignment/test_lib/Cargo.toml'
