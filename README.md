@@ -32,9 +32,22 @@ The intended development workflow is to do all the work with `Dockerfile.debug` 
 and only once development is finished to build the final image with `Dockerfile` and push to `rust-autograder`.
 
 # Instructions for actually running the code:
-```
+```bash
 git clone --recurse-submodules git@github.com:ethanabrooks/autograder.git # clone the sample-rust-submission submodule as well
 cd autograder
 docker build -f Dockerfile.debug -t ethanabrooks/debug-rust-autograder .
-docker push ethanabrooks/debug-rust-autograder # unnecessary unless you changes the build somehow
+docker push ethanabrooks/debug-rust-autograder # unnecessary unless you changed the build somehow
+cd submission
+zip -r submission.zip assignment Cargo.* src/ -x '*/\target/*' # create a zip file of the submission, ignoring target/ directories
 ```
+Now 
+1. Go to https://www.gradescope.com/courses/78826/assignments/355815/configure_autograder.
+2. Check the "Manual Docker Configuration" checkbox.
+3. Write `ethanabrooks/debug-rust-autograder` in the **DOCKERHUB IMAGE NAME** field.
+4. Click "Test Autograder" (lower right of the screen)
+5. Upload the zip file we made earlier (`autograder/submission/submission.zip`).
+6. (Optional) Click the "❯_ Debug via SSH". After a minute or two, Gradescope will spit out an ssh command -- something like
+```
+ssh root@ec2-34-216-119-27.us-west-2.compute.amazonaws.com -p 32790
+```
+If you run this on your terminal, you can poke around in the container that Gradescope is using to run the autograder. To reproduce what Gradescope actually does, run `./run_autograder`. This should produce a file at `/autograder/results/results.json`. The content of this file should match the output format specified here: https://gradescope-autograders.readthedocs.io/en/latest/specs/#output-format. 
