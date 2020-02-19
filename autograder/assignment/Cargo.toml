@@ -1,0 +1,9 @@
+[package]
+name = "assignment"
+version = "0.1.0"
+authors = ["Ethan Brooks <ethanabrooks@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+test_lib = { path = "../test_lib" }
+submission = { path = "../submission" }
