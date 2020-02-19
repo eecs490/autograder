@@ -1,8 +1,9 @@
 #! /usr/bin/env bash
-results_path=${1:-"/autograder/results/results.json"}
+submission_path=${1:-"/autograder/submission/Cargo.toml"}
+results_path=${2:-"/autograder/results/results.json"}
 export RUSTUP_HOME=/usr/local/rustup \
 export CARGO_HOME=/usr/local/cargo \
 export PATH=/usr/local/cargo/bin:$PATH \
 export RUST_VERSION=1.41.0
 source /usr/local/cargo/env
-cargo run --manifest-path='/autograder/submission/assignment/Cargo.toml' $results_path
+cargo run --manifest-path='/autograder/submission/assignment/Cargo.toml' $submission_path $results_path
