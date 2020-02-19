@@ -32,3 +32,9 @@ The intended development workflow is to do all the work with `Dockerfile.debug` 
 and only once development is finished to build the final image with `Dockerfile` and push to `rust-autograder`.
 
 # Instructions for actually running the code:
+```
+git clone --recurse-submodules git@github.com:ethanabrooks/autograder.git # clone the sample-rust-submission submodule as well
+cd autograder
+docker build -f Dockerfile.debug -t ethanabrooks/debug-rust-autograder .
+docker push ethanabrooks/debug-rust-autograder # unnecessary unless you changes the build somehow
+```
