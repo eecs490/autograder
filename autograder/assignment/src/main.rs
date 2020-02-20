@@ -37,18 +37,22 @@ fn main() -> Result<(), std::io::Error> {
         .expect("Must provide one argument representing path to write results file.");
 
     // scrape cargo test for submission and assignment package
-    let assignment_output: String = test_lib::get_test_output(assignment_path);
-    println!("{}", assignment_output.clone());
-    let submission_output: String = test_lib::get_test_output(submission_path);
-    println!("{}", submission_output.clone());
+    let outputs: (String, String) = (
+        test_lib::get_test_output(assignment_path),
+        test_lib::get_test_output(submission_path),
+    );
+    println!("{}", outputs.0.clone());
+    println!("{}", outputs.1.clone());
 
     // deserialize ouputs into TestResult structs
-    let mut test_results: Vec<TestResult> = test_lib::get_test_results(assignment_output);
-    let submission_test_results: Vec<TestResult> = test_lib::get_test_results(submission_output);
-    test_results.extend(submission_test_results);
+    let mut test_results: (Vec<TestResult>, Vec<TestResult>) = (
+        test_lib::get_test_results(outputs.0),
+        test_lib::get_test_results(outputs.1),
+    );
+    test_results.0.extend(test_results.1);
 
     // combine TestResult structs into Report struct
-    let report: Report = test_lib::build_report(test_results, scores);
+    let report: Report = test_lib::build_report(test_results.0, scores);
     println!("{}", report.clone().to_string());
 
     // write Report object to output_path
