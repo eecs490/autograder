@@ -55,7 +55,6 @@ pub struct Report {
     tests: std::vec::Vec<TestReport>,
 }
 impl Report {
-    #[allow(dead_code)]
     pub fn to_string(self) -> std::string::String {
         return serde_json::to_string(&self).expect("Failed to produce JSON string.");
     }
@@ -119,12 +118,10 @@ pub struct TestResult {
 //}
 //}
 
-#[allow(dead_code)]
 fn get_max_score(name: &String, scores: &HashMap<String, f32>) -> f32 {
     *scores.get(name).unwrap_or(&1.0)
 }
 
-#[allow(dead_code)]
 fn get_score(test_result: &TestResult, scores: &HashMap<String, f32>) -> f32 {
     match test_result.event {
         Event::Ok => get_max_score(&test_result.name, scores),
@@ -132,7 +129,6 @@ fn get_score(test_result: &TestResult, scores: &HashMap<String, f32>) -> f32 {
     }
 }
 
-#[allow(dead_code)]
 pub fn get_test_output(path: String) -> String {
     //cargo test --manifest-path="../../Cargo.toml"  -- -Z unstable-options --format json -q
     let stdout = Command::new("cargo")
@@ -157,7 +153,6 @@ pub fn get_test_results(test_output: String) -> Vec<TestResult> {
         .collect()
 }
 
-#[allow(dead_code)]
 pub fn build_report(test_results: Vec<TestResult>, scores: HashMap<String, f32>) -> Report {
     let actual_score: f32 = test_results
         .clone()
