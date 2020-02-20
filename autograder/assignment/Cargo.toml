@@ -8,3 +8,4 @@ edition = "2018"
 test_lib = { path = "../test_lib" }
 submission = { path = "../submission" }
 rand = "0.7.3"
+array-macro = "1.0.4"

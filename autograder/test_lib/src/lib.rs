@@ -4,6 +4,19 @@ use std::fs::File;
 use std::io::Write;
 use std::process::Command;
 
+#[macro_export]
+macro_rules! map(
+    { $($key:expr => $value:expr),+ } => {
+        {
+            let mut m = ::std::collections::HashMap::new();
+            $(
+                m.insert($key.to_string(), $value);
+            )+
+            m
+        }
+     };
+);
+
 #[derive(Serialize, Deserialize, Clone)]
 #[serde(rename_all = "snake_case")]
 pub enum Visibility {
