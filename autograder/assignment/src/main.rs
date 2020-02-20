@@ -24,6 +24,7 @@ fn main() -> Result<(), std::io::Error> {
     // The autograder defaults to 1.0 point per test for tests not included in thei HashMap.
     let scores: HashMap<String, f32> = map! { "tests::test4" => 5.0 };
 
+    // scrape cargo test output for assignment and submission
     let outputs: (String, String) = (
         lib::get_test_output(assignment_path.to_string()),
         lib::get_test_output(submission_path.to_string()),
@@ -36,7 +37,7 @@ fn main() -> Result<(), std::io::Error> {
         lib::get_test_results(outputs.0),
         lib::get_test_results(outputs.1),
     );
-    test_results.0.extend(test_results.1.clone());
+    test_results.0.extend(test_results.1.clone()); //concatenate results
     test_results
         .0
         .clone()
