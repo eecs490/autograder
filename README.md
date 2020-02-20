@@ -69,7 +69,7 @@ For this version, we zip all three directories. From the root of the project:
 
 ```bash
 cd autograder
-zip -r submission.zip assignment **/Cargo.* **/src/ -x '*/\target/*'
+zip -r submission.zip **/Cargo.* **/src/ -x '*/\target/*'
 ```
 
 ### release version
@@ -79,16 +79,20 @@ project:
 
 ```bash
 cd autograder/submission/
-zip -r submission.zip assignment **/Cargo.* **/src/ -x '*/\target/*'
+zip -r submission.zip **/Cargo.* **/src/ -x '*/\target/*'
 ```
 
 ### Submitting to Gradescope
 
 1. Go to https://www.gradescope.com/courses/78826/assignments/355815/configure_autograder.
 2. Check the "Manual Docker Configuration" checkbox.
-3. Write `ethanabrooks/debug-rust-autograder` (dev version) or `ethanabrooks/rust-autograder` in the **DOCKERHUB IMAGE NAME** field.
+3. In the **DOCKERHUB IMAGE NAME** field, write 
+    - `ethanabrooks/debug-rust-autograder` for the dev version.
+    - `ethanabrooks/rust-autograder` for the release version.
 4. Click "Test Autograder" (lower right of the screen)
-5. Upload the zip file we made earlier (either `autograder/submission.zip` for dev or `autograder/submission/submission.zip` for release).
+5. Upload the zip file we made earlier 
+    - `autograder/submission.zip` for dev.
+    - `autograder/submission/submission.zip` for release.
 6. (Optional) Click the "❯\_ Debug via SSH". After a minute or two, Gradescope will spit out an ssh command -- something like
 
 ```
