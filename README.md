@@ -29,31 +29,84 @@ instead of building a new image and pushing to dockerhub every time.
 Obviously the student's submission will not include out autograding/assignment logic.
 Therefore `Dockerfile`/`rust-autograder` copies the logic to the image before pushing to dockerhub.
 
-The intended development workflow is to do all the work with `Dockerfile.dev` and `dev-rust-autograder`
+The intended development workflow is to do all the work with `Dockerfile.dev` and `rust-autograder-dev`
 and only once development is finished to build the final image with `Dockerfile` and push to `rust-autograder`.
 
 # Getting started
 
-Note that in order to update the dockerhub image, you will need a dockerhub
-account, which you can register for here: https://hub.docker.com/signup
+```bash
+git clone git@github.com:ethanabrooks/autograder.git
+cd autograder
+```
 
-## Updating the dockerhub image
+## Building the docker image
 
 ### dev version
 
 ```bash
-git clone git@github.com:ethanabrooks/autograder.git
-cd autograder
-docker build -f Dockerfile.dev -t ethanabrooks/dev-rust-autograder .
-docker push ethanabrooks/dev-rust-autograder
+docker build -f Dockerfile.dev -t ethanabrooks/rust-autograder-dev .
 ```
 
 ### release version
 
 ```bash
-git clone git@github.com:ethanabrooks/autograder.git
-cd autograder
 docker build -t ethanabrooks/rust-autograder .
+```
+
+## Running the docker image locally
+
+### dev version
+
+```bash
+docker run --rm -it --name running-autograder ethanabrooks/rust-autograder-dev /bin/bash
+```
+
+From outside the image, run
+
+```bash
+docker cp ~/autograder/autograder running-autograder:/autograder/submission
+```
+
+This simulates the copying of the submission into the docker image.
+From inside the image, run
+
+```bash
+./run_autograder
+```
+
+### release version
+
+```bash
+docker run --rm -it --name running-autograder ethanabrooks/rust-autograder /bin/bash
+```
+
+From outside the image, run
+
+```bash
+docker cp ~/autograder/autograder/submission running-autograder:/autograder/submission
+```
+
+This simulates the copying of the submission into the docker image.
+From inside the image, run
+
+```bash
+./run_autograder
+```
+
+## Updating the dockerhub image
+
+Note that in order to update the dockerhub image, you will need a dockerhub
+account, which you can register for here: https://hub.docker.com/signup
+
+### dev version
+
+```bash
+docker push ethanabrooks/rust-autograder-dev
+```
+
+### release version
+
+```bash
 docker push ethanabrooks/rust-autograder
 ```
 
@@ -87,7 +140,7 @@ zip -r submission.zip **/Cargo.* **/src/ -x '*/\target/*'
 1. Go to https://www.gradescope.com/courses/78826/assignments/355815/configure_autograder.
 2. Check the "Manual Docker Configuration" checkbox.
 3. In the **DOCKERHUB IMAGE NAME** field, write
-   - `ethanabrooks/dev-rust-autograder` for the dev version.
+   - `ethanabrooks/rust-autograder-dev` for the dev version.
    - `ethanabrooks/rust-autograder` for the release version.
 4. Click "Update Autograder" (lower right of the screen)
 5. Click "Test Autograder" (lower right of the screen)
