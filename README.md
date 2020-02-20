@@ -13,24 +13,20 @@ Gradescope acquires the image for the container from dockerhub. In the image it
 runs some unspecified proprietary Gradescope magic code that copies the
 submission and messes with the environment variables 😩
 
-That said, there are two images that I have been using:
+## Release vs. Dev
 
-- `rust-autograder`: https://hub.docker.com/repository/docker/
-  rooks/rust-autograder/
+There are two images that I have been using:
+
+- `rust-autograder`: https://hub.docker.com/repository/docker//ethanabrooks/rust-autograder/
 - `rust-autograder-dev`: https://hub.docker.com/repository/docker/ethanabrooks/rust-autograder-dev/
 
-These correspond to the two Dockerfiles, `Dockerfile`, and `Dockerfile.dev`.
+These correspond to the two Dockerfiles, `Dockerfile`, and `Dockerfile.dev`. We refer to the first as the "release" version and the second as the "dev" version.
 
-The first is distinguished by the fact that it does not copy the autograding/assignment logic into the Docker image.
-The reason for this is to allow us to make changes to the autograding/assignment logic and submit them with our
-sample assignment (https://github.com/ethanabrooks/sample-rust-submission)
-instead of building a new image and pushing to dockerhub every time.
+The release version is distinguished by the fact that it copies the `assignment/` into the Docker image and builds it.
+In contrast, the dev version assumes that the developer will include the `assignment/` directory in the submission to Gradescope. This allows faster and more painless devlopment, because submitting into gradescope is much quicker than rebuilding an image and pushing to dockerhub (as with the release version). However, since the `assignment/` directory includes logic that we do not want students to see, the release version packages the assignment with the docker image, which is run by Gradescope but hidden from the student.
 
-Obviously the student's submission will not include out autograding/assignment logic.
-Therefore `Dockerfile`/`rust-autograder` copies the logic to the image before pushing to dockerhub.
-
-The intended development workflow is to do all the work with `Dockerfile.dev` and `rust-autograder-dev`
-and only once development is finished to build the final image with `Dockerfile` and push to `rust-autograder`.
+The intended development workflow is to do all the work with the dev version and 
+and only switch to release once development is finished and we are ready to release the assignment.
 
 # Getting started
 
