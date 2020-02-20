@@ -16,7 +16,7 @@ submission and messes with the environment variables 😩
 That said, there are two images that I have been using:
 
 - `rust-autograder`: https://hub.docker.com/repository/docker/
-rooks/rust-autograder/
+  rooks/rust-autograder/
 - `debug-rust-autograder`: https://hub.docker.com/repository/docker/ethanabrooks/debug-rust-autograder/
 
 These correspond to the two Dockerfiles, `Dockerfile`, and `Dockerfile.debug`.
@@ -32,23 +32,71 @@ Therefore `Dockerfile`/`rust-autograder` copies the logic to the image before pu
 The intended development workflow is to do all the work with `Dockerfile.debug` and `debug-rust-autograder`
 and only once development is finished to build the final image with `Dockerfile` and push to `rust-autograder`.
 
-# Instructions for actually running the code:
+# Getting started
+
+Note that in order to update the dockerhub image, you will need a dockerhub
+account, which you can register for here: https://hub.docker.com/signup
+
+## `dev` version
+
+To update the dockerhub image:
+
 ```bash
-git clone --recurse-submodules git@github.com:ethanabrooks/autograder.git # clone the sample-rust-submission submodule as well
 cd autograder
 docker build -f Dockerfile.debug -t ethanabrooks/debug-rust-autograder .
-docker push ethanabrooks/debug-rust-autograder # unnecessary unless you changed the build somehow
-cd submission
-zip -r submission.zip assignment Cargo.* src/ -x '*/\target/*' # create a zip file of the submission, ignoring target/ directories
+docker push ethanabrooks/debug-rust-autograder
 ```
-Now 
+
+To submit to Gradescope:
+
+```bash
+cd autograder
+zip -r submission.zip assignment **/Cargo.* **/src/ -x '*/\target/*'
+```
+
+Now
+
 1. Go to https://www.gradescope.com/courses/78826/assignments/355815/configure_autograder.
 2. Check the "Manual Docker Configuration" checkbox.
 3. Write `ethanabrooks/debug-rust-autograder` in the **DOCKERHUB IMAGE NAME** field.
 4. Click "Test Autograder" (lower right of the screen)
-5. Upload the zip file we made earlier (`autograder/submission/submission.zip`).
-6. (Optional) Click the "❯_ Debug via SSH". After a minute or two, Gradescope will spit out an ssh command -- something like
+5. Upload the zip file we made earlier (`autograder/autograder/submission.zip`).
+6. (Optional) Click the "❯\_ Debug via SSH". After a minute or two, Gradescope will spit out an ssh command -- something like
+
 ```
 ssh root@ec2-34-216-119-27.us-west-2.compute.amazonaws.com -p 32790
 ```
-If you run this on your terminal, you can poke around in the container that Gradescope is using to run the autograder. To reproduce what Gradescope actually does, run `./run_autograder`. This should produce a file at `/autograder/results/results.json`. The content of this file should match the output format specified here: https://gradescope-autograders.readthedocs.io/en/latest/specs/#output-format. 
+
+If you run this on your terminal, you can poke around in the container that Gradescope is using to run the autograder. To reproduce what Gradescope actually does, run `./run_autograder`. This should produce a file at `/autograder/results/results.json`. The content of this file should match the output format specified here: https://gradescope-autograders.readthedocs.io/en/latest/specs/#output-format.
+
+# Getting started with `release` version
+
+To update the dockerhub image:
+
+```bash
+cd autograder
+docker build -t ethanabrooks/rust-autograder .
+docker push ethanabrooks/rust-autograder
+```
+
+To submit to Gradescope:
+
+```bash
+cd autograder/submission
+zip -r submission.zip assignment **/Cargo.* **/src/ -x '*/\target/*'
+```
+
+Now
+
+1. Go to https://www.gradescope.com/courses/78826/assignments/355815/configure_autograder.
+2. Check the "Manual Docker Configuration" checkbox.
+3. Write `ethanabrooks/debug-rust-autograder` in the **DOCKERHUB IMAGE NAME** field.
+4. Click "Test Autograder" (lower right of the screen)
+5. Upload the zip file we made earlier (`autograder/autograder/submission/submission.zip`).
+6. (Optional) Click the "❯\_ Debug via SSH". After a minute or two, Gradescope will spit out an ssh command -- something like
+
+```
+ssh root@ec2-34-216-119-27.us-west-2.compute.amazonaws.com -p 32790
+```
+
+If you run this on your terminal, you can poke around in the container that Gradescope is using to run the autograder. To reproduce what Gradescope actually does, run `./run_autograder`. This should produce a file at `/autograder/results/results.json`. The content of this file should match the output format specified here: https://gradescope-autograders.readthedocs.io/en/latest/specs/#output-format.
