@@ -23,11 +23,12 @@ There are two images that I have been using:
 These correspond to the two Dockerfiles, `Dockerfile`, and `Dockerfile.dev`. We refer to the first as the "release" version and the second as the "dev" version.
 
 There are two ways to send files to Gradescope:
+
 1. In the docker image published to dockerhub.
 2. In the submission submitted by the student.
-Building an image and pushing to dockerhub is very slow. To speed things up, the dev version assumes that the submission will include the `assignment/` directory instead of looking for it in the original docker image. However, the `assignment/` directory includes logic that we do not want students to see (e.g. the solution to problems). Therefore the release version assumes that the `assignment/` directory will already exist in the docker image. Also, the release version builds the submission in advance so that grading is quicker for actual students.
+   Building an image and pushing to dockerhub is very slow. To speed things up, the dev version assumes that the submission will include the `assignment/` directory instead of looking for it in the original docker image. However, the `assignment/` directory includes logic that we do not want students to see (e.g. the solution to problems). Therefore the release version assumes that the `assignment/` directory will already exist in the docker image. Also, the release version builds the submission in advance so that grading is quicker for actual students.
 
-The intended development workflow is to do all the work with the dev version and 
+The intended development workflow is to do all the work with the dev version and
 and only switch to release once development is finished and we are ready to release the assignment.
 
 # Getting started
