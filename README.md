@@ -161,4 +161,5 @@ At a high level, the autograder
 2. scrapes the output and parses into `rust` `TestResult` structs.
 3. creates a `TestReport` struct and writes the associated json object to the location where Gradescope looks for it.
 
-A good place to start with the source code is `assignment/src/main.rs`. For details on how Gradescope works with this, read https://github.com/ethanabrooks/autograder/blob/master/README.md.
+A good place to start with the source code is `assignment/src/main.rs`.
+For more details on how Gradescope works, look at the [Gradescope autograding docs](https://gradescope-autograders.readthedocs.io/en/latest/).
