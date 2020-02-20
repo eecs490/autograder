@@ -219,7 +219,12 @@ pub fn write_report(
     // deserialize ouputs into TestResult structs
     let mut test_results: (Vec<TestResult>, Vec<TestResult>) =
         (get_test_results(outputs.0), get_test_results(outputs.1));
-    test_results.0.extend(test_results.1);
+    test_results.0.extend(test_results.1.clone());
+    test_results
+        .0
+        .clone()
+        .into_iter()
+        .for_each(|r| println!("{}", r.name));
 
     // combine TestResult structs into Report struct
     let report: Report = build_report(test_results.0, scores);
