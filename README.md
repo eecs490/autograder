@@ -17,7 +17,7 @@ submission and messes with the environment variables 😩
 
 There are two images that I have been using:
 
-- `rust-autograder`: https://hub.docker.com/repository/docker//ethanabrooks/rust-autograder/
+- `rust-autograder`: https://hub.docker.com/repository/docker/ethanabrooks/rust-autograder/
 - `rust-autograder-dev`: https://hub.docker.com/repository/docker/ethanabrooks/rust-autograder-dev/
 
 These correspond to the two Dockerfiles, `Dockerfile`, and `Dockerfile.dev`. We refer to the first as the "release" version and the second as the "dev" version.
