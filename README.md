@@ -15,7 +15,8 @@ submission and messes with the environment variables 😩
 
 That said, there are two images that I have been using:
 
-- `rust-autograder`: https://hub.docker.com/repository/docker/ethanabrooks/rust-autograder/
+- `rust-autograder`: https://hub.docker.com/repository/docker/
+rooks/rust-autograder/
 - `debug-rust-autograder`: https://hub.docker.com/repository/docker/ethanabrooks/debug-rust-autograder/
 
 These correspond to the two Dockerfiles, `Dockerfile`, and `Dockerfile.debug`.
