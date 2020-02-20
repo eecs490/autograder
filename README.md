@@ -17,7 +17,7 @@ That said, there are two images that I have been using:
 
 - `rust-autograder`: https://hub.docker.com/repository/docker/
   rooks/rust-autograder/
-- `rust-autograder-dev`: https://hub.docker.com/repository/docker/ethanabrooks/dev-rust-autograder/
+- `rust-autograder-dev`: https://hub.docker.com/repository/docker/ethanabrooks/rust-autograder-dev/
 
 These correspond to the two Dockerfiles, `Dockerfile`, and `Dockerfile.dev`.
 
