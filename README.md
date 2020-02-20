@@ -17,9 +17,9 @@ That said, there are two images that I have been using:
 
 - `rust-autograder`: https://hub.docker.com/repository/docker/
   rooks/rust-autograder/
-- `debug-rust-autograder`: https://hub.docker.com/repository/docker/ethanabrooks/debug-rust-autograder/
+- `rust-autograder-dev`: https://hub.docker.com/repository/docker/ethanabrooks/dev-rust-autograder/
 
-These correspond to the two Dockerfiles, `Dockerfile`, and `Dockerfile.debug`.
+These correspond to the two Dockerfiles, `Dockerfile`, and `Dockerfile.dev`.
 
 The first is distinguished by the fact that it does not copy the autograding/assignment logic into the Docker image.
 The reason for this is to allow us to make changes to the autograding/assignment logic and submit them with our
@@ -29,7 +29,7 @@ instead of building a new image and pushing to dockerhub every time.
 Obviously the student's submission will not include out autograding/assignment logic.
 Therefore `Dockerfile`/`rust-autograder` copies the logic to the image before pushing to dockerhub.
 
-The intended development workflow is to do all the work with `Dockerfile.debug` and `debug-rust-autograder`
+The intended development workflow is to do all the work with `Dockerfile.dev` and `dev-rust-autograder`
 and only once development is finished to build the final image with `Dockerfile` and push to `rust-autograder`.
 
 # Getting started
@@ -44,8 +44,8 @@ account, which you can register for here: https://hub.docker.com/signup
 ```bash
 git clone git@github.com:ethanabrooks/autograder.git
 cd autograder
-docker build -f Dockerfile.debug -t ethanabrooks/debug-rust-autograder .
-docker push ethanabrooks/debug-rust-autograder
+docker build -f Dockerfile.dev -t ethanabrooks/dev-rust-autograder .
+docker push ethanabrooks/dev-rust-autograder
 ```
 
 ### release version
@@ -87,7 +87,7 @@ zip -r submission.zip **/Cargo.* **/src/ -x '*/\target/*'
 1. Go to https://www.gradescope.com/courses/78826/assignments/355815/configure_autograder.
 2. Check the "Manual Docker Configuration" checkbox.
 3. In the **DOCKERHUB IMAGE NAME** field, write
-   - `ethanabrooks/debug-rust-autograder` for the dev version.
+   - `ethanabrooks/dev-rust-autograder` for the dev version.
    - `ethanabrooks/rust-autograder` for the release version.
 4. Click "Test Autograder" (lower right of the screen)
 5. Upload the zip file we made earlier
