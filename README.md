@@ -94,7 +94,7 @@ From inside the image, run
 ## Updating the dockerhub image
 
 Note that in order to update the dockerhub image, you will need a dockerhub
-account, which you can register for here: https://hub.docker.com/signup
+account, which you can register for [here](https://hub.docker.com/signup).
 
 ### dev version
 
