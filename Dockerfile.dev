@@ -36,4 +36,4 @@ RUN set -eux; \
     rm -rf /var/lib/apt/lists/*;
 WORKDIR /autograder
 RUN mkdir results
-COPY run_autograder.debug run_autograder
+COPY run_autograder.dev run_autograder
