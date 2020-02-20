@@ -51,6 +51,7 @@ docker push ethanabrooks/debug-rust-autograder
 ### release version
 
 ```bash
+git clone git@github.com:ethanabrooks/autograder.git
 cd autograder
 docker build -t ethanabrooks/rust-autograder .
 docker push ethanabrooks/rust-autograder
