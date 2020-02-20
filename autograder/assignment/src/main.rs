@@ -1,6 +1,5 @@
 use std::collections::HashMap;
 use std::env;
-use test_lib;
 
 #[test]
 #[should_panic]
