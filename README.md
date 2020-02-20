@@ -173,23 +173,14 @@ For details on how Gradescope works with this, read https://github.com/ethanabro
 │   ├── Cargo.lock
 │   ├── Cargo.toml
 │   └── src
+│       ├── lib.rs
 │       └── main.rs
-├── submission
-│   ├── Cargo.lock
-│   ├── Cargo.toml
-│   └── src
-│       └── lib.rs
-└── test_lib
+└── submission
     ├── Cargo.lock
     ├── Cargo.toml
     └── src
-        ├── lib.rs
-        └── main.rs -> ../../assignment/src/main.rs
+        └── lib.rs
 ```
-
-`test_lib/` contains code that should not change between assignmnets.
-`assignment/` contains code that is specific to each assignment.
-`submission/` simulates an example student submission.
 
 To understand at a high level what the program is doing look at
 `assignment/src/main.rs`.
