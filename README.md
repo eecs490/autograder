@@ -160,7 +160,7 @@ If you run this on your terminal, you can poke around in the container that Grad
 At a high level, the autograder
 
 1. runs `cargo test` on the student's submission and on the `assignment` package.
-2. scrapes the output and parses into `rust` `TestResult` structs.
+2. scrapes the output and parses into `TestResult` structs.
 3. creates a `TestReport` struct and writes the associated json object to the location where Gradescope looks for it.
 
 A good place to start with the source code is [`assignment/src/main.rs`](https://github.com/ethanabrooks/autograder/blob/master/autograder/assignment/src/main.rs).
