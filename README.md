@@ -37,7 +37,7 @@ and only once development is finished to build the final image with `Dockerfile`
 Note that in order to update the dockerhub image, you will need a dockerhub
 account, which you can register for here: https://hub.docker.com/signup
 
-## updating the dockerhub image
+## Updating the dockerhub image
 
 ### dev version
 
@@ -89,11 +89,12 @@ zip -r submission.zip **/Cargo.* **/src/ -x '*/\target/*'
 3. In the **DOCKERHUB IMAGE NAME** field, write
    - `ethanabrooks/dev-rust-autograder` for the dev version.
    - `ethanabrooks/rust-autograder` for the release version.
-4. Click "Test Autograder" (lower right of the screen)
-5. Upload the zip file we made earlier
+4. Click "Update Autograder" (lower right of the screen)
+5. Click "Test Autograder" (lower right of the screen)
+6. Upload the zip file we made earlier
    - `autograder/submission.zip` for dev.
    - `autograder/submission/submission.zip` for release.
-6. (Optional) Click the "❯\_ Debug via SSH". After a minute or two, Gradescope will spit out an ssh command -- something like
+7. (Optional) Click the "❯\_ Debug via SSH". After a minute or two, Gradescope will spit out an ssh command -- something like
 
 ```
 ssh root@ec2-34-216-119-27.us-west-2.compute.amazonaws.com -p 32790
