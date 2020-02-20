@@ -1,10 +1,26 @@
+extern crate rand;
 use std::collections::HashMap;
 use std::env;
 
-#[test]
-#[should_panic]
-fn test_panic() {
-    submission::fib(-1);
+#[cfg(test)]
+mod tests {
+    //use rand::rngs::StdRng;
+    //use rand::{Rng, SeedableRng};
+
+    pub fn fib(n: i32) -> i32 {
+        match n {
+            0 => 1,
+            1 => 1,
+            _ if n > 0 => fib(n - 1) + fib(n - 2),
+            _ => panic!("fib only accepts positive numbers."),
+        }
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_panic() {
+        submission::fib(-1);
+    }
 }
 
 macro_rules! map(
