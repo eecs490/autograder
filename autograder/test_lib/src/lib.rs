@@ -1,5 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use std::fs::File;
+use std::io::Write;
 use std::process::Command;
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -131,7 +133,7 @@ fn get_score(test_result: &TestResult, scores: &HashMap<String, f32>) -> f32 {
 }
 
 #[allow(dead_code)]
-pub fn get_test_output(path: &str) -> String {
+pub fn get_test_output(path: String) -> String {
     //cargo test --manifest-path="../../Cargo.toml"  -- -Z unstable-options --format json -q
     let stdout = Command::new("cargo")
         .arg("test")
@@ -190,4 +192,33 @@ pub fn build_report(test_results: Vec<TestResult>, scores: HashMap<String, f32>)
         None,
         test_reports,
     )
+}
+
+pub fn write_report(
+    scores: HashMap<String, f32>,
+    submission_path: &str,
+    assignment_path: &str,
+    output_path: &str,
+) -> Result<(), std::io::Error> {
+    // scrape cargo test for submission and assignment package
+    let outputs: (String, String) = (
+        get_test_output(assignment_path.to_string()),
+        get_test_output(submission_path.to_string()),
+    );
+    println!("{}", outputs.0.clone());
+    println!("{}", outputs.1.clone());
+
+    // deserialize ouputs into TestResult structs
+    let mut test_results: (Vec<TestResult>, Vec<TestResult>) =
+        (get_test_results(outputs.0), get_test_results(outputs.1));
+    test_results.0.extend(test_results.1);
+
+    // combine TestResult structs into Report struct
+    let report: Report = build_report(test_results.0, scores);
+    println!("{}", report.clone().to_string());
+
+    // write Report object to output_path
+    let mut buffer = File::create(output_path.to_string())?;
+    buffer.write(&report.to_string().as_bytes())?;
+    Ok(())
 }
