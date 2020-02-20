@@ -50,4 +50,13 @@ mod tests {
             Err(String::from("two plus two does not equal four"))
         }
     }
+
+    #[test]
+    fn it_doesnt_work() -> Result<(), String> {
+        if 2 + 2 = 3 {
+            Ok(())
+        } else {
+            Err(String::from("two plus two does not equal three"))
+        }
+    }
 }
