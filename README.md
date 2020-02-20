@@ -37,41 +37,18 @@ and only once development is finished to build the final image with `Dockerfile`
 Note that in order to update the dockerhub image, you will need a dockerhub
 account, which you can register for here: https://hub.docker.com/signup
 
-## `dev` version
+## updating the dockerhub image
 
-To update the dockerhub image:
+### dev version
 
 ```bash
+git clone git@github.com:ethanabrooks/autograder.git
 cd autograder
 docker build -f Dockerfile.debug -t ethanabrooks/debug-rust-autograder .
 docker push ethanabrooks/debug-rust-autograder
 ```
 
-To submit to Gradescope:
-
-```bash
-cd autograder
-zip -r submission.zip assignment **/Cargo.* **/src/ -x '*/\target/*'
-```
-
-Now
-
-1. Go to https://www.gradescope.com/courses/78826/assignments/355815/configure_autograder.
-2. Check the "Manual Docker Configuration" checkbox.
-3. Write `ethanabrooks/debug-rust-autograder` in the **DOCKERHUB IMAGE NAME** field.
-4. Click "Test Autograder" (lower right of the screen)
-5. Upload the zip file we made earlier (`autograder/autograder/submission.zip`).
-6. (Optional) Click the "❯\_ Debug via SSH". After a minute or two, Gradescope will spit out an ssh command -- something like
-
-```
-ssh root@ec2-34-216-119-27.us-west-2.compute.amazonaws.com -p 32790
-```
-
-If you run this on your terminal, you can poke around in the container that Gradescope is using to run the autograder. To reproduce what Gradescope actually does, run `./run_autograder`. This should produce a file at `/autograder/results/results.json`. The content of this file should match the output format specified here: https://gradescope-autograders.readthedocs.io/en/latest/specs/#output-format.
-
-# Getting started with `release` version
-
-To update the dockerhub image:
+### release version
 
 ```bash
 cd autograder
@@ -79,20 +56,38 @@ docker build -t ethanabrooks/rust-autograder .
 docker push ethanabrooks/rust-autograder
 ```
 
-To submit to Gradescope:
+## Submitting to Gradescope
+
+The first step is to create an assignment zip file. The dev version allows you
+to submit the grading/assignment logic with the submission, allow the developer
+to make changes without needing to update the dockerhub image.
+
+### dev version
+
+For this version, we zip all three directories. From the root of the project:
 
 ```bash
-cd autograder/submission
+cd autograder
 zip -r submission.zip assignment **/Cargo.* **/src/ -x '*/\target/*'
 ```
 
-Now
+### release version
+
+For this version, we only zip the `submission/` directory. From the root of the
+project:
+
+```bash
+cd autograder/submission/
+zip -r submission.zip assignment **/Cargo.* **/src/ -x '*/\target/*'
+```
+
+### Submitting to Gradescope
 
 1. Go to https://www.gradescope.com/courses/78826/assignments/355815/configure_autograder.
 2. Check the "Manual Docker Configuration" checkbox.
-3. Write `ethanabrooks/debug-rust-autograder` in the **DOCKERHUB IMAGE NAME** field.
+3. Write `ethanabrooks/debug-rust-autograder` (dev version) or `ethanabrooks/rust-autograder` in the **DOCKERHUB IMAGE NAME** field.
 4. Click "Test Autograder" (lower right of the screen)
-5. Upload the zip file we made earlier (`autograder/autograder/submission/submission.zip`).
+5. Upload the zip file we made earlier (either `autograder/submission.zip` for dev or `autograder/submission/submission.zip` for release).
 6. (Optional) Click the "❯\_ Debug via SSH". After a minute or two, Gradescope will spit out an ssh command -- something like
 
 ```
