@@ -53,7 +53,7 @@ mod tests {
 
     #[test]
     fn it_doesnt_work() -> Result<(), String> {
-        if 2 + 2 = 3 {
+        if 2 + 2 == 3 {
             Ok(())
         } else {
             Err(String::from("two plus two does not equal three"))
