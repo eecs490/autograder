@@ -86,13 +86,13 @@ zip -r submission.zip **/Cargo.* **/src/ -x '*/\target/*'
 
 1. Go to https://www.gradescope.com/courses/78826/assignments/355815/configure_autograder.
 2. Check the "Manual Docker Configuration" checkbox.
-3. In the **DOCKERHUB IMAGE NAME** field, write 
-    - `ethanabrooks/debug-rust-autograder` for the dev version.
-    - `ethanabrooks/rust-autograder` for the release version.
+3. In the **DOCKERHUB IMAGE NAME** field, write
+   - `ethanabrooks/debug-rust-autograder` for the dev version.
+   - `ethanabrooks/rust-autograder` for the release version.
 4. Click "Test Autograder" (lower right of the screen)
-5. Upload the zip file we made earlier 
-    - `autograder/submission.zip` for dev.
-    - `autograder/submission/submission.zip` for release.
+5. Upload the zip file we made earlier
+   - `autograder/submission.zip` for dev.
+   - `autograder/submission/submission.zip` for release.
 6. (Optional) Click the "❯\_ Debug via SSH". After a minute or two, Gradescope will spit out an ssh command -- something like
 
 ```
@@ -100,3 +100,42 @@ ssh root@ec2-34-216-119-27.us-west-2.compute.amazonaws.com -p 32790
 ```
 
 If you run this on your terminal, you can poke around in the container that Gradescope is using to run the autograder. To reproduce what Gradescope actually does, run `./run_autograder`. This should produce a file at `/autograder/results/results.json`. The content of this file should match the output format specified here: https://gradescope-autograders.readthedocs.io/en/latest/specs/#output-format.
+
+# Guide to the autograder
+
+At a high level, the autograder
+
+1. runs `cargo test` on the student's submission and on the `assignment` package.
+2. scrapes the output and parses into `rust` `TestResult` structs.
+3. creates a `TestReport` struct and writes the associated json object to the location where Gradescope looks for it.
+
+For details on how Gradescope works with this, read https://github.com/ethanabrooks/autograder/blob/master/README.md.
+
+`autograder/` contains three subdirectories:
+
+```bash
+.
+├── assignment
+│   ├── Cargo.lock
+│   ├── Cargo.toml
+│   └── src
+│       └── main.rs
+├── submission
+│   ├── Cargo.lock
+│   ├── Cargo.toml
+│   └── src
+│       └── lib.rs
+└── test_lib
+    ├── Cargo.lock
+    ├── Cargo.toml
+    └── src
+        ├── lib.rs
+        └── main.rs -> ../../assignment/src/main.rs
+```
+
+`test_lib/` contains code that should not change between assignmnets.
+`assignment/` contains code that is specific to each assignment.
+`submission/` simulates an example student submission.
+
+To understand at a high level what the program is doing look at
+`assignment/src/main.rs`.

@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::process::Command;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 #[serde(rename_all = "snake_case")]
 pub enum Visibility {
     Hidden,
@@ -11,7 +11,7 @@ pub enum Visibility {
     Visible, // default
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct TestReport {
     score: String,
     max_score: f32,
@@ -44,7 +44,7 @@ impl TestReport {
     }
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct Report {
     score: String,
     execution_time: Option<f32>,
