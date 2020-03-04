@@ -1,0 +1,3 @@
+[submodule "autograder/tarpaulin"]
+	path = autograder/tarpaulin
+	url = git@github.com:ethanabrooks/tarpaulin.git
