@@ -7,6 +7,12 @@ use std::collections::HashMap;
 use std::env;
 use std::fs::File;
 use std::io::Write;
+use tarpaulin::config::types::OutputFile;
+use tarpaulin::config::Config;
+use tarpaulin::errors::RunError;
+use tarpaulin::report::json::CoverageReport;
+use tarpaulin::trace;
+use tarpaulin::traces::TraceMap;
 
 fn main() -> Result<(), std::io::Error> {
     let args: Vec<String> = env::args().collect();
@@ -25,31 +31,29 @@ fn main() -> Result<(), std::io::Error> {
     let scores: HashMap<String, f32> = map! { "tests::test4" => 5.0 };
 
     // scrape cargo test output for assignment and submission
-    let outputs: (String, String) = (
-        lib::get_test_output(assignment_path.to_string()),
-        lib::get_test_output(submission_path.to_string()),
-    );
-    println!("{}", outputs.0.clone());
-    println!("{}", outputs.1.clone());
+    let outputs: String = lib::get_test_output(assignment_path.to_string());
+    println!("{}", outputs.clone());
 
     // deserialize ouputs into TestResult structs
-    let mut test_results: (Vec<TestResult>, Vec<TestResult>) = (
-        lib::get_test_results(outputs.0),
-        lib::get_test_results(outputs.1),
-    );
-    test_results.0.extend(test_results.1.clone()); //concatenate results
+    let test_results: Vec<TestResult> = lib::get_test_results(outputs);
     test_results
-        .0
         .clone()
         .into_iter()
         .for_each(|r| println!("{}", r.to_string()));
 
     // combine TestResult structs into Report struct
-    let report: Report = lib::build_report(test_results.0, scores);
+    let report: Report = lib::build_report(test_results, scores);
     println!("{}", report.clone().to_string());
 
     // write Report object to output_path
     let mut buffer = File::create(output_path.to_string())?;
     buffer.write(&report.to_string().as_bytes())?;
+    let mut config = Config::default();
+    config.name = submission_path.to_string();
+    config.generate = vec![OutputFile::Json];
+    let tracemap: Result<TraceMap, RunError> = trace(&[config]);
+    let tracemap: Result<TraceMap, std::io::Error> = tracemap.map_err(RunError::into);
+    let tracemap = tracemap?;
+    let coverage_report = CoverageReport::from(&tracemap);
     Ok(())
 }
