@@ -10,14 +10,11 @@ use std::io::Write;
 
 fn main() -> Result<(), std::io::Error> {
     let args: Vec<String> = env::args().collect();
-    let submission_path = args
-        .get(1)
-        .expect("Must provide one argument representing path to submission/Cargo.toml.");
     let assignment_path = args
-        .get(2)
+        .get(1)
         .expect("Must provide one argument representing path to assignment/Cargo.toml.");
     let output_path = args
-        .get(3)
+        .get(2)
         .expect("Must provide one argument representing path to write results file.");
 
     // assign custom scores to each test function.
@@ -25,27 +22,18 @@ fn main() -> Result<(), std::io::Error> {
     let scores: HashMap<String, f32> = map! { "tests::test4" => 5.0 };
 
     // scrape cargo test output for assignment and submission
-    let outputs: (String, String) = (
-        lib::get_test_output(assignment_path.to_string()),
-        lib::get_test_output(submission_path.to_string()),
-    );
-    println!("{}", outputs.0.clone());
-    println!("{}", outputs.1.clone());
+    let outputs: String = lib::get_test_output(assignment_path.to_string());
+    println!("{}", outputs.clone());
 
     // deserialize ouputs into TestResult structs
-    let mut test_results: (Vec<TestResult>, Vec<TestResult>) = (
-        lib::get_test_results(outputs.0),
-        lib::get_test_results(outputs.1),
-    );
-    test_results.0.extend(test_results.1.clone()); //concatenate results
+    let test_results: Vec<TestResult> = lib::get_test_results(outputs);
     test_results
-        .0
         .clone()
         .into_iter()
         .for_each(|r| println!("{}", r.to_string()));
 
     // combine TestResult structs into Report struct
-    let report: Report = lib::build_report(test_results.0, scores);
+    let report: Report = lib::build_report(test_results, scores);
     println!("{}", report.clone().to_string());
 
     // write Report object to output_path
