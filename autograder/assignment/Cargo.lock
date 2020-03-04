@@ -206,6 +206,7 @@ dependencies = [
 [[package]]
 name = "cargo-tarpaulin"
 version = "0.11.0"
+source = "git+https://github.com/ethanabrooks/tarpaulin.git?branch=develop#4a384161396c68064815191d62e9b6b8f16f8aab"
 dependencies = [
  "cargo",
  "chrono",
