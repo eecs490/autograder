@@ -7,6 +7,7 @@ use std::collections::HashMap;
 use std::env;
 use std::fs::File;
 use std::io::Write;
+use std::path::PathBuf;
 use tarpaulin::config::types::OutputFile;
 use tarpaulin::config::Config;
 use tarpaulin::errors::RunError;
@@ -49,11 +50,13 @@ fn main() -> Result<(), std::io::Error> {
     let mut buffer = File::create(output_path.to_string())?;
     buffer.write(&report.to_string().as_bytes())?;
     let mut config = Config::default();
-    config.name = submission_path.to_string();
+    config.manifest = PathBuf::from(submission_path);
     config.generate = vec![OutputFile::Json];
-    let tracemap: Result<TraceMap, RunError> = trace(&[config]);
-    let tracemap: Result<TraceMap, std::io::Error> = tracemap.map_err(RunError::into);
-    let tracemap = tracemap?;
-    let coverage_report = CoverageReport::from(&tracemap);
+    //config.output_directory = PathBuf::from("/tmp");
+    let tracemap: Result<TraceMap, std::io::Error> = trace(&[config]).map_err(RunError::into);
+    let coverage_report = CoverageReport::from(&tracemap?);
+    println!("*******assignment");
+    println!("{}", serde_json::to_string(&coverage_report)?);
+    println!("*******assignment");
     Ok(())
 }

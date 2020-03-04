@@ -1,7 +1,15 @@
-pub fn fib(n: i32) -> i32 {
+pub fn _fib(n: i32) -> i32 {
     match n {
         0 => 1,
         _ => n,
+    }
+}
+
+pub fn fib(n: i32) -> i32 {
+    match n {
+        0 => 1,
+        1 => 1,
+        _ => fib(n - 1) + fib(n - 2),
     }
 }
 
@@ -51,12 +59,12 @@ mod tests {
         }
     }
 
-    #[test]
-    fn it_doesnt_work() -> Result<(), String> {
-        if 2 + 2 == 3 {
-            Ok(())
-        } else {
-            Err(String::from("two plus two does not equal three"))
-        }
-    }
+    //#[test]
+    //fn it_doesnt_work() -> Result<(), String> {
+    //if 2 + 2 == 3 {
+    //Ok(())
+    //} else {
+    //Err(String::from("two plus two does not equal three"))
+    //}
+    //}
 }
