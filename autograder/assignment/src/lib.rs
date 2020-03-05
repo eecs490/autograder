@@ -6,6 +6,7 @@ use std::fmt;
 use std::io;
 use std::path::PathBuf;
 use std::process::Command;
+use std::process::Output;
 use std::string::FromUtf8Error;
 use tarpaulin::config::types::OutputFile;
 use tarpaulin::config::Config;
@@ -20,6 +21,13 @@ pub enum Error {
     TarpaulinError(RunError),
     IOError(io::Error),
     FromUtf8Error(FromUtf8Error),
+    ArgumentError(String),
+}
+
+impl Error {
+    pub fn arg(msg: &str) -> Self {
+        Error::ArgumentError(String::from(msg))
+    }
 }
 
 impl fmt::Display for Error {
@@ -29,6 +37,7 @@ impl fmt::Display for Error {
             Error::TarpaulinError(ref e) => e.fmt(f),
             Error::IOError(ref e) => e.fmt(f),
             Error::FromUtf8Error(ref e) => e.fmt(f),
+            Error::ArgumentError(ref e) => e.fmt(f),
         }
     }
 }
@@ -40,6 +49,7 @@ impl error::Error for Error {
             Error::TarpaulinError(_) => None,
             Error::IOError(ref e) => Some(e),
             Error::FromUtf8Error(ref e) => Some(e),
+            Error::ArgumentError(_) => None,
         }
     }
 }
@@ -208,9 +218,9 @@ fn get_max_score(name: &String, scores: &HashMap<String, f32>) -> f32 {
     *scores.get(name).unwrap_or(&1.0)
 }
 
-pub fn get_test_output(path: String) -> Result<String, Error> {
+pub fn get_test_output(path: String) -> Result<Output, Error> {
     //cargo test --manifest-path="../../Cargo.toml"  -- -Z unstable-options --format json -q
-    let output = Command::new("cargo")
+    Command::new("cargo")
         .arg("test")
         .arg(format!("--manifest-path={}", path))
         .arg("--")
@@ -218,9 +228,10 @@ pub fn get_test_output(path: String) -> Result<String, Error> {
         .arg("unstable-options")
         .arg("--format")
         .arg("json")
-        .output();
-    let stdout = output?.stdout;
-    String::from_utf8(stdout).map_err(Error::from)
+        .output()
+        .map_err(Error::from)
+    //let stdout = output?.stdout;
+    //String::from_utf8(stdout)
 }
 
 pub fn get_test_results(test_output: String) -> Vec<TestResult> {

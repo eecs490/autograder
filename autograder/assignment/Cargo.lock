@@ -43,6 +43,7 @@ dependencies = [
  "array-macro",
  "cargo-tarpaulin",
  "json",
+ "log",
  "rand",
  "serde",
  "serde_json",
