@@ -249,8 +249,8 @@ pub fn get_coverage_result(submission_path: String, max_score: f32) -> Result<Te
     //config.output_directory = PathBuf::from("/tmp");
     let tracemap: Result<TraceMap, Error> = trace(&[config]).map_err(Error::from);
     let coverage_report = CoverageReport::from(&tracemap?);
-    let covered: usize = coverage_report.iter().map(|f| f.covered).sum();
-    let coverable: usize = coverage_report.iter().map(|f| f.coverable).sum();
+    let covered: usize = coverage_report.covered().iter().sum();
+    let coverable: usize = coverage_report.coverable().iter().sum();
     Ok(TestReport {
         score: covered as f32 / coverable as f32,
         max_score: max_score,
