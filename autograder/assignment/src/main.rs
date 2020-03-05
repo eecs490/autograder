@@ -1,6 +1,6 @@
 mod error;
 mod report;
-use lcov::{Reader, Record, RecordKind};
+use lcov::Reader;
 mod test_result;
 mod util;
 extern crate array_macro;
@@ -16,31 +16,15 @@ use std::process::Output;
 use test_result::TestResult;
 
 fn main() -> Result<(), Error> {
-    // `Reader` is an iterator that iterates over `Result<lcov::Record, E>` read from the input buffer.
-    let reader = Reader::open_file("/Users/ethan/autograder/autograder/ccov/lcov.info")?;
-
-    // Collect the read records into a vector.
-    let records = reader.collect::<Result<Vec<_>, _>>()?;
-    assert_eq!(records[0], Record::TestName { name: "".into() });
-    assert_eq!(records[1].kind(), RecordKind::SourceFile);
-
-    // Outputs the read records in LCOV tracefile format.
-    for record in records {
-        println!("{}", record);
-    }
-    Ok(())
-}
-
-fn main2() -> Result<(), Error> {
     let args: Vec<String> = env::args().collect();
-    let submission_path = args.get(1).ok_or(Error::arg(
-        "Must provide one argument representing path to submission/Cargo.toml.",
-    ))?;
-    let assignment_path = args.get(2).ok_or(Error::arg(
+    let assignment_path = args.get(1).ok_or(Error::arg(
         "Must provide one argument representing path to assignment/Cargo.toml.",
     ))?;
-    let output_path = args.get(3).ok_or(Error::arg(
+    let output_path = args.get(2).ok_or(Error::arg(
         "Must provide one argument representing path to write results file.",
+    ))?;
+    let lcov_path = args.get(3).ok_or(Error::arg(
+        "Must provide one argument representing path to lcov.info file.",
     ))?;
 
     // assign custom scores to each test function.
@@ -59,24 +43,30 @@ fn main2() -> Result<(), Error> {
     for result in test_results.clone() {
         println!("{}", to_string_pretty(&result)?);
     }
+
+    // Covert TestResults into TestReports
     let mut test_reports: Vec<TestReport> = test_results
         .iter()
         .enumerate()
-        .map(|(i, r)| TestReport::from_result(r, i + 1, &scores))
+        .map(|(i, r)| TestReport::from_result(r, i, &scores))
         .collect();
 
-    // `Reader` is an iterator that iterates over `Result<lcov::Record, E>` read from the input buffer.
-    let mut reader = Reader::open_file("tests/fixtures/report.info")?;
+    // Read lcov.info file
+    let records = Reader::open_file(lcov_path)?.collect::<Result<Vec<_>, _>>()?;
+    println!("LCov records:");
+    for record in records.clone() {
+        println!("{:?}", record)
+    }
+
+    // Convert lcov records into TestReports and append to test_reports vec
+    test_reports.push(TestReport::line_coverage(&records, test_reports.len(), 2.0));
+    test_reports.push(TestReport::branch_coverage(
+        &records,
+        test_reports.len(),
+        2.0,
+    ));
 
     // Collect the read records into a vector.
-    let records = reader.collect::<Result<Vec<_>, _>>()?;
-    assert_eq!(records[0], Record::TestName { name: "".into() });
-    assert_eq!(records[1].kind(), RecordKind::SourceFile);
-
-    // Outputs the read records in LCOV tracefile format.
-    for record in records {
-        println!("{}", record);
-    }
     println!("TestReport structs:");
     for report in test_reports.clone() {
         println!("{}", to_string_pretty(&report)?);

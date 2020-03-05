@@ -1,5 +1,6 @@
 use crate::test_result::TestResult;
 use crate::util::get_max_score;
+use lcov::Record;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -99,6 +100,42 @@ impl Report {
     }
 }
 
+pub fn line_coverage(reports: &Vec<Record>) -> f32 {
+    let lines_found: u32 = reports
+        .iter()
+        .map(|r| match r {
+            Record::LinesFound { found } => found,
+            _ => &0,
+        })
+        .sum();
+    let lines_hit: u32 = reports
+        .iter()
+        .map(|r| match r {
+            Record::LinesHit { hit } => hit,
+            _ => &0,
+        })
+        .sum();
+    lines_hit as f32 / lines_found as f32
+}
+
+pub fn branch_coverage(reports: &Vec<Record>) -> f32 {
+    let branches_found: u32 = reports
+        .iter()
+        .map(|r| match r {
+            Record::BranchesFound { found } => found,
+            _ => &0,
+        })
+        .sum();
+    let branches_hit: u32 = reports
+        .iter()
+        .map(|r| match r {
+            Record::BranchesHit { hit } => hit,
+            _ => &0,
+        })
+        .sum();
+    branches_hit as f32 / branches_found as f32
+}
+
 impl TestReport {
     pub fn from_result(result: &TestResult, number: usize, scores: &HashMap<String, f32>) -> Self {
         Self {
@@ -107,6 +144,28 @@ impl TestReport {
             name: result.name.clone(),
             number: number,
             output: result.stdout.clone().or(result.message.clone()),
+            tags: None,
+            visibility: None,
+        }
+    }
+    pub fn line_coverage(reports: &Vec<Record>, number: usize, score: f32) -> Self {
+        Self {
+            score: line_coverage(reports),
+            max_score: score,
+            name: "Line coverage".into(),
+            number: number,
+            output: None, // TODO
+            tags: None,
+            visibility: None,
+        }
+    }
+    pub fn branch_coverage(reports: &Vec<Record>, number: usize, score: f32) -> Self {
+        Self {
+            score: branch_coverage(reports),
+            max_score: score,
+            name: "Branch coverage".into(),
+            number: number,
+            output: None, // TODO
             tags: None,
             visibility: None,
         }
