@@ -1,14 +1,7 @@
-use crate::error::Error;
 use crate::test_result::TestResult;
 use crate::util::get_max_score;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::path::PathBuf;
-use tarpaulin::config::types::OutputFile;
-use tarpaulin::config::Config;
-use tarpaulin::report::json::CoverageReport;
-use tarpaulin::trace;
-use tarpaulin::traces::TraceMap;
 
 #[derive(Serialize, Deserialize, Clone)]
 #[serde(rename_all = "snake_case")]
@@ -117,25 +110,5 @@ impl TestReport {
             tags: None,
             visibility: None,
         }
-    }
-
-    pub fn coverage(submission_path: String, max_score: f32) -> Result<TestReport, Error> {
-        let mut config = Config::default();
-        config.manifest = PathBuf::from(submission_path);
-        config.generate = vec![OutputFile::Json];
-        //config.output_directory = PathBuf::from("/tmp");
-        let tracemap: Result<TraceMap, Error> = trace(&[config]).map_err(Error::from);
-        let coverage_report = CoverageReport::from(&tracemap?);
-        let covered: usize = coverage_report.covered().iter().sum();
-        let coverable: usize = coverage_report.coverable().iter().sum();
-        Ok(TestReport {
-            score: covered as f32 / coverable as f32,
-            max_score: max_score,
-            name: String::from("test coverage"),
-            number: 0,
-            output: None,
-            tags: None,
-            visibility: None,
-        })
     }
 }
