@@ -6,7 +6,6 @@ use lib::GradescopeReport;
 use lib::Report;
 use lib::TestReport;
 use lib::TestResult;
-use log::info;
 use serde_json::to_string_pretty;
 use std::collections::HashMap;
 use std::env;
@@ -33,14 +32,14 @@ fn main() -> Result<(), Error> {
     // scrape cargo test output for assignment and submission
     let output: Output = lib::get_test_output(assignment_path.to_string())?;
     let stdout = String::from_utf8(output.stdout)?;
-    info!("cargo test output:");
-    info!("{}", stdout);
+    println!("cargo test output:");
+    println!("{}", stdout);
 
     // deserialize ouputs into TestResult structs
     let test_results: Vec<TestResult> = lib::get_test_results(stdout);
-    info!("TestResult structs:");
+    println!("TestResult structs:");
     for result in test_results.clone() {
-        info!("{}", to_string_pretty(&result)?);
+        println!("{}", to_string_pretty(&result)?);
     }
     let mut test_reports: Vec<TestReport> = test_results
         .iter()
@@ -50,16 +49,16 @@ fn main() -> Result<(), Error> {
     let coverage_result = lib::get_coverage_result(submission_path.to_string(), 10.0);
     test_reports.push(coverage_result?);
 
-    info!("TestReport structs:");
+    println!("TestReport structs:");
     for report in test_reports.clone() {
-        info!("{}", to_string_pretty(&report)?);
+        println!("{}", to_string_pretty(&report)?);
     }
 
     // combine TestResult structs into Report struct
     let report: Report = lib::build_report(test_reports, &scores);
     let gradescope_report: GradescopeReport = GradescopeReport::from(report);
-    info!("Gradescope Report:");
-    info!("{}", to_string_pretty(&gradescope_report)?);
+    println!("Gradescope Report:");
+    println!("{}", to_string_pretty(&gradescope_report)?);
 
     // write Report object to output_path
     let mut buffer = File::create(output_path.to_string())?;
