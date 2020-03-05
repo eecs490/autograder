@@ -1,11 +1,11 @@
-mod lib;
+mod report;
 extern crate array_macro;
 extern crate rand;
-use lib::Error;
-use lib::GradescopeReport;
-use lib::Report;
-use lib::TestReport;
-use lib::TestResult;
+use report::Error;
+use report::GradescopeReport;
+use report::Report;
+use report::TestReport;
+use report::TestResult;
 use serde_json::to_string_pretty;
 use std::collections::HashMap;
 use std::env;
@@ -30,13 +30,13 @@ fn main() -> Result<(), Error> {
     let scores: HashMap<String, f32> = map! { "tests::test4" => 5.0 };
 
     // scrape cargo test output for assignment and submission
-    let output: Output = lib::get_test_output(assignment_path.to_string())?;
+    let output: Output = report::get_test_output(assignment_path.to_string())?;
     let stdout = String::from_utf8(output.stdout)?;
     println!("cargo test output:");
     println!("{}", stdout);
 
     // deserialize ouputs into TestResult structs
-    let test_results: Vec<TestResult> = lib::get_test_results(stdout);
+    let test_results: Vec<TestResult> = report::get_test_results(stdout);
     println!("TestResult structs:");
     for result in test_results.clone() {
         println!("{}", to_string_pretty(&result)?);
@@ -44,9 +44,9 @@ fn main() -> Result<(), Error> {
     let mut test_reports: Vec<TestReport> = test_results
         .iter()
         .enumerate()
-        .map(|(i, r)| lib::test_report_from_result(r, i + 1, &scores))
+        .map(|(i, r)| report::test_report_from_result(r, i + 1, &scores))
         .collect();
-    let coverage_result = lib::get_coverage_result(submission_path.to_string(), 10.0);
+    let coverage_result = report::get_coverage_result(submission_path.to_string(), 10.0);
     test_reports.push(coverage_result?);
 
     println!("TestReport structs:");
@@ -55,7 +55,7 @@ fn main() -> Result<(), Error> {
     }
 
     // combine TestResult structs into Report struct
-    let report: Report = lib::build_report(test_reports, &scores);
+    let report: Report = report::build_report(test_reports, &scores);
     let gradescope_report: GradescopeReport = GradescopeReport::from(report);
     println!("Gradescope Report:");
     println!("{}", to_string_pretty(&gradescope_report)?);
