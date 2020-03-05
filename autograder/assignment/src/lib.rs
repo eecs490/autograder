@@ -84,7 +84,7 @@ pub struct GradescopeReport {
     tests: std::vec::Vec<GradescopeTestReport>,
 }
 
-impl Report {
+impl GradescopeReport {
     pub fn to_string(self) -> String {
         return serde_json::to_string(&self).expect("Failed to produce JSON string.");
     }
@@ -144,10 +144,6 @@ pub struct TestResult {
 }
 
 impl TestResult {
-    pub fn to_string(self) -> String {
-        return serde_json::to_string(&self).expect("Failed to produce JSON string.");
-    }
-
     fn get_score(&self, scores: &HashMap<String, f32>) -> f32 {
         match self.event {
             Event::Ok => get_max_score(&self.name, scores),
