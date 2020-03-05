@@ -44,7 +44,7 @@ fn main() -> Result<(), Error> {
     let mut test_reports: Vec<TestReport> = test_results
         .iter()
         .enumerate()
-        .map(|(i, r)| lib::test_report_from_result(r, i, &scores))
+        .map(|(i, r)| lib::test_report_from_result(r, i + 1, &scores))
         .collect();
     let coverage_result = lib::get_coverage_result(submission_path.to_string(), 10.0);
     test_reports.push(coverage_result?);
