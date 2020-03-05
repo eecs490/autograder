@@ -2,18 +2,12 @@ mod lib;
 extern crate array_macro;
 extern crate rand;
 use lib::Report;
+use lib::TestReport;
 use lib::TestResult;
 use std::collections::HashMap;
 use std::env;
 use std::fs::File;
 use std::io::Write;
-use std::path::PathBuf;
-use tarpaulin::config::types::OutputFile;
-use tarpaulin::config::Config;
-use tarpaulin::errors::RunError;
-use tarpaulin::report::json::CoverageReport;
-use tarpaulin::trace;
-use tarpaulin::traces::TraceMap;
 
 fn main() -> Result<(), std::io::Error> {
     let args: Vec<String> = env::args().collect();
@@ -41,22 +35,22 @@ fn main() -> Result<(), std::io::Error> {
         .clone()
         .into_iter()
         .for_each(|r| println!("{}", r.to_string()));
+    let mut test_reports: Vec<TestReport> = test_results
+        .iter()
+        .enumerate()
+        .map(|(i, r)| lib::test_report_from_result(r, i, &scores))
+        .collect();
+
+    let coverage_result = lib::get_coverage_result(submission_path.to_string(), 10.0);
+
+    test_reports.push(coverage_result?);
 
     // combine TestResult structs into Report struct
-    let report: Report = lib::build_report(test_results, scores);
+    let report: Report = lib::build_report(test_reports, &scores);
     println!("{}", report.clone().to_string());
 
     // write Report object to output_path
     let mut buffer = File::create(output_path.to_string())?;
     buffer.write(&report.to_string().as_bytes())?;
-    let mut config = Config::default();
-    config.manifest = PathBuf::from(submission_path);
-    config.generate = vec![OutputFile::Json];
-    //config.output_directory = PathBuf::from("/tmp");
-    let tracemap: Result<TraceMap, std::io::Error> = trace(&[config]).map_err(RunError::into);
-    let coverage_report = CoverageReport::from(&tracemap?);
-    println!("*******assignment");
-    println!("{}", serde_json::to_string(&coverage_report)?);
-    println!("*******assignment");
     Ok(())
 }
