@@ -10,7 +10,7 @@ use std::env;
 use std::fs::File;
 use std::io::Write;
 
-fn main() -> Result<(), std::io::Error> {
+fn main() -> Result<(), lib::Error> {
     let args: Vec<String> = env::args().collect();
     let submission_path = args
         .get(1)
@@ -27,7 +27,7 @@ fn main() -> Result<(), std::io::Error> {
     let scores: HashMap<String, f32> = map! { "tests::test4" => 5.0 };
 
     // scrape cargo test output for assignment and submission
-    let outputs: String = lib::get_test_output(assignment_path.to_string());
+    let outputs: String = lib::get_test_output(assignment_path.to_string())?;
     println!("{}", outputs.clone());
 
     // deserialize ouputs into TestResult structs
@@ -42,15 +42,22 @@ fn main() -> Result<(), std::io::Error> {
     test_reports
         .clone()
         .into_iter()
-        .for_each(|r| println!("{}", serde_json::to_string(&r).unwrap()));
+        .for_each(|r| println!("{}", serde_json::to_string_pretty(&r).unwrap()));
 
     // combine TestResult structs into Report struct
     let report: Report = lib::build_report(test_reports, &scores);
     let gradescope_report: GradescopeReport = GradescopeReport::from(report);
-    println!("{}", gradescope_report.clone().to_string());
+    println!(
+        "{}",
+        serde_json::to_string_pretty(&gradescope_report).unwrap()
+    );
 
     // write Report object to output_path
     let mut buffer = File::create(output_path.to_string())?;
-    buffer.write(&gradescope_report.to_string().as_bytes())?;
+    buffer.write(
+        &serde_json::to_string(&gradescope_report)
+            .unwrap()
+            .as_bytes(),
+    )?;
     Ok(())
 }

@@ -1,13 +1,71 @@
 use serde::{Deserialize, Serialize};
+use serde_json;
 use std::collections::HashMap;
+use std::error;
+use std::fmt;
+use std::io;
 use std::path::PathBuf;
 use std::process::Command;
+use std::string::FromUtf8Error;
 use tarpaulin::config::types::OutputFile;
 use tarpaulin::config::Config;
 use tarpaulin::errors::RunError;
 use tarpaulin::report::json::CoverageReport;
 use tarpaulin::trace;
 use tarpaulin::traces::TraceMap;
+
+#[derive(Debug)]
+pub enum Error {
+    JsonError(serde_json::Error),
+    TarpaulinError(RunError),
+    IOError(io::Error),
+    FromUtf8Error(FromUtf8Error),
+}
+
+impl fmt::Display for Error {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match *self {
+            Error::JsonError(ref e) => e.fmt(f),
+            Error::TarpaulinError(ref e) => e.fmt(f),
+            Error::IOError(ref e) => e.fmt(f),
+            Error::FromUtf8Error(ref e) => e.fmt(f),
+        }
+    }
+}
+
+impl error::Error for Error {
+    fn source(&self) -> Option<&(dyn error::Error + 'static)> {
+        match *self {
+            Error::JsonError(ref e) => Some(e),
+            Error::TarpaulinError(_) => None,
+            Error::IOError(ref e) => Some(e),
+            Error::FromUtf8Error(ref e) => Some(e),
+        }
+    }
+}
+impl From<serde_json::Error> for Error {
+    fn from(err: serde_json::Error) -> Error {
+        Error::JsonError(err)
+    }
+}
+
+impl From<RunError> for Error {
+    fn from(err: RunError) -> Error {
+        Error::TarpaulinError(err)
+    }
+}
+
+impl From<io::Error> for Error {
+    fn from(err: io::Error) -> Error {
+        Error::IOError(err)
+    }
+}
+
+impl From<FromUtf8Error> for Error {
+    fn from(err: FromUtf8Error) -> Error {
+        Error::FromUtf8Error(err)
+    }
+}
 
 #[macro_export]
 macro_rules! map(
@@ -84,12 +142,6 @@ pub struct GradescopeReport {
     tests: std::vec::Vec<GradescopeTestReport>,
 }
 
-impl GradescopeReport {
-    pub fn to_string(self) -> String {
-        return serde_json::to_string(&self).expect("Failed to produce JSON string.");
-    }
-}
-
 impl From<Report> for GradescopeReport {
     fn from(report: Report) -> Self {
         GradescopeReport {
@@ -156,9 +208,9 @@ fn get_max_score(name: &String, scores: &HashMap<String, f32>) -> f32 {
     *scores.get(name).unwrap_or(&1.0)
 }
 
-pub fn get_test_output(path: String) -> String {
+pub fn get_test_output(path: String) -> Result<String, Error> {
     //cargo test --manifest-path="../../Cargo.toml"  -- -Z unstable-options --format json -q
-    let stdout = Command::new("cargo")
+    let output = Command::new("cargo")
         .arg("test")
         .arg(format!("--manifest-path={}", path))
         .arg("--")
@@ -166,10 +218,9 @@ pub fn get_test_output(path: String) -> String {
         .arg("unstable-options")
         .arg("--format")
         .arg("json")
-        .output()
-        .expect("Failed to capture output")
-        .stdout;
-    String::from_utf8(stdout).expect("Failed to convert stdout to string.")
+        .output();
+    let stdout = output?.stdout;
+    String::from_utf8(stdout).map_err(Error::from)
 }
 
 pub fn get_test_results(test_output: String) -> Vec<TestResult> {
@@ -180,15 +231,12 @@ pub fn get_test_results(test_output: String) -> Vec<TestResult> {
         .collect()
 }
 
-pub fn get_coverage_result(
-    submission_path: String,
-    max_score: f32,
-) -> Result<TestReport, std::io::Error> {
+pub fn get_coverage_result(submission_path: String, max_score: f32) -> Result<TestReport, Error> {
     let mut config = Config::default();
     config.manifest = PathBuf::from(submission_path);
     config.generate = vec![OutputFile::Json];
     //config.output_directory = PathBuf::from("/tmp");
-    let tracemap: Result<TraceMap, std::io::Error> = trace(&[config]).map_err(RunError::into);
+    let tracemap: Result<TraceMap, Error> = trace(&[config]).map_err(Error::from);
     let coverage_report = CoverageReport::from(&tracemap?);
     let covered: usize = coverage_report.iter().map(|f| f.covered).sum();
     let coverable: usize = coverage_report.iter().map(|f| f.coverable).sum();
