@@ -2,4 +2,5 @@
 cargo test --manifest-path /autograder/assignment/Cargo.toml
 zip -0 /ccov.zip `find /autograder \( -name "submission*.gc*" \) -print`
 grcov "/ccov.zip" -s /autograder -t lcov --llvm --branch --ignore-not-existing -o /lcov.info
+mkdir -p results
 cargo run --manifest-path=/autograder/assignment/Cargo.toml /autograder/assignment/Cargo.toml /autograder/results/results.json /lcov.info
