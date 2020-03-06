@@ -1,11 +1,7 @@
 #! /usr/bin/env bash
-source_dir=${1:-"/autograder"}
-assignment_path=${2:-"/autograder/submission/Cargo.toml"}
-results_path=${3:-"/autograder/results/results.json"}
-lcov_dir="ccov"
-lcov_path="$lcov_dir/lcov.info"
-cargo test --manifest-path="$assignment_path"
-mkdir "$lcov_dir"
-zip -0 "$lcov_dir/ccov.zip" $(find . \( -name "submission*.gc*" \) -print)
-grcov "$lcov_dir/ccov.zip" -s $source_dir -t lcov --llvm --branch --ignore-not-existing -o "$lcov_path"
-cargo run --manifest-path="$assignment_path" "$assignment_path" "$results_path" "$lcov_path"
+cargo build --manifest-path /autograder/assignment/Cargo.toml
+cargo test --manifest-path /autograder/assignment/Cargo.toml
+apt-get update && apt-get install -y zip
+zip -0 /ccov.zip `find /autograder \( -name "submission*.gc*" \) -print`
+grcov "/ccov.zip" -s /autograder -t lcov --llvm --branch --ignore-not-existing -o /lcov.info
+cargo run --manifest-path=/autograder/assignment/Cargo.toml /autograder/assignment/Cargo.toml /autograder/results/results.json /lcov.info
