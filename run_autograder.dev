@@ -1,14 +1,12 @@
 #! /usr/bin/env bash
-source_dir=${1:-"/autograder"}
+source_dir=${1:-"/autograder/submission"}
 assignment_path=${2:-"/autograder/submission/assignment/Cargo.toml"}
 results_path=${3:-"/autograder/results/results.json"}
-#export RUSTUP_HOME=/usr/local/rustup \
-#export CARGO_HOME=/usr/local/cargo \
-#export PATH=/usr/local/cargo/bin:$PATH \
-#export RUST_VERSION=1.41.0
-#source "/usr/local/cargo/env"
-lcov_dir="ccov"
+lcov_dir="/autograder/ccov"
 lcov_path="$lcov_dir/lcov.info"
+export CARGO_INCREMENTAL=0
+export RUSTFLAGS="-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Zno-landing-pads"
+cargo build --manifest-path="$assignment_path"
 cargo test --manifest-path="$assignment_path"
 mkdir "$lcov_dir"
 zip -0 "$lcov_dir/ccov.zip" $(find . \( -name "submission*.gc*" \) -print)

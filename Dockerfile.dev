@@ -1,5 +1,11 @@
-FROM rust
+FROM rustlang/rust:nightly
  
+ RUN apt-get update && apt-get install -y --no-install-recommends zip lcov g++-7 clang-7 &&  rm -rf /var/lib/apt/lists/*
+
+RUN cargo install grcov
 WORKDIR /autograder
 RUN mkdir results
 COPY run_autograder.dev run_autograder
+ENV CLANG_CXX=clang++-7
+ENV GCC_CXX=g++-7
+ENV GCOV=gcov-7

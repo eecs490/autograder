@@ -1,19 +1,11 @@
 #! /usr/bin/env bash
-submission_path=${1:-"/autograder/submission/Cargo.toml"}
-assignment_path=${2:-"/autograder/assignment/Cargo.toml"}
+source_dir=${1:-"/autograder"}
+assignment_path=${2:-"/autograder/submission/Cargo.toml"}
 results_path=${3:-"/autograder/results/results.json"}
-export RUSTUP_HOME=/usr/local/rustup \
-export CARGO_HOME=/usr/local/cargo \
-export PATH=/usr/local/cargo/bin:$PATH \
-export RUST_VERSION=1.41.0
-source "/usr/local/cargo/env"
-export CARGO_INCREMENTAL=0
-export RUSTFLAGS="-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Zno-landing-pads"
-cargo build --manifest-path=$assignment_path
-cargo test --manifest-path=$assignment_path
-mkdir ccov
-zip -0 ccov/ccov.zip $(find . \( -name "submission*.gc*" \) -print)
-grcov ccov/ccov.zip -s . -t lcov --llvm --branch --ignore-not-existing --ignore-dir "/*" -o ccov/lcov.info
-unset CARGO_INCREMENTAL
-unset RUSTFLAGS
-cargo run --manifest-path="$assignment_path" "$submission_path" "$assignment_path" "$results_path"
+lcov_dir="ccov"
+lcov_path="$lcov_dir/lcov.info"
+cargo test --manifest-path="$assignment_path"
+mkdir "$lcov_dir"
+zip -0 "$lcov_dir/ccov.zip" $(find . \( -name "submission*.gc*" \) -print)
+grcov "$lcov_dir/ccov.zip" -s $source_dir -t lcov --llvm --branch --ignore-not-existing -o "$lcov_path"
+cargo run --manifest-path="$assignment_path" "$assignment_path" "$results_path" "$lcov_path"
