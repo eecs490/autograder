@@ -150,7 +150,7 @@ impl TestReport {
     }
     pub fn line_coverage(reports: &Vec<Record>, number: usize, score: f32) -> Self {
         Self {
-            score: line_coverage(reports),
+            score: score * line_coverage(reports),
             max_score: score,
             name: "Line coverage".into(),
             number: number,
@@ -161,7 +161,7 @@ impl TestReport {
     }
     pub fn branch_coverage(reports: &Vec<Record>, number: usize, score: f32) -> Self {
         Self {
-            score: branch_coverage(reports),
+            score: score * branch_coverage(reports),
             max_score: score,
             name: "Branch coverage".into(),
             number: number,
