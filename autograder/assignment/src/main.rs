@@ -29,7 +29,7 @@ fn main() -> Result<(), Error> {
 
     // assign custom scores to each test function.
     // The autograder defaults to 1.0 point per test for tests not included in thei HashMap.
-    let scores: HashMap<String, f32> = map! { "tests::test4" => 5.0 };
+    let scores: HashMap<String, f32> = map! { "test_random1" => 5.0 };
 
     // scrape cargo test output for assignment and submission
     let output: Output = util::cargo_test(assignment_path.to_string())?;
