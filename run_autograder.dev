@@ -1,9 +1,17 @@
 #! /usr/bin/env bash
+set -x
+root=${1:-/autograder}
+ccov=${3:-ccov}
+results=${6:-/autograder/results/results.json}
+assignment=$root/assignment/Cargo.toml
+
+mkdir -p results
 export CARGO_INCREMENTAL=0
 export RUSTFLAGS="-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Zno-landing-pads"
-cargo build --manifest-path /autograder/assignment/Cargo.toml
-cargo test --manifest-path /autograder/assignment/Cargo.toml
-zip -0 /ccov.zip `find /autograder \( -name "submission*.gc*" \) -print`
-grcov "/ccov.zip" -s /autograder -t lcov --llvm --branch --ignore-not-existing -o /lcov.info
-mkdir -p results
-cargo run --manifest-path=/autograder/assignment/Cargo.toml /autograder/assignment/Cargo.toml /autograder/results/results.json /lcov.info
+cargo build --manifest-path $root/assignment/Cargo.toml
+cd $root/submission
+cargo test 
+mkdir $ccov
+zip -0 $ccov/ccov.zip $(find . \( -name "submission*.gc*" \) -print)
+grcov $ccov/ccov.zip -s . -t lcov --llvm --branch --ignore-not-existing -o $ccov/lcov.info
+cargo run --manifest-path $assignment $assignment $results $ccov/lcov.info
