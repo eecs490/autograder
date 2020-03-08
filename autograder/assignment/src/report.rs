@@ -101,38 +101,26 @@ impl Report {
 }
 
 pub fn line_coverage(reports: &Vec<Record>) -> f32 {
-    let lines_found: u32 = reports
-        .iter()
-        .map(|r| match r {
-            Record::LinesFound { found } => found,
-            _ => &0,
-        })
-        .sum();
-    let lines_hit: u32 = reports
-        .iter()
-        .map(|r| match r {
-            Record::LinesHit { hit } => hit,
-            _ => &0,
-        })
-        .sum();
+    let (lines_hit, lines_found): (u32, u32) =
+        reports
+            .iter()
+            .fold((0, 0), |(hit, found), record| match record {
+                Record::LinesFound { .. } => (hit, found + 1),
+                Record::LinesHit { .. } => (hit + 1, found),
+                _ => (hit, found),
+            });
     lines_hit as f32 / lines_found as f32
 }
 
 pub fn branch_coverage(reports: &Vec<Record>) -> f32 {
-    let branches_found: u32 = reports
-        .iter()
-        .map(|r| match r {
-            Record::BranchesFound { found } => found,
-            _ => &0,
-        })
-        .sum();
-    let branches_hit: u32 = reports
-        .iter()
-        .map(|r| match r {
-            Record::BranchesHit { hit } => hit,
-            _ => &0,
-        })
-        .sum();
+    let (branches_hit, branches_found): (u32, u32) =
+        reports
+            .iter()
+            .fold((0, 0), |(hit, found), record| match record {
+                Record::BranchData { taken: Some(n), .. } if *n > 0 => (found + 1, hit + 1),
+                Record::BranchData { .. } => (hit, found + 1),
+                _ => (found, hit),
+            });
     branches_hit as f32 / branches_found as f32
 }
 
