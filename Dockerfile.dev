@@ -1,3 +1,4 @@
 FROM ethanabrooks/rust-autograder-base
+COPY run_autograder.base .
 COPY run_autograder.dev run_autograder
 #CMD ./run_autograder
