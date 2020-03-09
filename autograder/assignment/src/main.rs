@@ -23,58 +23,62 @@ fn main() -> Result<(), Error> {
     let matches = App::new("MyApp")
         .arg(
             Arg::with_name("assignment")
-                .help("path to assignment/Cargo.toml")
-                .short("a")
                 .long("assignment")
+                .help("path to assignment/Cargo.toml")
+                .takes_value(true)
                 .required(true),
         )
         .arg(
             Arg::with_name("submission")
-                .help("path to submission/Cargo.toml")
                 .long("submission")
+                .help("path to submission/Cargo.toml")
+                .takes_value(true)
                 .required(true),
         )
         .arg(
             Arg::with_name("output")
-                .help("path where results.json will be written")
-                .short("o")
                 .long("output")
+                .help("path where results.json will be written")
+                .takes_value(true)
                 .required(true),
         )
         .arg(
             Arg::with_name("lcov")
-                .help("path to lcov.info")
-                .short("l")
                 .long("lcov")
+                .help("path to lcov.info")
+                .takes_value(true)
                 .required(true),
         )
         .arg(
             Arg::with_name("scores")
                 .help("path to scores.yaml")
                 .long("scores")
+                .takes_value(true)
                 .required(true),
         )
         .arg(
             Arg::with_name("our_solution")
-                .help("path to our solution.rs file")
                 .long("our-solution")
+                .help("path to our solution.rs file")
+                .takes_value(true)
                 .required(true),
         )
         .arg(
             Arg::with_name("their_solution")
-                .help("path to their solution.rs file")
                 .long("their-solution")
+                .help("path to their solution.rs file")
+                .takes_value(true)
                 .required(true),
         )
         .get_matches();
 
-    let assignment_path = matches.value_of("assignment")?;
-    let _submission_path = matches.value_of("submission")?;
-    let output_path = matches.value_of("output")?;
-    let lcov_path = matches.value_of("lcov")?;
-    let scores_path = matches.value_of("scores")?;
-    let _our_solution = matches.value_of("our_solution")?;
-    let _their_solution = matches.value_of("their_solution")?;
+    let assignment_path = matches.value_of("assignment").unwrap();
+    let _submission_path = matches.value_of("submission").unwrap();
+    let output_path = matches.value_of("output").unwrap();
+    let lcov_path = matches.value_of("lcov").unwrap();
+    let scores_path = matches.value_of("scores").unwrap();
+    let _our_solution = matches.value_of("our_solution").unwrap();
+    let _their_solution = matches.value_of("their_solution").unwrap();
 
     // assign custom scores to each test function.
     // The autograder defaults to 1.0 point per test for tests not included in thei HashMap.
@@ -128,10 +132,10 @@ fn main() -> Result<(), Error> {
 
     // combine TestResult structs into Report struct
     let output = format!(
-        "Coverage scores are based on the following <code>lcov</code> coverage data output:
+    "Coverage scores are based on the following <code>lcov</code> coverage data output:
     \n{}\n\n
     To create an HTML view of this data, navigate to the root of your submission, create a file `lcov.info`, and run `mkdir -p /tmp/ccov && genhtml -o /tmp/ccov --show-details --highlight --ignore-errors source --legend lcov.info`.",
-        records_to_string(&records)
+    records_to_string(&records)
     );
     let report: Report = Report::build(test_reports, &scores, Some(output));
     let gradescope_report: GradescopeReport = GradescopeReport::from(report);

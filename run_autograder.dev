@@ -1,3 +1,0 @@
-#! /usr/bin/env bash
-set -x
-./run_autograder.base ${1:-/autograder/submission}

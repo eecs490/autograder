@@ -1,3 +1,26 @@
 #! /usr/bin/env bash
 set -x
-./run_autograder.base ${1:-/autograder}
+file_structure=${1:-file_structure}
+source $file_structure
+export RUSTUP_HOME=/usr/local/rustup
+export CARGO_HOME=/usr/local/cargo
+export PATH=/usr/local/cargo/bin:$PATH
+export CARGO_INCREMENTAL=0
+export RUSTFLAGS="-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Zno-landing-pads"
+
+mkdir -p $(dirname $OUTPUT)
+cd $(dirname $SUBMISSION)
+cargo test
+ccov=$(dirname $LCOV)
+mkdir -p $ccov
+zip -0 $ccov/ccov.zip $(find . \( -name "submission*.gc*" \) -print)
+grcov $ccov/ccov.zip -s . -t lcov --llvm --branch --ignore-not-existing -o $LCOV
+cargo run --manifest-path $ASSIGNMENT -- \
+  --assignment=$ASSIGNMENT \
+  --submission=$SUBMISSION \
+  --output=$OUTPUT \
+  --lcov=$LCOV \
+  --scores=$SCORES \
+  --our-solution=$OUR_SOLUTION \
+  --their-solution=$THEIR_SOLUTION
+rm -rf $ccov
