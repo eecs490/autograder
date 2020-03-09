@@ -1,4 +1,3 @@
-use crate::test_result::TestResult;
 use crate::util::{get_max_score, ScoreMap};
 use lcov::Record;
 use serde::{Deserialize, Serialize};

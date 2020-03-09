@@ -1,4 +1,4 @@
-use submission::fib;
+use submission::solution::fib;
 
 #[test]
 fn test0() {
