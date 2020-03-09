@@ -1,31 +1,28 @@
 #! /usr/bin/env bash
 set -x
-FILE_STRUCTURE=${1:-file_structure}
-export RUSTUP_HOME=${2:-/usr/local/rustup}
-export CARGO_HOME=${3:-/usr/local/cargo}
-export PATH=${4:-/usr/local/cargo/bin}:$PATH
-export CARGO_INCREMENTAL=0
-export RUSTFLAGS="-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Zno-landing-pads"
-source $FILE_STRUCTURE
+config=${1:-config.sh}
+source $config
 
-mkdir -p $(dirname $OUTPUT)
-cd $(dirname $SUBMISSION)
-cargo test
+# create coverage file
 ccov=$(dirname $LCOV)
 mkdir -p $ccov
+cd $(dirname $SUBMISSION)
+cargo test
 zip -0 $ccov/ccov.zip $(find . \( -name "submission*.gc*" \) -print)
 grcov $ccov/ccov.zip -s . -t lcov --llvm --branch --ignore-not-existing -o $LCOV
 cargo test --manifest-path $ASSIGNMENT -- -Z unstable-options --format json >&1 | tee $OUR_TEST_RESULTS
-mv $THEIR_SOLUTION /tmp
+
+# run their tests on our solution
 cp $OUR_SOLUTION $THEIR_SOLUTION
 cargo clean --manifest-path $SUBMISSION
 cargo test --manifest-path $SUBMISSION -- -Z unstable-options --format json >&1 | tee $THEIR_TEST_RESULTS
-cargo run --manifest-path $ASSIGNMENT -- \
+
+# run our tests on their solution
+mkdir -p $(dirname $OUTPUT)
+cargo run --manifest-path $AUTOGRADER -- \
   --our-test-results=$OUR_TEST_RESULTS \
   --their-test-results=$THEIR_TEST_RESULTS \
   --submission=$SUBMISSION \
   --output=$OUTPUT \
   --lcov=$LCOV \
   --scores=$SCORES
-rm -rf $ccov
-mv /tmp/$(basename $THEIR_SOLUTION) $THEIR_SOLUTION

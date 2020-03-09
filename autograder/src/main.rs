@@ -5,8 +5,6 @@ use lcov::Reader;
 use report::records_to_string;
 mod test_result;
 mod util;
-extern crate array_macro;
-extern crate rand;
 use clap::{App, Arg};
 use error::Error;
 use report::{GradescopeReport, Report, TestReport};
