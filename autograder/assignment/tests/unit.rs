@@ -7,7 +7,7 @@ mod our_tests {
     #[should_panic]
     #[test]
     fn panic() {
-        submission::fib(-1);
+        submission::solution::fib(-1);
     }
 
     #[test]
