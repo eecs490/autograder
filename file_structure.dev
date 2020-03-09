@@ -1,0 +1,8 @@
+#! /usr/bin/env bash
+ASSIGNMENT=/autograder/submission/assignment/Cargo.toml
+SUBMISSION=/autograder/submission/submission/Cargo.toml
+OUTPUT=/autograder/results/results.json
+LCOV=/autograder/submission/ccov/lcov.info
+SCORES=/autograder/scores.yaml
+OUR_SOLUTION=/autograder/submission/assignment/src/solution.rs
+THEIR_SOLUTION=/autograder/submission/submission/src/solution.rs
