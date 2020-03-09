@@ -85,9 +85,8 @@ fn main() -> Result<(), Error> {
     // combine TestResult structs into Report struct
     let output = format!(
         "Coverage scores are based on the following <code>lcov</code> coverage data output:
-    \n{}\n
-    See https://linux.die.net/man/1/genhtml or <code>man genhtml</code> for instructions on
-    generating an HTML view of this coverage data.",
+    \n{}\n\n
+    To create an HTML view of this data, navigate to the root of your submission, create a file `lcov.info`, and run `mkdir -p /tmp/ccov && genhtml -o /tmp/ccov --show-details --highlight --ignore-errors source --legend lcov.info`.",
         records_to_string(&records)
     );
     let report: Report = Report::build(test_reports, &scores, Some(output));

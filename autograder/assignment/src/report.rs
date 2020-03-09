@@ -135,7 +135,7 @@ impl TestReport {
             max_score: get_max_score(&result.name.clone(), scores),
             name: result.name.clone(),
             number: number,
-            output: None,
+            output: result.stdout.clone(),
             tags: None,
             visibility: None,
         }
@@ -161,7 +161,7 @@ impl TestReport {
             max_score: score,
             name: name,
             number: number,
-            output: records_to_string(records).into(),
+            output: None,
             tags: None,
             visibility: None,
         }
