@@ -1,6 +1,6 @@
 use crate::util;
+use crate::util::ScoreMap;
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 //{ "type": "suite", "event": "started", "test_count": 5 }
 //{ "type": "test", "event": "started", "name": "tests::test0" }
 //{ "type": "test", "event": "started", "name": "tests::test1" }
@@ -39,7 +39,7 @@ pub struct TestResult {
 }
 
 impl TestResult {
-    pub fn get_score(&self, scores: &HashMap<String, f32>) -> f32 {
+    pub fn get_score(&self, scores: &ScoreMap) -> f32 {
         match self.event {
             Event::Ok => util::get_max_score(&self.name, scores),
             Event::Failed => 0.0,

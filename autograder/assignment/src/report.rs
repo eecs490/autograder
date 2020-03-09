@@ -1,8 +1,7 @@
 use crate::test_result::TestResult;
-use crate::util::get_max_score;
+use crate::util::{get_max_score, ScoreMap};
 use lcov::Record;
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 
 #[derive(Serialize, Deserialize, Clone)]
 #[serde(rename_all = "snake_case")]
@@ -83,7 +82,7 @@ impl From<Report> for GradescopeReport {
 }
 
 impl Report {
-    pub fn build(test_reports: Vec<TestReport>, scores: &HashMap<String, f32>) -> Self {
+    pub fn build(test_reports: Vec<TestReport>, scores: &ScoreMap) -> Self {
         let actual_score: f32 = test_reports.clone().into_iter().map(|r| r.score).sum();
         let max_score: f32 = test_reports
             .clone()
@@ -123,7 +122,7 @@ pub fn branch_coverage(reports: &Vec<Record>) -> f32 {
 }
 
 impl TestReport {
-    pub fn from_result(result: &TestResult, number: usize, scores: &HashMap<String, f32>) -> Self {
+    pub fn from_result(result: &TestResult, number: usize, scores: &ScoreMap) -> Self {
         Self {
             score: result.get_score(scores),
             max_score: get_max_score(&result.name.clone(), scores),

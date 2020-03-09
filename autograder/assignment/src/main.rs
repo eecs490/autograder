@@ -8,8 +8,9 @@ extern crate rand;
 use error::Error;
 use report::{GradescopeReport, Report, TestReport};
 use serde_json::to_string_pretty;
-use std::collections::HashMap;
+use serde_yaml;
 use std::env;
+use std::fs;
 use std::fs::File;
 use std::io::Write;
 use std::process::Output;
@@ -26,10 +27,14 @@ fn main() -> Result<(), Error> {
     let lcov_path = args.get(3).ok_or(Error::arg(
         "Must provide one argument representing path to lcov.info file.",
     ))?;
+    let scores_path = args.get(4).ok_or(Error::arg(
+        "Must provide one argument representing path to scores.yml.",
+    ))?;
 
     // assign custom scores to each test function.
     // The autograder defaults to 1.0 point per test for tests not included in thei HashMap.
-    let scores: HashMap<String, f32> = map! { "test_random1" => 5.0 };
+    let scores = fs::read_to_string(scores_path)?;
+    let scores: util::ScoreMap = serde_yaml::from_str(&scores)?;
 
     // scrape cargo test output for assignment and submission
     let output: Output = util::cargo_test(assignment_path.to_string())?;

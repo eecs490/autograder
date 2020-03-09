@@ -1,7 +1,9 @@
 use crate::error::Error;
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 use std::process::Command;
 use std::process::Output;
+
+pub type ScoreMap = BTreeMap<String, f32>;
 
 #[macro_export]
 macro_rules! map(
@@ -30,6 +32,6 @@ pub fn cargo_test(path: String) -> Result<Output, Error> {
         .map_err(Error::from)
 }
 
-pub fn get_max_score(name: &String, scores: &HashMap<String, f32>) -> f32 {
+pub fn get_max_score(name: &String, scores: &ScoreMap) -> f32 {
     *scores.get(name).unwrap_or(&1.0)
 }
