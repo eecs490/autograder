@@ -102,13 +102,11 @@ impl Report {
 
 pub fn line_coverage(reports: &Vec<Record>) -> f32 {
     let (lines_hit, lines_found): (u32, u32) =
-        reports
-            .iter()
-            .fold((0, 0), |(hit, found), record| match record {
-                Record::LinesFound { .. } => (hit, found + 1),
-                Record::LinesHit { .. } => (hit + 1, found),
-                _ => (hit, found),
-            });
+        reports.iter().fold((0, 0), |(h, f), record| match record {
+            Record::LinesFound { found } => (h, found + f),
+            Record::LinesHit { hit } => (hit + h, f),
+            _ => (h, f),
+        });
     lines_hit as f32 / lines_found as f32
 }
 
@@ -117,9 +115,9 @@ pub fn branch_coverage(reports: &Vec<Record>) -> f32 {
         reports
             .iter()
             .fold((0, 0), |(hit, found), record| match record {
-                Record::BranchData { taken: Some(n), .. } if *n > 0 => (found + 1, hit + 1),
+                Record::BranchData { taken: Some(n), .. } if *n > 0 => (hit + 1, found + 1),
                 Record::BranchData { .. } => (hit, found + 1),
-                _ => (found, hit),
+                _ => (hit, found),
             });
     branches_hit as f32 / branches_found as f32
 }
