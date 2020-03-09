@@ -61,29 +61,13 @@ fn main() -> Result<(), Error> {
                 .takes_value(true)
                 .required(true),
         )
-        .arg(
-            Arg::with_name("our_solution")
-                .long("our-solution")
-                .help("path to our solution.rs file")
-                .takes_value(true)
-                .required(true),
-        )
-        .arg(
-            Arg::with_name("their_solution")
-                .long("their-solution")
-                .help("path to their solution.rs file")
-                .takes_value(true)
-                .required(true),
-        )
         .get_matches();
 
     let output_path = matches.value_of("output").unwrap();
     let lcov_path = matches.value_of("lcov").unwrap();
     let scores_path = matches.value_of("scores").unwrap();
-    let _our_solution = matches.value_of("our_solution").unwrap();
-    let _their_solution = matches.value_of("their_solution").unwrap();
     let our_test_results = matches.value_of("our_test_results").unwrap();
-    let _their_test_results = matches.value_of("their_test_results").unwrap();
+    let their_test_results = matches.value_of("their_test_results").unwrap();
 
     // assign custom scores to each test function.
     // The autograder defaults to 1.0 point per test for tests not included in thei HashMap.
@@ -92,7 +76,10 @@ fn main() -> Result<(), Error> {
 
     // deserialize ouputs into TestResult structs
     let our_test_results = fs::read_to_string(our_test_results)?;
-    let test_results: Vec<TestResult> = TestResult::from_output(our_test_results);
+    let their_test_results = fs::read_to_string(their_test_results)?;
+    let mut test_results: Vec<TestResult> = TestResult::from_output(our_test_results);
+    test_results.extend(TestResult::from_output(their_test_results));
+
     println!("TestResult structs:");
     for result in test_results.clone() {
         println!("{}", to_string_pretty(&result)?);

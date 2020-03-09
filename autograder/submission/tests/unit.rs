@@ -22,9 +22,7 @@ fn test3() {
 
 #[test]
 fn test4() {
-    // This assert would fire and test will fail.
-    // Please note, that private functions can be tested too!
-    assert_eq!(fib(4), 5, "NOOOOOO");
+    assert_eq!(fib(4), 4, "NOOOOOO");
 }
 
 #[test]

@@ -16,7 +16,9 @@ mkdir -p $ccov
 zip -0 $ccov/ccov.zip $(find . \( -name "submission*.gc*" \) -print)
 grcov $ccov/ccov.zip -s . -t lcov --llvm --branch --ignore-not-existing -o $LCOV
 cargo test --manifest-path $ASSIGNMENT -- -Z unstable-options --format json >&1 | tee $OUR_TEST_RESULTS
+mv $THEIR_SOLUTION /tmp
 cp $OUR_SOLUTION $THEIR_SOLUTION
+cargo clean --manifest-path $SUBMISSION
 cargo test --manifest-path $SUBMISSION -- -Z unstable-options --format json >&1 | tee $THEIR_TEST_RESULTS
 cargo run --manifest-path $ASSIGNMENT -- \
   --our-test-results=$OUR_TEST_RESULTS \
@@ -24,7 +26,6 @@ cargo run --manifest-path $ASSIGNMENT -- \
   --submission=$SUBMISSION \
   --output=$OUTPUT \
   --lcov=$LCOV \
-  --scores=$SCORES \
-  --our-solution=$OUR_SOLUTION \
-  --their-solution=$THEIR_SOLUTION
+  --scores=$SCORES
 rm -rf $ccov
+mv /tmp/$(basename $THEIR_SOLUTION) $THEIR_SOLUTION
