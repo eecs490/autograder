@@ -84,11 +84,12 @@ fn main() -> Result<(), Error> {
     }
 
     // Covert TestResults into TestReports
-    let mut test_reports: Vec<TestReport> = test_results
+    let test_reports: Result<Vec<_>, _> = test_results
         .iter()
         .enumerate()
         .map(|(i, r)| TestReport::from_result(r, i, &scores))
         .collect();
+    let mut test_reports: Vec<TestReport> = test_reports?;
 
     // Read lcov.info file
     let records = Reader::open_file(lcov_path)?.collect::<Result<Vec<_>, _>>()?;
@@ -102,12 +103,12 @@ fn main() -> Result<(), Error> {
         &records,
         test_reports.len(),
         &scores,
-    ));
+    )?);
     test_reports.push(TestReport::branch_coverage(
         &records,
         test_reports.len(),
         &scores,
-    ));
+    )?);
 
     // Collect the read records into a vector.
     println!("TestReport structs:");
@@ -122,7 +123,7 @@ fn main() -> Result<(), Error> {
 To create an HTML view of this data, navigate to the root of your submission, create a file `lcov.info`, and run `mkdir -p /tmp/ccov && genhtml -o /tmp/ccov --show-details --highlight --ignore-errors source --legend lcov.info`.",
 records_to_string(&records)
 );
-    let report: Report = Report::build(test_reports, &scores, Some(output));
+    let report: Report = Report::build(test_reports, &scores, Some(output))?;
     let gradescope_report: GradescopeReport = GradescopeReport::from(report);
     println!("Gradescope Report:");
     println!("{}", to_string_pretty(&gradescope_report)?);

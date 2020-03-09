@@ -1,3 +1,4 @@
+use crate::error::Error;
 use crate::test_result::TestResult;
 use crate::util::{get_max_score, ScoreMap};
 use lcov::Record;
@@ -82,20 +83,26 @@ impl From<Report> for GradescopeReport {
 }
 
 impl Report {
-    pub fn build(test_reports: Vec<TestReport>, scores: &ScoreMap, output: Option<String>) -> Self {
+    pub fn build(
+        test_reports: Vec<TestReport>,
+        scores: &ScoreMap,
+        output: Option<String>,
+    ) -> Result<Self, Error> {
         let actual_score: f32 = test_reports.clone().into_iter().map(|r| r.score).sum();
-        let max_score: f32 = test_reports
+        let max_scores: Result<Vec<_>, _> = test_reports
             .clone()
             .into_iter()
             .map(|r| get_max_score(&r.name, scores))
-            .sum();
-        Self {
+            .collect();
+        let max_score: f32 = max_scores?.into_iter().sum();
+
+        Ok(Self {
             score: 100.0 * actual_score / max_score,
             execution_time: None,
             output: output,
             stdout_visibility: None,
             tests: test_reports,
-        }
+        })
     }
 }
 
@@ -129,21 +136,29 @@ pub fn records_to_string(records: &Vec<Record>) -> String {
 }
 
 impl TestReport {
-    pub fn from_result(result: &TestResult, number: usize, scores: &ScoreMap) -> Self {
-        Self {
-            score: result.get_score(scores),
-            max_score: get_max_score(&result.name.clone(), scores),
+    pub fn from_result(
+        result: &TestResult,
+        number: usize,
+        scores: &ScoreMap,
+    ) -> Result<Self, Error> {
+        Ok(Self {
+            score: result.get_score(scores)?,
+            max_score: get_max_score(&result.name.clone(), scores)?,
             name: result.name.clone(),
             number: number,
             output: result.stdout.clone(),
             tags: None,
             visibility: None,
-        }
+        })
     }
-    pub fn line_coverage(records: &Vec<Record>, number: usize, scores: &ScoreMap) -> Self {
+    pub fn line_coverage(
+        records: &Vec<Record>,
+        number: usize,
+        scores: &ScoreMap,
+    ) -> Result<Self, Error> {
         let name: String = "Line coverage".into();
-        let score = get_max_score(&name, scores);
-        Self {
+        let score = get_max_score(&name, scores)?;
+        Ok(Self {
             score: score * line_coverage(records),
             max_score: score,
             name: "Line coverage".into(),
@@ -151,12 +166,16 @@ impl TestReport {
             output: None,
             tags: None,
             visibility: None,
-        }
+        })
     }
-    pub fn branch_coverage(records: &Vec<Record>, number: usize, scores: &ScoreMap) -> Self {
+    pub fn branch_coverage(
+        records: &Vec<Record>,
+        number: usize,
+        scores: &ScoreMap,
+    ) -> Result<Self, Error> {
         let name: String = "Branch coverage".into();
-        let score = get_max_score(&name, scores);
-        Self {
+        let score = get_max_score(&name, scores)?;
+        Ok(Self {
             score: score * branch_coverage(records),
             max_score: score,
             name: name,
@@ -164,6 +183,6 @@ impl TestReport {
             output: None,
             tags: None,
             visibility: None,
-        }
+        })
     }
 }

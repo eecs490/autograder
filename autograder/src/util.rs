@@ -1,3 +1,4 @@
+use crate::error::Error;
 use std::collections::BTreeMap;
 
 pub type ScoreMap = BTreeMap<String, f32>;
@@ -15,6 +16,7 @@ macro_rules! map(
      };
 );
 
-pub fn get_max_score(name: &String, scores: &ScoreMap) -> f32 {
-    *scores.get(name).unwrap_or(&1.0)
+pub fn get_max_score(name: &String, scores: &ScoreMap) -> Result<f32, Error> {
+    let score = scores.get(name)?;
+    Ok(*score)
 }

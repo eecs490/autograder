@@ -1,4 +1,4 @@
-use crate::util;
+use crate::error::Error;
 use crate::util::ScoreMap;
 use serde::{Deserialize, Serialize};
 //{ "type": "suite", "event": "started", "test_count": 5 }
@@ -39,10 +39,13 @@ pub struct TestResult {
 }
 
 impl TestResult {
-    pub fn get_score(&self, scores: &ScoreMap) -> f32 {
+    pub fn get_score(&self, scores: &ScoreMap) -> Result<f32, Error> {
         match self.event {
-            Event::Ok => util::get_max_score(&self.name, scores),
-            Event::Failed => 0.0,
+            Event::Ok => {
+                let score = scores.get(&self.name)?;
+                Ok(*score)
+            }
+            Event::Failed => Ok(0.0),
         }
     }
     pub fn from_output(test_output: String) -> Vec<TestResult> {
