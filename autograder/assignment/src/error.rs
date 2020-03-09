@@ -4,6 +4,7 @@ use serde_yaml;
 use std::error;
 use std::fmt;
 use std::io;
+use std::option::NoneError;
 use std::string::FromUtf8Error;
 
 #[derive(Debug)]
@@ -12,14 +13,8 @@ pub enum Error {
     YamlError(serde_yaml::Error),
     IOError(io::Error),
     FromUtf8Error(FromUtf8Error),
-    ArgumentError(String),
     LcovReaderError(lcov::reader::Error),
-}
-
-impl Error {
-    pub fn arg(msg: &str) -> Self {
-        Error::ArgumentError(String::from(msg))
-    }
+    NoneError(NoneError),
 }
 
 impl fmt::Display for Error {
@@ -29,8 +24,8 @@ impl fmt::Display for Error {
             Error::YamlError(ref e) => e.fmt(f),
             Error::IOError(ref e) => e.fmt(f),
             Error::FromUtf8Error(ref e) => e.fmt(f),
-            Error::ArgumentError(ref e) => e.fmt(f),
             Error::LcovReaderError(ref e) => e.fmt(f),
+            Error::NoneError(ref e) => write!(f, "{:?}", e),
         }
     }
 }
@@ -42,9 +37,15 @@ impl error::Error for Error {
             Error::YamlError(ref e) => Some(e),
             Error::IOError(ref e) => Some(e),
             Error::FromUtf8Error(ref e) => Some(e),
-            Error::ArgumentError(_) => None,
             Error::LcovReaderError(_) => None,
+            Error::NoneError(_) => None,
         }
+    }
+}
+
+impl From<NoneError> for Error {
+    fn from(err: NoneError) -> Error {
+        Error::NoneError(err)
     }
 }
 

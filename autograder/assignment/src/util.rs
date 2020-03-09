@@ -1,5 +1,6 @@
 use crate::error::Error;
 use std::collections::BTreeMap;
+use std::path::PathBuf;
 use std::process::Command;
 use std::process::Output;
 
@@ -18,11 +19,12 @@ macro_rules! map(
      };
 );
 
-pub fn cargo_test(path: String) -> Result<Output, Error> {
+pub fn cargo_test(path: PathBuf) -> Result<Output, Error> {
     //cargo test --manifest-path="../../Cargo.toml"  -- -Z unstable-options --format json -q
     Command::new("cargo")
         .arg("test")
-        .arg(format!("--manifest-path={}", path))
+        .arg("--manifest-path")
+        .arg(path)
         .arg("--")
         .arg("-Z")
         .arg("unstable-options")
@@ -30,6 +32,10 @@ pub fn cargo_test(path: String) -> Result<Output, Error> {
         .arg("json")
         .output()
         .map_err(Error::from)
+}
+
+pub fn replace_solution(our_solution: PathBuf, their_solution: PathBuf) -> Result<(), Error> {
+    Ok(())
 }
 
 pub fn get_max_score(name: &String, scores: &ScoreMap) -> f32 {
