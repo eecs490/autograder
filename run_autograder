@@ -1,12 +1,12 @@
 #! /usr/bin/env bash
 set -x
-file_structure=${1:-file_structure}
-source $file_structure
-export RUSTUP_HOME=/usr/local/rustup
-export CARGO_HOME=/usr/local/cargo
-export PATH=/usr/local/cargo/bin:$PATH
+FILE_STRUCTURE=${1:-file_structure}
+export RUSTUP_HOME=${2:-/usr/local/rustup}
+export CARGO_HOME=${3:-/usr/local/cargo}
+export PATH=${4:-/usr/local/cargo/bin}:$PATH
 export CARGO_INCREMENTAL=0
 export RUSTFLAGS="-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Zno-landing-pads"
+source $FILE_STRUCTURE
 
 mkdir -p $(dirname $OUTPUT)
 cd $(dirname $SUBMISSION)

@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 ASSIGNMENT=/autograder/assignment/Cargo.toml
-SUBMISSION=/autograder/assignment/Cargo.toml
+SUBMISSION=/autograder/submission/Cargo.toml
 OUTPUT=/autograder/results/results.json
 LCOV=/autograder/ccov/lcov.info
 SCORES=/autograder/scores.yaml
