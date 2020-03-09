@@ -82,7 +82,7 @@ impl From<Report> for GradescopeReport {
 }
 
 impl Report {
-    pub fn build(test_reports: Vec<TestReport>, scores: &ScoreMap) -> Self {
+    pub fn build(test_reports: Vec<TestReport>, scores: &ScoreMap, output: Option<String>) -> Self {
         let actual_score: f32 = test_reports.clone().into_iter().map(|r| r.score).sum();
         let max_score: f32 = test_reports
             .clone()
@@ -92,16 +92,16 @@ impl Report {
         Self {
             score: 100.0 * actual_score / max_score,
             execution_time: None,
-            output: None,
+            output: output,
             stdout_visibility: None,
             tests: test_reports,
         }
     }
 }
 
-pub fn line_coverage(reports: &Vec<Record>) -> f32 {
+pub fn line_coverage(records: &Vec<Record>) -> f32 {
     let (lines_hit, lines_found): (u32, u32) =
-        reports.iter().fold((0, 0), |(h, f), record| match record {
+        records.iter().fold((0, 0), |(h, f), record| match record {
             Record::LinesFound { found } => (h, found + f),
             Record::LinesHit { hit } => (hit + h, f),
             _ => (h, f),
@@ -109,9 +109,9 @@ pub fn line_coverage(reports: &Vec<Record>) -> f32 {
     lines_hit as f32 / lines_found as f32
 }
 
-pub fn branch_coverage(reports: &Vec<Record>) -> f32 {
+pub fn branch_coverage(records: &Vec<Record>) -> f32 {
     let (branches_hit, branches_found): (u32, u32) =
-        reports
+        records
             .iter()
             .fold((0, 0), |(hit, found), record| match record {
                 Record::BranchData { taken: Some(n), .. } if *n > 0 => (hit + 1, found + 1),
@@ -121,6 +121,13 @@ pub fn branch_coverage(reports: &Vec<Record>) -> f32 {
     branches_hit as f32 / branches_found as f32
 }
 
+pub fn records_to_string(records: &Vec<Record>) -> String {
+    records
+        .into_iter()
+        .map(|rec| format!("{}\n", rec))
+        .collect::<String>()
+}
+
 impl TestReport {
     pub fn from_result(result: &TestResult, number: usize, scores: &ScoreMap) -> Self {
         Self {
@@ -128,33 +135,33 @@ impl TestReport {
             max_score: get_max_score(&result.name.clone(), scores),
             name: result.name.clone(),
             number: number,
-            output: result.stdout.clone().or(result.message.clone()),
+            output: None,
             tags: None,
             visibility: None,
         }
     }
-    pub fn line_coverage(reports: &Vec<Record>, number: usize, scores: &ScoreMap) -> Self {
+    pub fn line_coverage(records: &Vec<Record>, number: usize, scores: &ScoreMap) -> Self {
         let name: String = "Line coverage".into();
         let score = get_max_score(&name, scores);
         Self {
-            score: score * line_coverage(reports),
+            score: score * line_coverage(records),
             max_score: score,
             name: "Line coverage".into(),
             number: number,
-            output: None, // TODO
+            output: None,
             tags: None,
             visibility: None,
         }
     }
-    pub fn branch_coverage(reports: &Vec<Record>, number: usize, scores: &ScoreMap) -> Self {
+    pub fn branch_coverage(records: &Vec<Record>, number: usize, scores: &ScoreMap) -> Self {
         let name: String = "Branch coverage".into();
         let score = get_max_score(&name, scores);
         Self {
-            score: score * branch_coverage(reports),
+            score: score * branch_coverage(records),
             max_score: score,
             name: name,
             number: number,
-            output: None, // TODO
+            output: records_to_string(records).into(),
             tags: None,
             visibility: None,
         }

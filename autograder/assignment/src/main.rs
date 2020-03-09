@@ -1,6 +1,7 @@
 mod error;
 mod report;
 use lcov::Reader;
+use report::records_to_string;
 mod test_result;
 mod util;
 extern crate array_macro;
@@ -82,7 +83,14 @@ fn main() -> Result<(), Error> {
     }
 
     // combine TestResult structs into Report struct
-    let report: Report = Report::build(test_reports, &scores);
+    let output = format!(
+        "Coverage scores are based on the following <code>lcov</code> coverage data output:
+    \n{}\n
+    See https://linux.die.net/man/1/genhtml or <code>man genhtml</code> for instructions on
+    generating an HTML view of this coverage data.",
+        records_to_string(&records)
+    );
+    let report: Report = Report::build(test_reports, &scores, Some(output));
     let gradescope_report: GradescopeReport = GradescopeReport::from(report);
     println!("Gradescope Report:");
     println!("{}", to_string_pretty(&gradescope_report)?);
