@@ -1,14 +1,11 @@
-#![feature(try_trait)]
 mod error;
 mod report;
-
 use lcov::Reader;
 mod test_result;
 mod util;
 extern crate array_macro;
 extern crate rand;
 use error::Error;
-use locate_cargo_manifest::locate_manifest;
 use report::{GradescopeReport, Report, TestReport};
 use serde_json::to_string_pretty;
 use std::collections::HashMap;

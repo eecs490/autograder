@@ -1,6 +1,5 @@
 use crate::error::Error;
 use std::collections::HashMap;
-use std::path::PathBuf;
 use std::process::Command;
 use std::process::Output;
 
@@ -29,8 +28,6 @@ pub fn cargo_test(path: String) -> Result<Output, Error> {
         .arg("json")
         .output()
         .map_err(Error::from)
-    //let stdout = output?.stdout;
-    //String::from_utf8(stdout)
 }
 
 pub fn get_max_score(name: &String, scores: &HashMap<String, f32>) -> f32 {
