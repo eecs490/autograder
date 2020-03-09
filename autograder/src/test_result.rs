@@ -1,4 +1,5 @@
 use crate::error::Error;
+use crate::util::get_max_score;
 use crate::util::ScoreMap;
 use serde::{Deserialize, Serialize};
 //{ "type": "suite", "event": "started", "test_count": 5 }
@@ -41,10 +42,7 @@ pub struct TestResult {
 impl TestResult {
     pub fn get_score(&self, scores: &ScoreMap) -> Result<f32, Error> {
         match self.event {
-            Event::Ok => {
-                let score = scores.get(&self.name)?;
-                Ok(*score)
-            }
+            Event::Ok => get_max_score(&self.name, scores),
             Event::Failed => Ok(0.0),
         }
     }

@@ -4,7 +4,6 @@ use serde_yaml;
 use std::error;
 use std::fmt;
 use std::io;
-use std::option::NoneError;
 use std::string::FromUtf8Error;
 
 #[derive(Debug)]
@@ -14,7 +13,6 @@ pub enum Error {
     IOError(io::Error),
     FromUtf8Error(FromUtf8Error),
     LcovReaderError(lcov::reader::Error),
-    NoneError(NoneError),
 }
 
 impl fmt::Display for Error {
@@ -25,7 +23,6 @@ impl fmt::Display for Error {
             Error::IOError(ref e) => e.fmt(f),
             Error::FromUtf8Error(ref e) => e.fmt(f),
             Error::LcovReaderError(ref e) => e.fmt(f),
-            Error::NoneError(ref e) => write!(f, "{:?}", e),
         }
     }
 }
@@ -38,14 +35,7 @@ impl error::Error for Error {
             Error::IOError(ref e) => Some(e),
             Error::FromUtf8Error(ref e) => Some(e),
             Error::LcovReaderError(_) => None,
-            Error::NoneError(_) => None,
         }
-    }
-}
-
-impl From<NoneError> for Error {
-    fn from(err: NoneError) -> Error {
-        Error::NoneError(err)
     }
 }
 

@@ -17,6 +17,8 @@ macro_rules! map(
 );
 
 pub fn get_max_score(name: &String, scores: &ScoreMap) -> Result<f32, Error> {
-    let score = scores.get(name)?;
-    Ok(*score)
+    match scores.get(name) {
+        None => panic!("Could not find {} in scores: {:?}", name, scores),
+        Some(x) => Ok(*x),
+    }
 }

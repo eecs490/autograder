@@ -1,5 +1,0 @@
-FROM ethanabrooks/rust-autograder-base
-COPY scores.yaml .
-COPY config.dev .
-COPY run_autograder .
-#CMD ./run_autograder
