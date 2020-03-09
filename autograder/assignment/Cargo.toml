@@ -14,4 +14,4 @@ array-macro = "1.0.4"
 submission = { path = "../submission" }
 rand = "0.7.3"
 lcov = "0.5"
-
+locate-cargo-manifest = "0.1.0"

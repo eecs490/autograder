@@ -1,8 +1,10 @@
 use lcov;
+use locate_cargo_manifest::LocateManifestError;
 use serde_json;
 use std::error;
 use std::fmt;
 use std::io;
+use std::option;
 use std::string::FromUtf8Error;
 
 #[derive(Debug)]
@@ -12,6 +14,8 @@ pub enum Error {
     FromUtf8Error(FromUtf8Error),
     ArgumentError(String),
     LcovReaderError(lcov::reader::Error),
+    NoneError(option::NoneError),
+    LocateManifestError(LocateManifestError),
 }
 
 impl Error {
@@ -28,6 +32,8 @@ impl fmt::Display for Error {
             Error::FromUtf8Error(ref e) => e.fmt(f),
             Error::ArgumentError(ref e) => e.fmt(f),
             Error::LcovReaderError(ref e) => e.fmt(f),
+            Error::NoneError(ref e) => write!(f, "NoneError: {:?}", e),
+            Error::LocateManifestError(ref e) => write!(f, "LocateManifestError: {:?}", e),
         }
     }
 }
@@ -40,7 +46,21 @@ impl error::Error for Error {
             Error::FromUtf8Error(ref e) => Some(e),
             Error::ArgumentError(_) => None,
             Error::LcovReaderError(_) => None,
+            Error::NoneError(_) => None,
+            Error::LocateManifestError(_) => None,
         }
+    }
+}
+
+impl From<LocateManifestError> for Error {
+    fn from(err: LocateManifestError) -> Error {
+        Error::LocateManifestError(err)
+    }
+}
+
+impl From<option::NoneError> for Error {
+    fn from(err: option::NoneError) -> Error {
+        Error::NoneError(err)
     }
 }
 

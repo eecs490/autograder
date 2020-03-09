@@ -15,3 +15,4 @@ mkdir $ccov
 zip -0 $ccov/ccov.zip $(find . \( -name "submission*.gc*" \) -print)
 grcov $ccov/ccov.zip -s . -t lcov --llvm --branch --ignore-not-existing -o $ccov/lcov.info
 cargo run --manifest-path $assignment $assignment $results $ccov/lcov.info
+rm -rf $ccov

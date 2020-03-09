@@ -1,3 +1,4 @@
+#![feature(try_trait)]
 mod error;
 mod report;
 use lcov::Reader;

@@ -11,8 +11,9 @@ name = "assignment"
 version = "0.1.0"
 dependencies = [
  "array-macro",
- "json",
+ "json 0.12.1",
  "lcov",
+ "locate-cargo-manifest",
  "rand",
  "serde",
  "serde_json",
@@ -103,6 +104,12 @@ checksum = "b8b7a7c0c47db5545ed3fef7468ee7bb5b74691498139e4b3f6a20685dc6dd8e"
 
 [[package]]
 name = "json"
+version = "0.11.15"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "92c245af8786f6ac35f95ca14feca9119e71339aaab41e878e7cdd655c97e9e5"
+
+[[package]]
+name = "json"
 version = "0.12.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9a38661a28126f8621fb246611288ae28935ddf180f5e21f2d0fbfe5e4131dbe"
@@ -121,6 +128,15 @@ name = "libc"
 version = "0.2.67"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "eb147597cdf94ed43ab7a9038716637d2d1bf2bc571da995d0028dec06bd3018"
+
+[[package]]
+name = "locate-cargo-manifest"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9d87d2c1ca6d2636268f961e70b024866db2d8244a46687527e7ed1a9360b8de"
+dependencies = [
+ "json 0.11.15",
+]
 
 [[package]]
 name = "ppv-lite86"
