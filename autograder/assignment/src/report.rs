@@ -133,7 +133,9 @@ impl TestReport {
             visibility: None,
         }
     }
-    pub fn line_coverage(reports: &Vec<Record>, number: usize, score: f32) -> Self {
+    pub fn line_coverage(reports: &Vec<Record>, number: usize, scores: &ScoreMap) -> Self {
+        let name: String = "Line coverage".into();
+        let score = get_max_score(&name, scores);
         Self {
             score: score * line_coverage(reports),
             max_score: score,
@@ -144,11 +146,13 @@ impl TestReport {
             visibility: None,
         }
     }
-    pub fn branch_coverage(reports: &Vec<Record>, number: usize, score: f32) -> Self {
+    pub fn branch_coverage(reports: &Vec<Record>, number: usize, scores: &ScoreMap) -> Self {
+        let name: String = "Branch coverage".into();
+        let score = get_max_score(&name, scores);
         Self {
             score: score * branch_coverage(reports),
             max_score: score,
-            name: "Branch coverage".into(),
+            name: name,
             number: number,
             output: None, // TODO
             tags: None,

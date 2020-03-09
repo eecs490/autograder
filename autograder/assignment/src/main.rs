@@ -64,11 +64,15 @@ fn main() -> Result<(), Error> {
     }
 
     // Convert lcov records into TestReports and append to test_reports vec
-    test_reports.push(TestReport::line_coverage(&records, test_reports.len(), 2.0));
+    test_reports.push(TestReport::line_coverage(
+        &records,
+        test_reports.len(),
+        &scores,
+    ));
     test_reports.push(TestReport::branch_coverage(
         &records,
         test_reports.len(),
-        2.0,
+        &scores,
     ));
 
     // Collect the read records into a vector.
