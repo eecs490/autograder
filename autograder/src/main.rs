@@ -113,15 +113,22 @@ fn main() -> Result<(), Error> {
     }
 
     // Convert lcov records into TestReports and append to test_reports vec
+    let coverage_output = Some(format!(
+        "Score is based on the following LCOV coverage data output:
+    \n{}",
+        records_to_string(&records)
+    ));
     test_reports.push(TestReport::line_coverage(
         &records,
         test_reports.len(),
         scores.line_coverage,
+        coverage_output.clone(),
     )?);
     test_reports.push(TestReport::branch_coverage(
         &records,
         test_reports.len(),
         scores.branch_coverage,
+        coverage_output.clone(),
     )?);
 
     // Collect the read records into a vector.
@@ -131,13 +138,8 @@ fn main() -> Result<(), Error> {
     }
 
     // combine TestResult structs into Report struct
-    let output = format!(
-    "Coverage scores are based on the following <code>lcov</code> coverage data output:
-    \n{}\n\n
-    To create an HTML view of this data, navigate to the root of your submission, create a file `lcov.info`, and run `mkdir -p /tmp/ccov && genhtml -o /tmp/ccov --show-details --highlight --ignore-errors source --legend lcov.info`.",
-    records_to_string(&records)
-    );
-    let report: Report = Report::build(test_reports, &scores, Some(output))?;
+    let output = Some("To create an HTML view of LCOV data:\n- navigate to the root of your submission\n- copy LCOV data to a file `lcov.info`\n- run `mkdir -p /tmp/ccov && genhtml -o /tmp/ccov --show-details --highlight --ignore-errors source --legend lcov.info`".into());
+    let report: Report = Report::build(test_reports, &scores, output)?;
     let gradescope_report: GradescopeReport = GradescopeReport::from(report);
     println!("Gradescope Report:");
     println!("{}", to_string_pretty(&gradescope_report)?);
