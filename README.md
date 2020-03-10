@@ -75,7 +75,7 @@ three steps:
 1. It runs the student's tests on the student's solution and measures code
    coverage.
 2. It runs our tests on the student's solution and measures correctness.
-3. It rune the student's tests on our solution and measures the correctness of
+3. It runs the student's tests on our solution and measures the correctness of
    the student's tests.
 4. It runs [`assignment/src/main.rs`](https://github.com/ethanabrooks/autograder/blob/master/assignment/src/main.rs) to process these results into a JSON file formatted for Gradescope (per <https://gradescope-autograders.readthedocs.io/en/latest/specs/#output-format>),
 
