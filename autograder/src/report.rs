@@ -161,13 +161,8 @@ impl TestReport {
             visibility: None,
         })
     }
-    pub fn line_coverage(
-        records: &Vec<Record>,
-        number: usize,
-        scores: &ScoreMap,
-    ) -> Result<Self, Error> {
+    pub fn line_coverage(records: &Vec<Record>, number: usize, score: f32) -> Result<Self, Error> {
         let name: String = "line coverage".into();
-        let score = scores.get(&name)?;
         Ok(Self {
             score: score * line_coverage(records),
             max_score: score,
@@ -181,10 +176,9 @@ impl TestReport {
     pub fn branch_coverage(
         records: &Vec<Record>,
         number: usize,
-        scores: &ScoreMap,
+        score: f32,
     ) -> Result<Self, Error> {
         let name: String = "branch coverage".into();
-        let score = scores.get(&name)?;
         Ok(Self {
             score: score * branch_coverage(records),
             max_score: score,

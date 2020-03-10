@@ -95,17 +95,15 @@ fn main() -> Result<(), Error> {
     }
 
     // Covert TestResults into TestReports
-    let score_their_tests = scores.get(&("their tests".into()))?;
     let num_their_tests = their_test_results.len() as f32;
-    let mut test_reports =
-        our_test_results
-            .iter()
-            .enumerate()
-            .map(|(i, r)| TestReport::from_our_tests(r, i, &scores))
-            .chain(their_test_results.enumerate().map(|(i, r)| {
-                TestReport::from_their_tests(&r, i, score_their_tests / num_their_tests)
-            }))
-            .collect::<Result<Vec<_>, _>>()?;
+    let mut test_reports = our_test_results
+        .iter()
+        .enumerate()
+        .map(|(i, r)| TestReport::from_our_tests(r, i, &scores))
+        .chain(their_test_results.enumerate().map(|(i, r)| {
+            TestReport::from_their_tests(&r, i, scores.their_tests / num_their_tests)
+        }))
+        .collect::<Result<Vec<_>, _>>()?;
 
     // Read lcov.info file
     let records = Reader::open_file(lcov_path)?.collect::<Result<Vec<_>, _>>()?;
@@ -118,12 +116,12 @@ fn main() -> Result<(), Error> {
     test_reports.push(TestReport::line_coverage(
         &records,
         test_reports.len(),
-        &scores,
+        scores.line_coverage,
     )?);
     test_reports.push(TestReport::branch_coverage(
         &records,
         test_reports.len(),
-        &scores,
+        scores.branch_coverage,
     )?);
 
     // Collect the read records into a vector.
