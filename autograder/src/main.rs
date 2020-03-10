@@ -1,17 +1,18 @@
 mod error;
 mod report;
-use lcov::Reader;
-use report::records_to_string;
+mod score_map;
 mod test_result;
-mod util;
 use clap::{App, Arg};
 use error::Error;
+use lcov::Reader;
+use report::records_to_string;
 use report::{GradescopeReport, Report, TestReport};
+use score_map::ScoreMap;
 use serde_json::to_string_pretty;
-use serde_yaml;
 use std::fs;
 use std::fs::File;
 use std::io::Write;
+use std::path::PathBuf;
 use test_result::TestResult;
 
 fn main() -> Result<(), Error> {
@@ -68,8 +69,8 @@ fn main() -> Result<(), Error> {
 
     // assign custom scores to each test function.
     // The autograder defaults to 1.0 point per test for tests not included in thei HashMap.
-    let scores = fs::read_to_string(scores_path)?;
-    let scores: util::ScoreMap = serde_yaml::from_str(&scores)?;
+    let scores: Result<ScoreMap, Error> = ScoreMap::from_path(&PathBuf::from(scores_path));
+    let scores = scores?;
 
     // deserialize ouputs into TestResult structs
     let our_test_results: Vec<TestResult> =
