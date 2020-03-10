@@ -13,6 +13,7 @@ pub enum Error {
     IOError(io::Error),
     FromUtf8Error(FromUtf8Error),
     LcovReaderError(lcov::reader::Error),
+    ScoreError(String),
 }
 
 impl fmt::Display for Error {
@@ -23,6 +24,7 @@ impl fmt::Display for Error {
             Error::IOError(ref e) => e.fmt(f),
             Error::FromUtf8Error(ref e) => e.fmt(f),
             Error::LcovReaderError(ref e) => e.fmt(f),
+            Error::ScoreError(ref e) => e.fmt(f),
         }
     }
 }
@@ -35,6 +37,7 @@ impl error::Error for Error {
             Error::IOError(ref e) => Some(e),
             Error::FromUtf8Error(ref e) => Some(e),
             Error::LcovReaderError(_) => None,
+            Error::ScoreError(_) => None,
         }
     }
 }

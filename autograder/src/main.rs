@@ -72,23 +72,34 @@ fn main() -> Result<(), Error> {
     let scores: util::ScoreMap = serde_yaml::from_str(&scores)?;
 
     // deserialize ouputs into TestResult structs
-    let our_test_results = fs::read_to_string(our_test_results)?;
-    let their_test_results = fs::read_to_string(their_test_results)?;
-    let mut test_results: Vec<TestResult> = TestResult::from_output(our_test_results);
-    test_results.extend(TestResult::from_output(their_test_results));
+    let our_test_results: Vec<TestResult> =
+        TestResult::from_output(fs::read_to_string(our_test_results)?);
+    let their_test_results: Vec<TestResult> =
+        TestResult::from_output(fs::read_to_string(their_test_results)?);
+    let score = 1. / their_test_results.len() as f32;
+    let their_test_results = their_test_results.iter().map(|r| r.assign_score(score));
 
-    println!("TestResult structs:");
-    for result in test_results.clone() {
+    println!("Our TestResult structs:");
+    for result in our_test_results.clone() {
+        println!("{}", to_string_pretty(&result)?);
+    }
+    println!("Their TestResult structs:");
+    for result in their_test_results.clone() {
         println!("{}", to_string_pretty(&result)?);
     }
 
     // Covert TestResults into TestReports
-    let test_reports: Result<Vec<_>, _> = test_results
+    let test_reports: Result<Vec<_>, _> = our_test_results
         .iter()
         .enumerate()
-        .map(|(i, r)| TestReport::from_result(r, i, &scores))
+        .map(|(i, r)| TestReport::from_our_tests(r, i, &scores))
+        .chain(
+            their_test_results
+                .enumerate()
+                .map(|(i, r)| TestReport::from_their_tests(&r, i, score)),
+        )
         .collect();
-    let mut test_reports: Vec<TestReport> = test_reports?;
+    let mut test_reports = test_reports?;
 
     // Read lcov.info file
     let records = Reader::open_file(lcov_path)?.collect::<Result<Vec<_>, _>>()?;
@@ -117,11 +128,11 @@ fn main() -> Result<(), Error> {
 
     // combine TestResult structs into Report struct
     let output = format!(
-"Coverage scores are based on the following <code>lcov</code> coverage data output:
-\n{}\n\n
-To create an HTML view of this data, navigate to the root of your submission, create a file `lcov.info`, and run `mkdir -p /tmp/ccov && genhtml -o /tmp/ccov --show-details --highlight --ignore-errors source --legend lcov.info`.",
-records_to_string(&records)
-);
+    "Coverage scores are based on the following <code>lcov</code> coverage data output:
+    \n{}\n\n
+    To create an HTML view of this data, navigate to the root of your submission, create a file `lcov.info`, and run `mkdir -p /tmp/ccov && genhtml -o /tmp/ccov --show-details --highlight --ignore-errors source --legend lcov.info`.",
+    records_to_string(&records)
+    );
     let report: Report = Report::build(test_reports, &scores, Some(output))?;
     let gradescope_report: GradescopeReport = GradescopeReport::from(report);
     println!("Gradescope Report:");

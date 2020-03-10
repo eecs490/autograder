@@ -89,12 +89,7 @@ impl Report {
         output: Option<String>,
     ) -> Result<Self, Error> {
         let actual_score: f32 = test_reports.clone().into_iter().map(|r| r.score).sum();
-        let max_scores: Result<Vec<_>, _> = test_reports
-            .clone()
-            .into_iter()
-            .map(|r| get_max_score(&r.name, scores))
-            .collect();
-        let max_score: f32 = max_scores?.into_iter().sum();
+        let max_score: f32 = scores.values().sum();
 
         Ok(Self {
             score: 100.0 * actual_score / max_score,
@@ -136,14 +131,29 @@ pub fn records_to_string(records: &Vec<Record>) -> String {
 }
 
 impl TestReport {
-    pub fn from_result(
+    pub fn from_our_tests(
         result: &TestResult,
         number: usize,
         scores: &ScoreMap,
     ) -> Result<Self, Error> {
         Ok(Self {
-            score: result.get_score(scores)?,
+            score: if result.passing() {
+                get_max_score(&result.name.clone(), scores)?
+            } else {
+                0.
+            },
             max_score: get_max_score(&result.name.clone(), scores)?,
+            name: result.name.clone(),
+            number: number,
+            output: result.stdout.clone(),
+            tags: None,
+            visibility: None,
+        })
+    }
+    pub fn from_their_tests(result: &TestResult, number: usize, score: f32) -> Result<Self, Error> {
+        Ok(Self {
+            score: if result.passing() { score } else { 0. },
+            max_score: score,
             name: result.name.clone(),
             number: number,
             output: result.stdout.clone(),
@@ -161,7 +171,7 @@ impl TestReport {
         Ok(Self {
             score: score * line_coverage(records),
             max_score: score,
-            name: "Line coverage".into(),
+            name: name,
             number: number,
             output: None,
             tags: None,

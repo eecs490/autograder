@@ -1,6 +1,3 @@
-use crate::error::Error;
-use crate::util::get_max_score;
-use crate::util::ScoreMap;
 use serde::{Deserialize, Serialize};
 //{ "type": "suite", "event": "started", "test_count": 5 }
 //{ "type": "test", "event": "started", "name": "tests::test0" }
@@ -37,13 +34,14 @@ pub struct TestResult {
     pub event: Event,
     pub stdout: Option<String>,
     pub message: Option<String>,
+    pub score: Option<f32>,
 }
 
 impl TestResult {
-    pub fn get_score(&self, scores: &ScoreMap) -> Result<f32, Error> {
+    pub fn passing(&self) -> bool {
         match self.event {
-            Event::Ok => get_max_score(&self.name, scores),
-            Event::Failed => Ok(0.0),
+            Event::Ok => true,
+            Event::Failed => false,
         }
     }
     pub fn from_output(test_output: String) -> Vec<TestResult> {
@@ -52,5 +50,11 @@ impl TestResult {
             .map(serde_json::from_str)
             .filter_map(Result::ok)
             .collect()
+    }
+    pub fn assign_score(&self, score: f32) -> Self {
+        Self {
+            score: Some(score),
+            ..self.clone()
+        }
     }
 }

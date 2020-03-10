@@ -18,7 +18,7 @@ macro_rules! map(
 
 pub fn get_max_score(name: &String, scores: &ScoreMap) -> Result<f32, Error> {
     match scores.get(name) {
-        None => panic!("Could not find {} in scores: {:?}", name, scores),
+        None => Err(Error::ScoreError(name.clone())),
         Some(x) => Ok(*x),
     }
 }
