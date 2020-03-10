@@ -1,30 +1,34 @@
 use crate::error::Error;
-use std::collections::btree_map::Values;
+use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 use std::fs;
-use std::path::PathBuf;
+use std::path::Path;
 
-#[derive(Clone)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct ScoreMap {
-    map: BTreeMap<String, f32>,
+    pub line_coverage: f32,
+    pub branch_coverage: f32,
+    pub their_tests: f32,
+    pub our_tests: BTreeMap<String, f32>,
 }
 
 impl ScoreMap {
-    pub fn from_path(path: &PathBuf) -> Result<Self, Error> {
+    pub fn values(&self) -> Vec<&f32> {
+        let mut values: Vec<&f32> = self.our_tests.values().into_iter().collect();
+        values.push(&self.line_coverage);
+        values.push(&self.branch_coverage);
+        values.push(&self.their_tests);
+        values
+    }
+    pub fn from_path(path: &Path) -> Result<Self, Error> {
         let string = fs::read_to_string(path)?;
-        Ok(Self {
-            map: serde_yaml::from_str(&string)?,
-        })
+        serde_yaml::from_str(&string).map_err(|e| Error::YamlError(e))
     }
 
     pub fn get(&self, name: &String) -> Result<f32, Error> {
-        match self.map.get(name) {
+        match self.our_tests.get(name) {
             None => Err(Error::ScoreError(name.clone())),
             Some(x) => Ok(*x),
         }
-    }
-
-    pub fn values(&self) -> Values<String, f32> {
-        self.map.values()
     }
 }

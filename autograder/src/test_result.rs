@@ -1,4 +1,7 @@
+use crate::error::Error;
 use serde::{Deserialize, Serialize};
+use std::fs;
+use std::path::Path;
 //{ "type": "suite", "event": "started", "test_count": 5 }
 //{ "type": "test", "event": "started", "name": "tests::test0" }
 //{ "type": "test", "event": "started", "name": "tests::test1" }
@@ -50,6 +53,10 @@ impl TestResult {
             .map(serde_json::from_str)
             .filter_map(Result::ok)
             .collect()
+    }
+    pub fn from_path(test_path: &Path) -> Result<Vec<TestResult>, Error> {
+        let output = String::from_utf8_lossy(&fs::read(test_path)?).into_owned();
+        Ok(Self::from_output(output))
     }
     pub fn assign_score(&self, score: f32) -> Self {
         Self {

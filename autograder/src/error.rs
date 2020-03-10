@@ -1,3 +1,4 @@
+use clap;
 use lcov;
 use serde_json;
 use serde_yaml;
@@ -14,6 +15,7 @@ pub enum Error {
     FromUtf8Error(FromUtf8Error),
     LcovReaderError(lcov::reader::Error),
     ScoreError(String),
+    ClapError(clap::Error),
 }
 
 impl fmt::Display for Error {
@@ -25,6 +27,7 @@ impl fmt::Display for Error {
             Error::FromUtf8Error(ref e) => e.fmt(f),
             Error::LcovReaderError(ref e) => e.fmt(f),
             Error::ScoreError(ref e) => e.fmt(f),
+            Error::ClapError(ref e) => e.fmt(f),
         }
     }
 }
@@ -38,7 +41,14 @@ impl error::Error for Error {
             Error::FromUtf8Error(ref e) => Some(e),
             Error::LcovReaderError(_) => None,
             Error::ScoreError(_) => None,
+            Error::ClapError(ref e) => Some(e),
         }
+    }
+}
+
+impl From<clap::Error> for Error {
+    fn from(err: clap::Error) -> Error {
+        Error::ClapError(err)
     }
 }
 

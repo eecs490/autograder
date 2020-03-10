@@ -1,6 +1,6 @@
 use crate::error::Error;
-use crate::test_result::TestResult;
 use crate::score_map::ScoreMap;
+use crate::test_result::TestResult;
 use lcov::Record;
 use serde::{Deserialize, Serialize};
 
@@ -89,7 +89,7 @@ impl Report {
         output: Option<String>,
     ) -> Result<Self, Error> {
         let actual_score: f32 = test_reports.clone().into_iter().map(|r| r.score).sum();
-        let max_score: f32 = scores.values().sum();
+        let max_score: f32 = scores.values().into_iter().sum();
 
         Ok(Self {
             score: 100.0 * actual_score / max_score,
@@ -166,7 +166,7 @@ impl TestReport {
         number: usize,
         scores: &ScoreMap,
     ) -> Result<Self, Error> {
-        let name: String = "Line coverage".into();
+        let name: String = "line coverage".into();
         let score = scores.get(&name)?;
         Ok(Self {
             score: score * line_coverage(records),
@@ -183,7 +183,7 @@ impl TestReport {
         number: usize,
         scores: &ScoreMap,
     ) -> Result<Self, Error> {
-        let name: String = "Branch coverage".into();
+        let name: String = "branch coverage".into();
         let score = scores.get(&name)?;
         Ok(Self {
             score: score * branch_coverage(records),

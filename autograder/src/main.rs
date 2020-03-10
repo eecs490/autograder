@@ -2,14 +2,13 @@ mod error;
 mod report;
 mod score_map;
 mod test_result;
-use clap::{App, Arg};
+use clap::{value_t, App, Arg};
 use error::Error;
 use lcov::Reader;
 use report::records_to_string;
 use report::{GradescopeReport, Report, TestReport};
 use score_map::ScoreMap;
 use serde_json::to_string_pretty;
-use std::fs;
 use std::fs::File;
 use std::io::Write;
 use std::path::PathBuf;
@@ -61,24 +60,30 @@ fn main() -> Result<(), Error> {
         )
         .get_matches();
 
-    let output_path = matches.value_of("output").unwrap();
-    let lcov_path = matches.value_of("lcov").unwrap();
-    let scores_path = matches.value_of("scores").unwrap();
-    let our_test_results = matches.value_of("our_test_results").unwrap();
-    let their_test_results = matches.value_of("their_test_results").unwrap();
+    // parse args
+    let output_path = value_t!(matches, "output", PathBuf)?;
+    let lcov_path = value_t!(matches, "lcov", PathBuf)?;
+    let scores_path = value_t!(matches, "scores", PathBuf)?;
+    let our_test_results = value_t!(matches, "our_test_results", PathBuf)?;
+    let their_test_results = value_t!(matches, "their_test_results", PathBuf)?;
+
+    // coerce to paths
+    let output_path = output_path.as_path();
+    let lcov_path = lcov_path.as_path();
+    let scores_path = scores_path.as_path();
+    let our_test_results = our_test_results.as_path();
+    let their_test_results = their_test_results.as_path();
 
     // assign custom scores to each test function.
     // The autograder defaults to 1.0 point per test for tests not included in thei HashMap.
-    let scores: Result<ScoreMap, Error> = ScoreMap::from_path(&PathBuf::from(scores_path));
-    let scores = scores?;
+    let scores: ScoreMap = ScoreMap::from_path(scores_path)?;
 
     // deserialize ouputs into TestResult structs
-    let our_test_results: Vec<TestResult> =
-        TestResult::from_output(fs::read_to_string(our_test_results)?);
-    let their_test_results: Vec<TestResult> =
-        TestResult::from_output(fs::read_to_string(their_test_results)?);
-    let score = 1. / their_test_results.len() as f32;
-    let their_test_results = their_test_results.iter().map(|r| r.assign_score(score));
+    let our_test_results: Vec<TestResult> = TestResult::from_path(our_test_results)?;
+    let their_test_results: Vec<TestResult> = TestResult::from_path(their_test_results)?;
+    let their_test_results = their_test_results
+        .iter()
+        .map(|r| r.assign_score(scores.their_tests));
 
     println!("Our TestResult structs:");
     for result in our_test_results.clone() {
@@ -90,17 +95,17 @@ fn main() -> Result<(), Error> {
     }
 
     // Covert TestResults into TestReports
-    let test_reports: Result<Vec<_>, _> = our_test_results
-        .iter()
-        .enumerate()
-        .map(|(i, r)| TestReport::from_our_tests(r, i, &scores))
-        .chain(
-            their_test_results
-                .enumerate()
-                .map(|(i, r)| TestReport::from_their_tests(&r, i, score)),
-        )
-        .collect();
-    let mut test_reports = test_reports?;
+    let score_their_tests = scores.get(&("their tests".into()))?;
+    let num_their_tests = their_test_results.len() as f32;
+    let mut test_reports =
+        our_test_results
+            .iter()
+            .enumerate()
+            .map(|(i, r)| TestReport::from_our_tests(r, i, &scores))
+            .chain(their_test_results.enumerate().map(|(i, r)| {
+                TestReport::from_their_tests(&r, i, score_their_tests / num_their_tests)
+            }))
+            .collect::<Result<Vec<_>, _>>()?;
 
     // Read lcov.info file
     let records = Reader::open_file(lcov_path)?.collect::<Result<Vec<_>, _>>()?;
@@ -140,7 +145,7 @@ fn main() -> Result<(), Error> {
     println!("{}", to_string_pretty(&gradescope_report)?);
 
     // write Report object to output_path
-    let mut buffer = File::create(output_path.to_string())?;
+    let mut buffer = File::create(output_path)?;
     buffer.write(&serde_json::to_string(&gradescope_report)?.as_bytes())?;
     Ok(())
 }
