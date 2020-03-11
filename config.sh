@@ -2,6 +2,8 @@
 RUSTUP_HOME=/usr/local/rustup
 CARGO_HOME=/usr/local/cargo
 PATH=/usr/local/cargo/bin:$PATH
+ 
+# file structure
 AUTOGRADER=/autograder/autograder/Cargo.toml
 ASSIGNMENT=/autograder/assignment/Cargo.toml
 SUBMISSION=/autograder/submission/Cargo.toml
