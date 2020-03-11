@@ -47,17 +47,16 @@ impl TestResult {
             Event::Failed => false,
         }
     }
-    pub fn from_output(test_output: String) -> Vec<TestResult> {
-        test_output
+    pub fn from_output(test_output: String) -> Result<Vec<TestResult>, Error> {
+        Ok(test_output
             .split("\n")
             .map(serde_json::from_str)
-            .filter_map(Result::ok)
-            .collect()
+            .collect::<Result<Vec<_>, _>>()?)
     }
     pub fn from_path(test_path: &Path) -> Result<Vec<TestResult>, Error> {
         let utf8 = fs::read(test_path).map_err(|e| Error::io_error_from(e, test_path));
         let output = String::from_utf8_lossy(&utf8?).into_owned();
-        Ok(Self::from_output(output))
+        Self::from_output(output)
     }
     pub fn assign_score(&self, score: f32) -> Self {
         Self {
