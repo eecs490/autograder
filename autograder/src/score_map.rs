@@ -14,7 +14,7 @@ pub struct ScoreMap {
 }
 
 impl ScoreMap {
-    pub fn values<'a>(&'a self) -> impl Iterator<Item = f32> + 'a {
+    pub fn values(&'_ self) -> impl Iterator<Item = f32> + '_ {
         self.our_tests
             .values()
             .copied()
