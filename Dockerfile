@@ -77,13 +77,30 @@ RUN set -eux; \
 # end FROM rustlang/rust:nightly
 
 RUN cargo install grcov
-WORKDIR /autograder
 
-COPY autograder/ /autograder/autograder
-COPY assignment/ /autograder/assignment
-COPY submission/ /autograder/submission
 ENV CARGO_INCREMENTAL=0 \
     RUSTFLAGS="-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Zno-landing-pads"
+
+WORKDIR /autograder
+
+# dummy build autograder for caching purposes
+COPY autograder/Cargo.toml /autograder/autograder/Cargo.toml
+COPY autograder/Cargo.lock /autograder/autograder/Cargo.lock
+RUN mkdir /autograder/autograder/src && touch /autograder/autograder/src/lib.rs
+RUN cargo build --manifest-path autograder/Cargo.toml
+RUN rm -rf /autograder/autograder/src
+
+COPY submission/ /autograder/submission
+
+# dummy build autograder for caching purposes
+COPY assignment/Cargo.toml /autograder/assignment/Cargo.toml
+COPY assignment/Cargo.lock /autograder/assignment/Cargo.lock
+RUN mkdir /autograder/assignment/src && touch /autograder/assignment/src/lib.rs
+RUN cargo build --manifest-path assignment/Cargo.toml
+RUN rm -rf /autograder/assignment/src
+
+COPY autograder/src /autograder/autograder/src
+COPY assignment/ /autograder/assignment
 
 RUN cargo build --manifest-path autograder/Cargo.toml
 RUN cargo build --manifest-path assignment/Cargo.toml
