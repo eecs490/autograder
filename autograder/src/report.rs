@@ -145,7 +145,7 @@ impl TestReport {
             max_score: scores.get(&result.name.clone())?,
             name: result.name.clone(),
             number: number,
-            output: result.stdout.clone(),
+            output: result.stdout.clone().or(result.message.clone()),
             tags: None,
             visibility: None,
         })
@@ -156,7 +156,7 @@ impl TestReport {
             max_score: score,
             name: result.name.clone(),
             number: number,
-            output: result.stdout.clone(),
+            output: result.stdout.clone().or(result.message.clone()),
             tags: None,
             visibility: None,
         })
