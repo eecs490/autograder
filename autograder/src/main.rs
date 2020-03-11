@@ -9,6 +9,7 @@ use report::records_to_string;
 use report::{GradescopeReport, Report, TestReport};
 use score_map::ScoreMap;
 use serde_json::to_string_pretty;
+use std::collections::HashSet;
 use std::fs::File;
 use std::io::Write;
 use std::path::PathBuf;
@@ -141,9 +142,16 @@ fn main() -> Result<(), Error> {
     // combine TestResult structs into Report struct
     let output = Some("To create an HTML view of LCOV data:\n- navigate to the root of your submission\n- copy LCOV data to a file `lcov.info`\n- run `mkdir -p /tmp/ccov && genhtml -o /tmp/ccov --show-details --highlight --ignore-errors source --legend lcov.info`".into());
     let report: Report = Report::build(test_reports, &scores, output)?;
-    let gradescope_report: GradescopeReport = GradescopeReport::from(report);
+    let gradescope_report: GradescopeReport = GradescopeReport::from(report.clone());
     println!("Gradescope Report:");
     println!("{}", to_string_pretty(&gradescope_report)?);
+
+    assert_eq!(
+        report.names().collect::<HashSet<String>>(),
+        scores.our_test_names().collect::<HashSet<String>>()
+    );
+
+    //for (n1, n2) in scores.our_test_names().zip_longest(scores.names()) {}
 
     // write Report object to output_path
     let mut buffer = File::create(output_path).map_err(|e| Error::io_error_from(e, output_path))?;

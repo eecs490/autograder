@@ -99,6 +99,10 @@ impl Report {
             tests: test_reports,
         })
     }
+
+    pub fn names(&'_ self) -> impl Iterator<Item = String> + '_ {
+        self.tests.iter().map(|t| t.name.clone())
+    }
 }
 
 pub fn line_coverage(records: &Vec<Record>) -> f32 {

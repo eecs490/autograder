@@ -14,6 +14,10 @@ pub struct ScoreMap {
 }
 
 impl ScoreMap {
+    pub fn our_test_names(&'_ self) -> impl Iterator<Item = String> + '_ {
+        self.our_tests.keys().cloned()
+    }
+
     pub fn values(&'_ self) -> impl Iterator<Item = f32> + '_ {
         self.our_tests
             .values()
