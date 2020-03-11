@@ -48,6 +48,7 @@ impl From<TestReport> for GradescopeTestReport {
         }
     }
 }
+
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Report {
     score: f32,
