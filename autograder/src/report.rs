@@ -167,11 +167,10 @@ impl TestReport {
         score: f32,
         output: Option<String>,
     ) -> Result<Self, Error> {
-        let name: String = "line coverage".into();
         Ok(Self {
             score: score * line_coverage(records),
             max_score: score,
-            name: name,
+            name: "line coverage".into(),
             number: number,
             output: output,
             tags: None,
@@ -184,11 +183,10 @@ impl TestReport {
         score: f32,
         output: Option<String>,
     ) -> Result<Self, Error> {
-        let name: String = "branch coverage".into();
         Ok(Self {
             score: score * branch_coverage(records),
             max_score: score,
-            name: name,
+            name: "branch coverage".into(),
             number: number,
             output: output,
             tags: None,
