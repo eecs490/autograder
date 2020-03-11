@@ -20,9 +20,14 @@ fn test3() {
     assert_eq!(fib(3), 3);
 }
 
+//#[test]
+//fn test4() {
+//assert_eq!(fib(4), 4, "NOOOOOO");
+//}
+#[should_panic]
 #[test]
-fn test4() {
-    assert_eq!(fib(4), 4, "NOOOOOO");
+fn panic() {
+    fib(-1);
 }
 
 #[test]

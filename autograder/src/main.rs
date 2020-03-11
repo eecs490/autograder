@@ -106,7 +106,8 @@ fn main() -> Result<(), Error> {
         .collect::<Result<Vec<_>, _>>()?;
 
     // Read lcov.info file
-    let records = Reader::open_file(lcov_path)?.collect::<Result<Vec<_>, _>>()?;
+    let readers = Reader::open_file(lcov_path).map_err(|e| Error::io_error_from(e, lcov_path))?;
+    let records = readers.collect::<Result<Vec<_>, _>>()?;
     println!("LCov records:");
     for record in records.clone() {
         println!("{:?}", record)
@@ -145,7 +146,9 @@ fn main() -> Result<(), Error> {
     println!("{}", to_string_pretty(&gradescope_report)?);
 
     // write Report object to output_path
-    let mut buffer = File::create(output_path)?;
-    buffer.write(&serde_json::to_string(&gradescope_report)?.as_bytes())?;
+    let mut buffer = File::create(output_path).map_err(|e| Error::io_error_from(e, output_path))?;
+    buffer
+        .write(&serde_json::to_string(&gradescope_report)?.as_bytes())
+        .map_err(|e| Error::io_error_from(e, output_path))?;
     Ok(())
 }

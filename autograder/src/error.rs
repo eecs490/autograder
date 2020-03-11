@@ -5,17 +5,24 @@ use serde_yaml;
 use std::error;
 use std::fmt;
 use std::io;
+use std::path::Path;
 use std::string::FromUtf8Error;
 
 #[derive(Debug)]
 pub enum Error {
     JsonError(serde_json::Error),
     YamlError(serde_yaml::Error),
-    IOError(io::Error),
+    IOError(String),
     FromUtf8Error(FromUtf8Error),
     LcovReaderError(lcov::reader::Error),
     ScoreError(String),
     ClapError(clap::Error),
+}
+
+impl Error {
+    pub fn io_error_from(err: io::Error, path: &Path) -> Self {
+        Self::IOError(format!("{} {:?}", err, path))
+    }
 }
 
 impl fmt::Display for Error {
@@ -37,7 +44,7 @@ impl error::Error for Error {
         match *self {
             Error::JsonError(ref e) => Some(e),
             Error::YamlError(ref e) => Some(e),
-            Error::IOError(ref e) => Some(e),
+            Error::IOError(_) => None,
             Error::FromUtf8Error(ref e) => Some(e),
             Error::LcovReaderError(_) => None,
             Error::ScoreError(_) => None,
@@ -67,12 +74,6 @@ impl From<serde_yaml::Error> for Error {
 impl From<serde_json::Error> for Error {
     fn from(err: serde_json::Error) -> Error {
         Error::JsonError(err)
-    }
-}
-
-impl From<io::Error> for Error {
-    fn from(err: io::Error) -> Error {
-        Error::IOError(err)
     }
 }
 

@@ -55,7 +55,8 @@ impl TestResult {
             .collect()
     }
     pub fn from_path(test_path: &Path) -> Result<Vec<TestResult>, Error> {
-        let output = String::from_utf8_lossy(&fs::read(test_path)?).into_owned();
+        let utf8 = fs::read(test_path).map_err(|e| Error::io_error_from(e, test_path));
+        let output = String::from_utf8_lossy(&utf8?).into_owned();
         Ok(Self::from_output(output))
     }
     pub fn assign_score(&self, score: f32) -> Self {

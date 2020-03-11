@@ -24,7 +24,7 @@ impl ScoreMap {
     }
 
     pub fn from_path(path: &Path) -> Result<Self, Error> {
-        let string = fs::read_to_string(path)?;
+        let string = fs::read_to_string(path).map_err(|e| Error::io_error_from(e, path))?;
         serde_yaml::from_str(&string).map_err(|e| Error::YamlError(e))
     }
 

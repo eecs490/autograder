@@ -75,17 +75,14 @@ RUN set -eux; \
     rustc --version;
 
 # end FROM rustlang/rust:nightly
- 
+
 RUN cargo install grcov
 WORKDIR /autograder
 
 COPY autograder/ /autograder/autograder
 COPY assignment/ /autograder/assignment
 COPY submission/ /autograder/submission
-ENV RUSTUP_HOME=/usr/local/rustup \
-    CARGO_HOME=/usr/local/cargo \
-    PATH="/usr/local/cargo/bin:$PATH" \
-    CARGO_INCREMENTAL=0 \
+ENV CARGO_INCREMENTAL=0 \
     RUSTFLAGS="-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Zno-landing-pads"
 
 RUN cargo build --manifest-path autograder/Cargo.toml
