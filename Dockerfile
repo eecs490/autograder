@@ -85,16 +85,15 @@ ENV CARGO_INCREMENTAL=0 \
 WORKDIR /autograder
 
 COPY autograder/ /autograder/autograder
-RUN --mount=type=cache,target=/usr/local/cargo,from=rust,source=/usr/local/cargo \
-    --mount=type=cache,target=target \
-    cargo build --manifest-path /autograder/autograder/Cargo.toml
+#RUN --mount=type=cache,target=/usr/local/cargo,from=rust,source=/usr/local/cargo \
+    #--mount=type=cache,target=target \
+    #cargo build --manifest-path /autograder/autograder/Cargo.toml
 
 COPY submission/ /autograder/submission
 COPY assignment/ /autograder/assignment
-RUN --mount=type=cache,target=/usr/local/cargo,from=rust,source=/usr/local/cargo \
-    --mount=type=cache,target=target \
-    cargo build --manifest-path /autograder/assignment/Cargo.toml
-
+#RUN --mount=type=cache,target=/usr/local/cargo,from=rust,source=/usr/local/cargo \
+    #--mount=type=cache,target=target \
+    #cargo build --manifest-path /autograder/assignment/Cargo.toml
 
 RUN cargo build --manifest-path autograder/Cargo.toml
 RUN cargo build --manifest-path assignment/Cargo.toml
