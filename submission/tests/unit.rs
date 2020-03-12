@@ -21,6 +21,11 @@ fn test3() {
 }
 
 //#[test]
+//fn test100() {
+//fib(100);
+//}
+
+//#[test]
 //fn test4() {
 //assert_eq!(fib(4), 4, "NOOOOOO");
 //}

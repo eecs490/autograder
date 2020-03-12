@@ -11,11 +11,6 @@ mod our_tests {
     }
 
     #[test]
-    fn test0() {
-        assert_eq!(submission::solution::fib(0), fib(0));
-    }
-
-    #[test]
     fn random() {
         let seed: [u8; 32] = array![|x| x as u8; 32];
         let mut rng: StdRng = SeedableRng::from_seed(seed);
