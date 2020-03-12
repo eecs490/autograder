@@ -21,6 +21,10 @@ fn test3() {
 }
 
 //#[test]
+//fn test_infinite_loop() {
+//while true {}
+//}
+//#[test]
 //fn test100() {
 //fib(100);
 //}

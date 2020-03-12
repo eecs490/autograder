@@ -6,7 +6,7 @@ use clap::{value_t, App, Arg};
 use error::Error;
 use lcov::Reader;
 use report::records_to_string;
-use report::{GradescopeReport, Report, TestReport};
+use report::{Report, TestReport};
 use score_map::ScoreMap;
 use serde_json::to_string_pretty;
 use std::collections::HashSet;
@@ -81,6 +81,16 @@ fn main() -> Result<(), Error> {
 
     // deserialize ouputs into TestResult structs
     let our_test_results: Vec<TestResult> = TestResult::from_path(our_test_results)?;
+
+    assert_eq!(
+        scores.our_test_names().collect::<HashSet<String>>(),
+        our_test_results
+            .iter()
+            .map(|r| r.name.clone())
+            .collect::<HashSet<String>>(),
+        "There is a mismatch between the test names in scores.yaml and the assignment tests that ran and completed on the submission code."
+    );
+
     let their_test_results: Vec<TestResult> = TestResult::from_path(their_test_results)?;
     let their_test_results = their_test_results
         .iter()
@@ -142,21 +152,13 @@ fn main() -> Result<(), Error> {
     // combine TestResult structs into Report struct
     let output = Some("To create an HTML view of LCOV data:\n- navigate to the root of your submission\n- copy LCOV data to a file `lcov.info`\n- run `mkdir -p /tmp/ccov && genhtml -o /tmp/ccov --show-details --highlight --ignore-errors source --legend lcov.info`".into());
     let report: Report = Report::build(test_reports, &scores, output)?;
-    let gradescope_report: GradescopeReport = GradescopeReport::from(report.clone());
     println!("Gradescope Report:");
-    println!("{}", to_string_pretty(&gradescope_report)?);
-
-    assert_eq!(
-        report.names().collect::<HashSet<String>>(),
-        scores.our_test_names().collect::<HashSet<String>>()
-    );
-
-    //for (n1, n2) in scores.our_test_names().zip_longest(scores.names()) {}
+    println!("{}", to_string_pretty(&report)?);
 
     // write Report object to output_path
     let mut buffer = File::create(output_path).map_err(|e| Error::io_error_from(e, output_path))?;
     buffer
-        .write(&serde_json::to_string(&gradescope_report)?.as_bytes())
+        .write(&serde_json::to_string(&report)?.as_bytes())
         .map_err(|e| Error::io_error_from(e, output_path))?;
     Ok(())
 }

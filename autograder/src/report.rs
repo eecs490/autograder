@@ -2,6 +2,7 @@ use crate::error::Error;
 use crate::score_map::ScoreMap;
 use crate::test_result::TestResult;
 use lcov::Record;
+use serde::Serializer;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -13,11 +14,27 @@ pub enum Visibility {
     Visible, // default
 }
 
+fn f32_to_str<S>(float: &f32, s: S) -> Result<S::Ok, S::Error>
+where
+    S: Serializer,
+{
+    s.serialize_str(&*float.to_string())
+}
+
+fn usize_to_str<S>(float: &usize, s: S) -> Result<S::Ok, S::Error>
+where
+    S: Serializer,
+{
+    s.serialize_str(&*float.to_string())
+}
+
 #[derive(Serialize, Deserialize, Clone)]
 pub struct TestReport {
+    #[serde(serialize_with = "f32_to_str")]
     score: f32,
     max_score: f32,
     name: String,
+    #[serde(serialize_with = "usize_to_str")]
     number: usize,
     output: Option<String>,
     tags: Option<std::vec::Vec<String>>,
@@ -25,62 +42,13 @@ pub struct TestReport {
 }
 
 #[derive(Serialize, Deserialize, Clone)]
-pub struct GradescopeTestReport {
-    score: String,
-    max_score: f32,
-    name: String,
-    number: String,
-    output: Option<String>,
-    tags: Option<std::vec::Vec<String>>,
-    visibility: Option<Visibility>,
-}
-
-impl From<TestReport> for GradescopeTestReport {
-    fn from(report: TestReport) -> Self {
-        GradescopeTestReport {
-            score: report.score.to_string(),
-            max_score: report.max_score,
-            name: report.name,
-            number: report.number.to_string(),
-            output: report.output,
-            tags: report.tags,
-            visibility: report.visibility,
-        }
-    }
-}
-
-#[derive(Serialize, Deserialize, Clone)]
 pub struct Report {
+    #[serde(serialize_with = "f32_to_str")]
     score: f32,
     execution_time: Option<f32>,
     output: Option<String>,
     stdout_visibility: Option<Visibility>,
     tests: std::vec::Vec<TestReport>,
-}
-
-#[derive(Serialize, Deserialize, Clone)]
-pub struct GradescopeReport {
-    score: String,
-    execution_time: Option<f32>,
-    output: Option<String>,
-    stdout_visibility: Option<Visibility>,
-    tests: std::vec::Vec<GradescopeTestReport>,
-}
-
-impl From<Report> for GradescopeReport {
-    fn from(report: Report) -> Self {
-        GradescopeReport {
-            score: report.score.to_string(),
-            execution_time: report.execution_time,
-            output: report.output,
-            stdout_visibility: report.stdout_visibility,
-            tests: report
-                .tests
-                .into_iter()
-                .map(GradescopeTestReport::from)
-                .collect(),
-        }
-    }
 }
 
 impl Report {
@@ -99,10 +67,6 @@ impl Report {
             stdout_visibility: None,
             tests: test_reports,
         })
-    }
-
-    pub fn names(&'_ self) -> impl Iterator<Item = String> + '_ {
-        self.tests.iter().map(|t| t.name.clone())
     }
 }
 
