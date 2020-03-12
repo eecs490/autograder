@@ -74,6 +74,7 @@ pub fn line_coverage(records: &Vec<Record>) -> f32 {
     lines_hit as f32 / lines_found as f32
 }
 
+#[allow(dead_code)]
 pub fn branch_coverage(records: &Vec<Record>) -> f32 {
     let (branches_hit, branches_found): (u32, u32) =
         records
@@ -140,6 +141,8 @@ impl TestReport {
             visibility: None,
         })
     }
+
+    #[allow(dead_code)]
     pub fn branch_coverage(
         records: &Vec<Record>,
         number: usize,

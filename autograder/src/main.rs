@@ -136,12 +136,6 @@ fn main() -> Result<(), Error> {
         scores.line_coverage,
         coverage_output.clone(),
     )?);
-    test_reports.push(TestReport::branch_coverage(
-        &records,
-        test_reports.len(),
-        scores.branch_coverage,
-        coverage_output.clone(),
-    )?);
 
     // Collect the read records into a vector.
     println!("TestReport structs:");

@@ -1,5 +1,4 @@
 line_coverage: 3
-branch_coverage: 2
 their_tests: 2
 our_tests:
   our_tests::panic: 5.0
