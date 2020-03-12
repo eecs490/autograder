@@ -8,7 +8,6 @@ use std::path::Path;
 #[derive(Serialize, Deserialize, Clone)]
 pub struct ScoreMap {
     pub line_coverage: f32,
-    pub branch_coverage: f32,
     pub their_tests: f32,
     pub our_tests: BTreeMap<String, f32>,
 }
@@ -23,7 +22,6 @@ impl ScoreMap {
             .values()
             .copied()
             .chain(once(self.line_coverage))
-            .chain(once(self.branch_coverage))
             .chain(once(self.their_tests))
     }
 

@@ -1,4 +1,3 @@
-# syntax=docker/dockerfile:experimental
 FROM gradescope/auto-builds:ubuntu-18.04
 
 # FROM rustlang/rust:nightly
