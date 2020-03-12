@@ -28,8 +28,7 @@ pub struct TestReport {
     score: f32,
     max_score: f32,
     pub name: String,
-    #[serde(serialize_with = "to_str")]
-    number: usize,
+    number: String,
     output: Option<String>,
     tags: Option<std::vec::Vec<String>>,
     visibility: Option<Visibility>,
@@ -97,7 +96,7 @@ pub fn records_to_string(records: &Vec<Record>) -> String {
 impl TestReport {
     pub fn from_our_tests(
         result: &TestResult,
-        number: usize,
+        number: String,
         scores: &ScoreMap,
     ) -> Result<Self, Error> {
         Ok(Self {
@@ -114,7 +113,11 @@ impl TestReport {
             visibility: None,
         })
     }
-    pub fn from_their_tests(result: &TestResult, number: usize, score: f32) -> Result<Self, Error> {
+    pub fn from_their_tests(
+        result: &TestResult,
+        number: String,
+        score: f32,
+    ) -> Result<Self, Error> {
         Ok(Self {
             score: if result.passing() { score } else { 0. },
             max_score: score,
@@ -127,7 +130,7 @@ impl TestReport {
     }
     pub fn line_coverage(
         records: &Vec<Record>,
-        number: usize,
+        number: String,
         score: f32,
         output: Option<String>,
     ) -> Result<Self, Error> {
@@ -145,7 +148,7 @@ impl TestReport {
     #[allow(dead_code)]
     pub fn branch_coverage(
         records: &Vec<Record>,
-        number: usize,
+        number: String,
         score: f32,
         output: Option<String>,
     ) -> Result<Self, Error> {

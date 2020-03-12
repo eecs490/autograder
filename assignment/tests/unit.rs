@@ -1,4 +1,4 @@
-mod our_tests {
+mod ours {
     use array_macro::array;
     use assignment::solution::fib;
     use rand::rngs::StdRng;

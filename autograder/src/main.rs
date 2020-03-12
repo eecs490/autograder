@@ -12,6 +12,7 @@ use serde_json::to_string_pretty;
 use std::collections::HashSet;
 use std::fs::File;
 use std::io::Write;
+use std::iter::once;
 use std::path::PathBuf;
 use test_result::TestResult;
 
@@ -80,7 +81,7 @@ fn main() -> Result<(), Error> {
     let scores: ScoreMap = ScoreMap::from_path(scores_path)?;
 
     // deserialize ouputs into TestResult structs
-    let our_test_results: Vec<TestResult> = TestResult::from_path(our_test_results)?;
+    let mut our_test_results: Vec<TestResult> = TestResult::from_path(our_test_results)?;
 
     assert_eq!(
         scores.our_test_names().collect::<HashSet<String>>(),
@@ -92,9 +93,13 @@ fn main() -> Result<(), Error> {
     );
 
     let their_test_results: Vec<TestResult> = TestResult::from_path(their_test_results)?;
-    let their_test_results = their_test_results
+    let mut their_test_results: Vec<TestResult> = their_test_results
         .iter()
-        .map(|r| r.assign_score(scores.their_tests));
+        .map(|r| r.assign_score(scores.their_tests))
+        .collect();
+
+    our_test_results.sort_by(|r1, r2| r1.name.cmp(&r2.name));
+    their_test_results.sort_by(|r1, r2| r1.name.cmp(&r2.name));
 
     println!("Our TestResult structs:");
     for result in our_test_results.clone() {
@@ -105,18 +110,6 @@ fn main() -> Result<(), Error> {
         println!("{}", to_string_pretty(&result)?);
     }
 
-    // Covert TestResults into TestReports
-    let num_their_tests = their_test_results.len() as f32;
-    let mut test_reports = our_test_results
-        .iter()
-        .enumerate()
-        .map(|(i, r)| TestReport::from_our_tests(r, i, &scores))
-        .chain(their_test_results.enumerate().map(|(i, r)| {
-            TestReport::from_their_tests(&r, i, scores.their_tests / num_their_tests)
-        }))
-        .collect::<Result<Vec<_>, _>>()?;
-    test_reports.sort_by(|r1, r2| r1.name.cmp(&r2.name));
-
     // Read lcov.info file
     let readers = Reader::open_file(lcov_path).map_err(|e| Error::io_error_from(e, lcov_path))?;
     let records = readers.collect::<Result<Vec<_>, _>>()?;
@@ -124,19 +117,36 @@ fn main() -> Result<(), Error> {
     for record in records.clone() {
         println!("{:?}", record)
     }
-
-    // Convert lcov records into TestReports and append to test_reports vec
     let coverage_output = Some(format!(
         "Score is based on the following LCOV coverage data output:
-    \n{}",
-        records_to_string(&records)
-    ));
-    test_reports.push(TestReport::line_coverage(
-        &records,
-        test_reports.len(),
-        scores.line_coverage,
-        coverage_output.clone(),
-    )?);
+
+{}
+
+To create an HTML view of LCOV data:
+- navigate to the root of your submission
+- copy LCOV data to a file `lcov.info`
+- run `mkdir -p /tmp/ccov && genhtml -o /tmp/ccov --show-details --highlight --ignore-errors source --legend lcov.info`", records_to_string(&records)));
+
+    // Covert TestResults into TestReports
+    let num_their_tests = their_test_results.len() as f32;
+    let test_reports = our_test_results
+        .iter()
+        .map(|r| TestReport::from_our_tests(r, "Our tests".into(), &scores))
+        .chain(their_test_results.iter().map(|r| {
+            TestReport::from_their_tests(
+                &r,
+                "Your tests".into(),
+                scores.their_tests / num_their_tests,
+            )
+        }))
+        // Convert lcov records into TestReports and append to test_reports vec
+        .chain(once(TestReport::line_coverage(
+            &records,
+            "".into(),
+            scores.line_coverage,
+            coverage_output.clone(),
+        )))
+        .collect::<Result<Vec<_>, _>>()?;
 
     // Collect the read records into a vector.
     println!("TestReport structs:");
@@ -145,8 +155,7 @@ fn main() -> Result<(), Error> {
     }
 
     // combine TestResult structs into Report struct
-    let output = Some("To create an HTML view of LCOV data:\n- navigate to the root of your submission\n- copy LCOV data to a file `lcov.info`\n- run `mkdir -p /tmp/ccov && genhtml -o /tmp/ccov --show-details --highlight --ignore-errors source --legend lcov.info`".into());
-    let report: Report = Report::build(test_reports, &scores, output)?;
+    let report: Report = Report::build(test_reports, &scores, None)?;
     println!("Gradescope Report:");
     println!("{}", to_string_pretty(&report)?);
 
