@@ -27,7 +27,7 @@ pub struct TestReport {
     #[serde(serialize_with = "to_str")]
     score: f32,
     max_score: f32,
-    name: String,
+    pub name: String,
     #[serde(serialize_with = "to_str")]
     number: usize,
     output: Option<String>,

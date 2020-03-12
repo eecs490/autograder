@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:experimental
 FROM gradescope/auto-builds:ubuntu-18.04
 
 # FROM rustlang/rust:nightly
@@ -83,24 +84,17 @@ ENV CARGO_INCREMENTAL=0 \
 
 WORKDIR /autograder
 
-# dummy build autograder for caching purposes
-COPY autograder/Cargo.toml /autograder/autograder/Cargo.toml
-COPY autograder/Cargo.lock /autograder/autograder/Cargo.lock
-RUN mkdir /autograder/autograder/src && touch /autograder/autograder/src/lib.rs
-RUN cargo build --manifest-path autograder/Cargo.toml
-RUN rm -rf /autograder/autograder/src
+COPY autograder/ /autograder/autograder
+RUN --mount=type=cache,target=/usr/local/cargo,from=rust,source=/usr/local/cargo \
+    --mount=type=cache,target=target \
+    cargo build --manifest-path /autograder/autograder/Cargo.toml
 
 COPY submission/ /autograder/submission
-
-# dummy build autograder for caching purposes
-COPY assignment/Cargo.toml /autograder/assignment/Cargo.toml
-COPY assignment/Cargo.lock /autograder/assignment/Cargo.lock
-RUN mkdir /autograder/assignment/src && touch /autograder/assignment/src/lib.rs
-RUN cargo build --manifest-path assignment/Cargo.toml
-RUN rm -rf /autograder/assignment/src
-
-COPY autograder/src /autograder/autograder/src
 COPY assignment/ /autograder/assignment
+RUN --mount=type=cache,target=/usr/local/cargo,from=rust,source=/usr/local/cargo \
+    --mount=type=cache,target=target \
+    cargo build --manifest-path /autograder/assignment/Cargo.toml
+
 
 RUN cargo build --manifest-path autograder/Cargo.toml
 RUN cargo build --manifest-path assignment/Cargo.toml

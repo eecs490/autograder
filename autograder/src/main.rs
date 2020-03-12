@@ -115,6 +115,7 @@ fn main() -> Result<(), Error> {
             TestReport::from_their_tests(&r, i, scores.their_tests / num_their_tests)
         }))
         .collect::<Result<Vec<_>, _>>()?;
+    test_reports.sort_by(|r1, r2| r1.name.cmp(&r2.name));
 
     // Read lcov.info file
     let readers = Reader::open_file(lcov_path).map_err(|e| Error::io_error_from(e, lcov_path))?;
