@@ -27,6 +27,7 @@ pub enum Type {
 pub enum Event {
     Ok,
     Failed,
+    Started,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -45,12 +46,23 @@ impl TestResult {
         match self.event {
             Event::Ok => true,
             Event::Failed => false,
+            Event::Started => {
+                panic!("There should not be any TestResults with event = Event::Started ")
+            }
         }
     }
     pub fn from_output(test_output: String) -> Result<Vec<TestResult>, Error> {
         Ok(test_output
             .split("\n")
             .map(serde_json::from_str)
+            .filter(|r: &Result<TestResult, _>| match r {
+                Ok(r) => match r.event {
+                    Event::Ok => true,
+                    Event::Failed => true,
+                    _ => false,
+                },
+                _ => false,
+            })
             .collect::<Result<Vec<_>, _>>()?)
     }
     pub fn from_path(test_path: &Path) -> Result<Vec<TestResult>, Error> {
