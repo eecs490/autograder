@@ -14,27 +14,21 @@ pub enum Visibility {
     Visible, // default
 }
 
-fn f32_to_str<S>(float: &f32, s: S) -> Result<S::Ok, S::Error>
+fn to_str<S, T>(float: &T, s: S) -> Result<S::Ok, S::Error>
 where
     S: Serializer,
-{
-    s.serialize_str(&*float.to_string())
-}
-
-fn usize_to_str<S>(float: &usize, s: S) -> Result<S::Ok, S::Error>
-where
-    S: Serializer,
+    T: std::fmt::Display,
 {
     s.serialize_str(&*float.to_string())
 }
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct TestReport {
-    #[serde(serialize_with = "f32_to_str")]
+    #[serde(serialize_with = "to_str")]
     score: f32,
     max_score: f32,
     name: String,
-    #[serde(serialize_with = "usize_to_str")]
+    #[serde(serialize_with = "to_str")]
     number: usize,
     output: Option<String>,
     tags: Option<std::vec::Vec<String>>,
@@ -43,7 +37,7 @@ pub struct TestReport {
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Report {
-    #[serde(serialize_with = "f32_to_str")]
+    #[serde(serialize_with = "to_str")]
     score: f32,
     execution_time: Option<f32>,
     output: Option<String>,
