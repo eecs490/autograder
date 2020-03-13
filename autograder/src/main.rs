@@ -10,14 +10,14 @@
 extern crate error_chain;
 //mod error;
 //mod report;
-//mod score_map;
+mod score_map;
 //mod test_result;
 use clap::{value_t, App, Arg};
 //use error::Error;
 //use lcov::Reader;
 //use report::records_to_string;
 //use report::{Report, TestReport};
-//use score_map::ScoreMap;
+use score_map::ScoreMap;
 //use serde_json::to_string_pretty;
 //use std::collections::HashSet;
 //use std::fs::File;
@@ -117,8 +117,8 @@ fn run() -> Result<()> {
     let _our_test_results = our_test_results.as_path();
     let _their_test_results = their_test_results.as_path();
 
-    //// assign custom scores to each test function.
-    //// The autograder defaults to 1.0 point per test for tests not included in thei HashMap.
+    // assign custom scores to each test function.
+    // The autograder defaults to 1.0 point per test for tests not included in thei HashMap.
     //let scores: ScoreMap = ScoreMap::from_path(scores_path)?;
 
     //// deserialize ouputs into TestResult structs

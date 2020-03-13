@@ -25,15 +25,15 @@ impl ScoreMap {
             .chain(once(self.their_tests))
     }
 
-    pub fn from_path(path: &Path) -> Result<Self, Error> {
-        let string = fs::read_to_string(path).map_err(|e| Error::io_error_from(e, path))?;
-        serde_yaml::from_str(&string).map_err(|e| Error::YamlError(e))
-    }
+    //pub fn from_path(path: &Path) -> Result<Self, Error> {
+    //let string = fs::read_to_string(path)?;
+    //serde_yaml::from_str(&string)
+    //}
 
-    pub fn get(&self, name: &String) -> Result<f32, Error> {
-        match self.our_tests.get(name) {
-            None => Err(Error::ScoreError(name.clone())),
-            Some(x) => Ok(*x),
-        }
-    }
+    //pub fn get(&self, name: &String) -> Result<f32, Error> {
+    //match self.our_tests.get(name) {
+    //None => Err(Error::ScoreError(name.clone())),
+    //Some(x) => Ok(*x),
+    //}
+    //}
 }
