@@ -29,7 +29,8 @@ impl ScoreMap {
     pub fn from_path(path: &Path) -> Result<Self> {
         let string = fs::read_to_string(path).chain_err(|| failed_to_read(&path))?;
         let msg = format!(
-            "Failed to convert the following string to struct ScoreMap:
+            "\
+Failed to convert the following string to struct ScoreMap:
 
 {}",
             string

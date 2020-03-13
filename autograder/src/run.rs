@@ -86,14 +86,15 @@ pub fn run() -> Result<()> {
         println!("{:?}", record)
     }
     let coverage_output = Some(format!(
-    "Score is based on the following LCOV coverage data output:
+    "\
+Score is based on the following LCOV coverage data output:
 
-    {}
+{}
 
-    To create an HTML view of LCOV data:
-    - navigate to the root of your submission
-    - copy LCOV data to a file `lcov.info`
-    - run `mkdir -p /tmp/ccov && genhtml -o /tmp/ccov --show-details --highlight --ignore-errors source --legend lcov.info`", lcov_string));
+To create an HTML view of LCOV data:
+- navigate to the root of your submission
+- copy LCOV data to a file `lcov.info`
+- run `mkdir -p /tmp/ccov && genhtml -o /tmp/ccov --show-details --highlight --ignore-errors source --legend lcov.info`", lcov_string));
 
     // Covert TestOutputs into TestReports
     let num_their_tests = their_test_results.len() as f32;
