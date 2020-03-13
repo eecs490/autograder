@@ -1,8 +1,9 @@
+use crate::args::args;
 use crate::error::Result;
 use crate::report::{Report, TestReport};
 use crate::score_map::ScoreMap;
 use crate::test_result::TestResult;
-use clap::{value_t, App, Arg};
+use clap::value_t;
 use lcov::Reader;
 use serde_json::to_string_pretty;
 use std::collections::HashSet;
@@ -13,53 +14,9 @@ use std::iter::once;
 use std::path::PathBuf;
 
 pub fn run() -> Result<()> {
-    let matches = App::new("MyApp")
-        .arg(
-            Arg::with_name("our_test_results")
-                .long("our-test-results")
-                .help("path to output of running our tests on their solution")
-                .takes_value(true)
-                .required(true),
-        )
-        .arg(
-            Arg::with_name("their_test_results")
-                .long("their-test-results")
-                .help("path to output of running their tests on our solution")
-                .takes_value(true)
-                .required(true),
-        )
-        .arg(
-            Arg::with_name("submission")
-                .long("submission")
-                .help("path to submission/Cargo.toml")
-                .takes_value(true)
-                .required(true),
-        )
-        .arg(
-            Arg::with_name("output")
-                .long("output")
-                .help("path where results.json will be written")
-                .takes_value(true)
-                .required(true),
-        )
-        .arg(
-            Arg::with_name("lcov")
-                .long("lcov")
-                .help("path to lcov.info")
-                .takes_value(true)
-                .required(true),
-        )
-        .arg(
-            Arg::with_name("scores")
-                .help("path to scores.yaml")
-                .long("scores")
-                .takes_value(true)
-                .required(true),
-        )
-        .get_matches();
+    let matches = args().get_matches();
 
     // parse args
-
     let output_path = value_t!(matches, "output", PathBuf)?;
     let lcov_path = value_t!(matches, "lcov", PathBuf)?;
     let scores_path = value_t!(matches, "scores", PathBuf)?;

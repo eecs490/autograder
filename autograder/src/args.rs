@@ -1,6 +1,6 @@
 use clap::{App, Arg};
 
-pub fn args<'a>() -> App<'a> {
+pub fn args<'a>() -> App<'a, 'a> {
     App::new("MyApp")
         .arg(
             Arg::with_name("our_test_results")
