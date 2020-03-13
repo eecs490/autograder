@@ -70,7 +70,7 @@ pub fn run() -> Result<()> {
     let lcov_string = fs::read_to_string(&lcov_path).chain_err(|| failed_to_read(&lcov_path))?;
     let reader = Reader::new(lcov_string.as_bytes());
     let records = reader
-        .collect::<std::result::Result<Vec<_>, _>>()
+        .collect::<std::result::Result<Vec<_>, lcov::reader::Error>>()
         .map_err(Error::from)
         .chain_err(|| {
             format!(

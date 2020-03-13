@@ -15,7 +15,7 @@ error_chain! {
             display("Name not found in scores.yaml file: '{}'", s)
         }
         LcovReaderError(e: lcov::reader::Error) {
-            display("Unable to read {}", e)
+            display("{}", e)
         }
     }
 }
