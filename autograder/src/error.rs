@@ -1,3 +1,4 @@
+use std::path::Path;
 mod error {
     error_chain! {}
 }
@@ -23,4 +24,8 @@ impl From<lcov::reader::Error> for Error {
     fn from(err: lcov::reader::Error) -> Error {
         Error::from(ErrorKind::LcovReaderError(err))
     }
+}
+
+pub fn failed_to_read(path: &Path) -> String {
+    format!("Failed to read {}", path.display())
 }

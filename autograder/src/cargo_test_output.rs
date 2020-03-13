@@ -1,3 +1,4 @@
+use crate::error::{failed_to_read, ResultExt};
 use crate::Result;
 use serde::{Deserialize, Serialize};
 use std::fs;
@@ -55,9 +56,8 @@ impl TestOutput {
             .collect()
     }
     pub fn from_path(test_path: &Path) -> Result<Vec<TestOutput>> {
-        //let err_msg: String = String::from(format!("Failed to read "));
-        let utf8 = fs::read(test_path);
-        let output = String::from_utf8_lossy(&utf8?).into_owned();
+        let utf8: Vec<u8> = fs::read(test_path).chain_err(|| failed_to_read(test_path))?;
+        let output = String::from_utf8_lossy(&utf8).into_owned();
         Ok(Self::from_output(output))
     }
     pub fn assign_score(&self, score: f32) -> Self {

@@ -1,6 +1,8 @@
 use crate::args::args;
 use crate::cargo_test_output::TestOutput;
+use crate::error::failed_to_read;
 use crate::error::Result;
+use crate::error::ResultExt;
 use crate::report::{Report, TestReport};
 use crate::score_map::ScoreMap;
 use clap::value_t;
@@ -65,7 +67,7 @@ pub fn run() -> Result<()> {
     }
 
     // Read lcov.info file
-    let lcov_string = fs::read_to_string(lcov_path)?;
+    let lcov_string = fs::read_to_string(&lcov_path).chain_err(|| failed_to_read(&lcov_path))?;
     let reader = Reader::new(lcov_string.as_bytes());
     let records = reader.collect::<std::result::Result<Vec<_>, _>>()?;
 
