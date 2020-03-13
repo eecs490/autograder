@@ -1,8 +1,7 @@
-use crate::error::Error;
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::Path;
-//{ "type": "suite", "event": "started", "test_count": 5 }
+//{ "type":"suite", "event": "started", "test_count": 5 }
 //{ "type": "test", "event": "started", "name": "tests::test0" }
 //{ "type": "test", "event": "started", "name": "tests::test1" }
 //{ "type": "test", "event": "started", "name": "tests::test2" }
@@ -54,8 +53,8 @@ impl TestResult {
             .filter_map(Result::ok)
             .collect()
     }
-    pub fn from_path(test_path: &Path) -> Result<Vec<TestResult>, Error> {
-        let utf8 = fs::read(test_path).map_err(|e| Error::io_error_from(e, test_path));
+    pub fn from_path(test_path: &Path) -> crate::Result<Vec<TestResult>> {
+        let utf8 = fs::read(test_path);
         let output = String::from_utf8_lossy(&utf8?).into_owned();
         Ok(Self::from_output(output))
     }

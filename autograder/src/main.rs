@@ -11,7 +11,7 @@ extern crate error_chain;
 //mod error;
 //mod report;
 mod score_map;
-//mod test_result;
+mod test_result;
 use clap::{value_t, App, Arg};
 //use error::Error;
 //use lcov::Reader;
@@ -25,7 +25,7 @@ use score_map::ScoreMap;
 //use std::iter::once;
 use clap;
 use std::path::PathBuf;
-//use test_result::TestResult;
+use test_result::TestResult;
 mod error {
     error_chain! {}
 }
@@ -115,15 +115,15 @@ fn run() -> Result<()> {
     let _output_path = output_path.as_path();
     let _lcov_path = lcov_path.as_path();
     let scores_path = scores_path.as_path();
-    let _our_test_results = our_test_results.as_path();
+    let our_test_results = our_test_results.as_path();
     let _their_test_results = their_test_results.as_path();
 
     // assign custom scores to each test function.
     // The autograder defaults to 1.0 point per test for tests not included in thei HashMap.
     let _scores: ScoreMap = ScoreMap::from_path(scores_path)?;
 
-    //// deserialize ouputs into TestResult structs
-    //let mut our_test_results: Vec<TestResult> = TestResult::from_path(our_test_results)?;
+    // deserialize ouputs into TestResult structs
+    let mut our_test_results: Vec<TestResult> = TestResult::from_path(our_test_results)?;
 
     //assert_eq!(
     //scores.our_test_names().collect::<HashSet<String>>(),
