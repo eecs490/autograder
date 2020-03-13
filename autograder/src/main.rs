@@ -18,8 +18,8 @@ use clap::{value_t, App, Arg};
 //use report::records_to_string;
 //use report::{Report, TestReport};
 use score_map::ScoreMap;
-//use serde_json::to_string_pretty;
-//use std::collections::HashSet;
+use serde_json::to_string_pretty;
+use std::collections::HashSet;
 //use std::fs::File;
 //use std::io::Write;
 //use std::iter::once;
@@ -35,6 +35,7 @@ error_chain! {
         Fmt(::std::fmt::Error);
         Clap(::clap::Error);
         Yaml(::serde_yaml::Error);
+        Json(::serde_json::Error);
         Io(::std::io::Error);
     }
 }
@@ -116,41 +117,41 @@ fn run() -> Result<()> {
     let _lcov_path = lcov_path.as_path();
     let scores_path = scores_path.as_path();
     let our_test_results = our_test_results.as_path();
-    let _their_test_results = their_test_results.as_path();
+    let their_test_results = their_test_results.as_path();
 
     // assign custom scores to each test function.
     // The autograder defaults to 1.0 point per test for tests not included in thei HashMap.
-    let _scores: ScoreMap = ScoreMap::from_path(scores_path)?;
+    let scores: ScoreMap = ScoreMap::from_path(scores_path)?;
 
     // deserialize ouputs into TestResult structs
     let mut our_test_results: Vec<TestResult> = TestResult::from_path(our_test_results)?;
 
-    //assert_eq!(
-    //scores.our_test_names().collect::<HashSet<String>>(),
-    //our_test_results
-    //.iter()
-    //.map(|r| r.name.clone())
-    //.collect::<HashSet<String>>(),
-    //"There is a mismatch between the test names in scores.yaml and the assignment tests that ran and completed on the submission code."
-    //);
+    assert_eq!(
+    scores.our_test_names().collect::<HashSet<String>>(),
+    our_test_results
+    .iter()
+    .map(|r| r.name.clone())
+    .collect::<HashSet<String>>(),
+    "There is a mismatch between the test names in scores.yaml and the assignment tests that ran and completed on the submission code."
+    );
 
-    //let their_test_results: Vec<TestResult> = TestResult::from_path(their_test_results)?;
-    //let mut their_test_results: Vec<TestResult> = their_test_results
-    //.iter()
-    //.map(|r| r.assign_score(scores.their_tests))
-    //.collect();
+    let their_test_results: Vec<TestResult> = TestResult::from_path(their_test_results)?;
+    let mut their_test_results: Vec<TestResult> = their_test_results
+        .iter()
+        .map(|r| r.assign_score(scores.their_tests))
+        .collect();
 
-    //our_test_results.sort_by(|r1, r2| r1.name.cmp(&r2.name));
-    //their_test_results.sort_by(|r1, r2| r1.name.cmp(&r2.name));
+    our_test_results.sort_by(|r1, r2| r1.name.cmp(&r2.name));
+    their_test_results.sort_by(|r1, r2| r1.name.cmp(&r2.name));
 
-    //println!("Our TestResult structs:");
-    //for result in our_test_results.clone() {
-    //println!("{}", to_string_pretty(&result)?);
-    //}
-    //println!("Their TestResult structs:");
-    //for result in their_test_results.clone() {
-    //println!("{}", to_string_pretty(&result)?);
-    //}
+    println!("Our TestResult structs:");
+    for result in our_test_results.clone() {
+        println!("{}", to_string_pretty(&result)?);
+    }
+    println!("Their TestResult structs:");
+    for result in their_test_results.clone() {
+        println!("{}", to_string_pretty(&result)?);
+    }
 
     //// Read lcov.info file
     //let readers = Reader::open_file(lcov_path).map_err(|e| Error::io_error_from(e, lcov_path))?;
