@@ -1,8 +1,8 @@
 use crate::args::args;
+use crate::cargo_test_output::TestResult;
 use crate::error::Result;
 use crate::report::{Report, TestReport};
 use crate::score_map::ScoreMap;
-use crate::test_result::TestResult;
 use clap::value_t;
 use lcov::Reader;
 use serde_json::to_string_pretty;

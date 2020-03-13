@@ -2,11 +2,11 @@
 #[macro_use]
 extern crate error_chain;
 mod args;
+mod cargo_test_output;
 mod error;
 mod report;
 mod run;
 mod score_map;
-mod test_result;
 use clap;
 use error::Result;
 use run::run;

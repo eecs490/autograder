@@ -1,5 +1,5 @@
+use crate::cargo_test_output::TestResult;
 use crate::score_map::ScoreMap;
-use crate::test_result::TestResult;
 use crate::Result;
 use lcov::Record;
 use serde::Serializer;
