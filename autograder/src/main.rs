@@ -8,56 +8,24 @@
 // `Cargo.toml`!
 #[macro_use]
 extern crate error_chain;
-//mod error;
+mod error;
 mod report;
 mod score_map;
 mod test_result;
+use clap;
 use clap::{value_t, App, Arg};
-//use error::Error;
-use lcov::reader::Error::{Io, ParseRecord};
+use error::Result;
 use lcov::Reader;
 use report::{Report, TestReport};
 use score_map::ScoreMap;
 use serde_json::to_string_pretty;
 use std::collections::HashSet;
 use std::fs;
-//use std::fs::File;
-//use std::io::Write;
-//use std::iter::once;
-use clap;
+use std::fs::File;
+use std::io::Write;
+use std::iter::once;
 use std::path::PathBuf;
 use test_result::TestResult;
-mod error {
-    error_chain! {}
-}
-
-error_chain! {
-    foreign_links {
-        Fmt(::std::fmt::Error);
-        Clap(::clap::Error);
-        Yaml(::serde_yaml::Error);
-        Json(::serde_json::Error);
-        Io(::std::io::Error);
-    }
-    errors {
-        ScoreError(s: String) {
-            display("Name not found in scores.yaml file: '{}'", s)
-        }
-        LcovReaderError(e: lcov::reader::Error) {
-            display("Unable to read {}", e)
-        }
-    }
-}
-
-impl From<lcov::reader::Error> for Error {
-    fn from(err: lcov::reader::Error) -> Error {
-        Error::from(ErrorKind::LcovReaderError(err))
-        //Error::from(match err {
-        //Io(e) => ErrorKind::Io(e),
-        //ParseRecord(_, _) => panic!("oh shit"), // ErrorKind::LcovReaderError(err),
-        //})
-    }
-}
 
 fn main() {
     if let Err(ref e) = run() {
@@ -193,40 +161,38 @@ fn run() -> Result<()> {
 
     // Covert TestResults into TestReports
     let num_their_tests = their_test_results.len() as f32;
-    //let test_reports = our_test_results
-    //.iter()
-    //.map(|r| TestReport::from_our_tests(r, "Our tests".into(), &scores))
-    //.chain(their_test_results.iter().map(|r| {
-    //TestReport::from_their_tests(
-    //&r,
-    //"Your tests".into(),
-    //scores.their_tests / num_their_tests,
-    //)
-    //}))
-    //// Convert lcov records into TestReports and append to test_reports vec
-    //.chain(once(TestReport::line_coverage(
-    //&records,
-    //"".into(),
-    //scores.line_coverage,
-    //coverage_output.clone(),
-    //)))
-    //.collect::<Result<Vec<_>, _>>()?;
+    let test_reports = our_test_results
+        .iter()
+        .map(|r| TestReport::from_our_tests(r, "Our tests".into(), &scores))
+        .chain(their_test_results.iter().map(|r| {
+            TestReport::from_their_tests(
+                &r,
+                "Your tests".into(),
+                scores.their_tests / num_their_tests,
+            )
+        }))
+        // Convert lcov records into TestReports and append to test_reports vec
+        .chain(once(TestReport::line_coverage(
+            &records,
+            "".into(),
+            scores.line_coverage,
+            coverage_output.clone(),
+        )))
+        .collect::<Result<Vec<_>>>()?;
 
-    //// Collect the read records into a vector.
-    //println!("TestReport structs:");
-    //for report in test_reports.clone() {
-    //println!("{}", to_string_pretty(&report)?);
-    //}
+    // Collect the read records into a vector.
+    println!("TestReport structs:");
+    for report in test_reports.clone() {
+        println!("{}", to_string_pretty(&report)?);
+    }
 
-    //// combine TestResult structs into Report struct
-    //let report: Report = Report::build(test_reports, &scores, None)?;
-    //println!("Gradescope Report:");
-    //println!("{}", to_string_pretty(&report)?);
+    // combine TestResult structs into Report struct
+    let report: Report = Report::build(test_reports, &scores, None)?;
+    println!("Gradescope Report:");
+    println!("{}", to_string_pretty(&report)?);
 
-    //// write Report object to output_path
-    //let mut buffer = File::create(output_path).map_err(|e| Error::io_error_from(e, output_path))?;
-    //buffer
-    //.write(&serde_json::to_string(&report)?.as_bytes())
-    //.map_err(|e| Error::io_error_from(e, output_path))?;
+    // write Report object to output_path
+    let mut buffer = File::create(output_path)?;
+    buffer.write(&serde_json::to_string(&report)?.as_bytes())?;
     Ok(())
 }
