@@ -1,5 +1,5 @@
 line_coverage: 100
 their_tests: 210
 our_tests:
-  ours::panic: 200
-  ours::random: 200.0
+  panic: 200
+  random: 200.0
