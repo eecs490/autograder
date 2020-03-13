@@ -34,7 +34,8 @@ error_chain! {
     foreign_links {
         Fmt(::std::fmt::Error);
         Clap(::clap::Error);
-        Io(::std::io::Error) #[cfg(unix)];
+        Yaml(::serde_yaml::Error);
+        Io(::std::io::Error);
     }
 }
 
@@ -113,13 +114,13 @@ fn run() -> Result<()> {
     //// coerce to paths
     let _output_path = output_path.as_path();
     let _lcov_path = lcov_path.as_path();
-    let _scores_path = scores_path.as_path();
+    let scores_path = scores_path.as_path();
     let _our_test_results = our_test_results.as_path();
     let _their_test_results = their_test_results.as_path();
 
     // assign custom scores to each test function.
     // The autograder defaults to 1.0 point per test for tests not included in thei HashMap.
-    //let scores: ScoreMap = ScoreMap::from_path(scores_path)?;
+    let _scores: ScoreMap = ScoreMap::from_path(scores_path)?;
 
     //// deserialize ouputs into TestResult structs
     //let mut our_test_results: Vec<TestResult> = TestResult::from_path(our_test_results)?;

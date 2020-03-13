@@ -1,4 +1,4 @@
-use crate::error::Error;
+use crate::Result;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 use std::fs;
@@ -25,10 +25,10 @@ impl ScoreMap {
             .chain(once(self.their_tests))
     }
 
-    //pub fn from_path(path: &Path) -> Result<Self, Error> {
-    //let string = fs::read_to_string(path)?;
-    //serde_yaml::from_str(&string)
-    //}
+    pub fn from_path(path: &Path) -> Result<Self> {
+        let string = fs::read_to_string(path)?;
+        Ok(serde_yaml::from_str(&string)?)
+    }
 
     //pub fn get(&self, name: &String) -> Result<f32, Error> {
     //match self.our_tests.get(name) {
