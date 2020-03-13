@@ -27,7 +27,6 @@ pub enum Type {
 pub enum Event {
     Ok,
     Failed,
-    Started,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -46,29 +45,19 @@ impl TestResult {
         match self.event {
             Event::Ok => true,
             Event::Failed => false,
-            Event::Started => {
-                panic!("There should not be any TestResults with event = Event::Started ")
-            }
         }
     }
-    pub fn from_output(test_output: String) -> Result<Vec<TestResult>, Error> {
-        Ok(test_output
+    pub fn from_output(test_output: String) -> Vec<TestResult> {
+        test_output
             .split("\n")
             .map(serde_json::from_str)
-            .filter(|r: &Result<TestResult, _>| match r {
-                Ok(r) => match r.event {
-                    Event::Ok => true,
-                    Event::Failed => true,
-                    _ => false,
-                },
-                _ => false,
-            })
-            .collect::<Result<Vec<_>, _>>()?)
+            .filter_map(Result::ok)
+            .collect()
     }
     pub fn from_path(test_path: &Path) -> Result<Vec<TestResult>, Error> {
         let utf8 = fs::read(test_path).map_err(|e| Error::io_error_from(e, test_path));
         let output = String::from_utf8_lossy(&utf8?).into_owned();
-        Self::from_output(output)
+        Ok(Self::from_output(output))
     }
     pub fn assign_score(&self, score: f32) -> Self {
         Self {
