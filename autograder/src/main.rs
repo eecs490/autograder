@@ -26,12 +26,17 @@ use clap::{value_t, App, Arg};
 use clap;
 use std::path::PathBuf;
 //use test_result::TestResult;
-mod errors {
-    // Create the Error, ErrorKind, ResultExt, and Result types
+mod error {
     error_chain! {}
 }
 
-use errors::*;
+error_chain! {
+    foreign_links {
+        Fmt(::std::fmt::Error);
+        Clap(::clap::Error);
+        Io(::std::io::Error) #[cfg(unix)];
+    }
+}
 
 fn main() {
     if let Err(ref e) = run() {
@@ -98,7 +103,8 @@ fn run() -> Result<()> {
         .get_matches();
 
     // parse args
-    //let _output_path = value_t!(matches, "output", PathBuf)?;
+
+    let _output_path = value_t!(matches, "outpu2t", PathBuf)?;
     //let _lcov_path = value_t!(matches, "lcov", PathBuf)?;
     //let _scores_path = value_t!(matches, "scores", PathBuf)?;
     //let _our_test_results = value_t!(matches, "our_test_results", PathBuf)?;
