@@ -1,3 +1,4 @@
+use crate::Result;
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::Path;
@@ -50,10 +51,10 @@ impl TestResult {
         test_output
             .split("\n")
             .map(serde_json::from_str)
-            .filter_map(Result::ok)
+            .filter_map(std::result::Result::ok)
             .collect()
     }
-    pub fn from_path(test_path: &Path) -> crate::Result<Vec<TestResult>> {
+    pub fn from_path(test_path: &Path) -> Result<Vec<TestResult>> {
         let utf8 = fs::read(test_path);
         let output = String::from_utf8_lossy(&utf8?).into_owned();
         Ok(Self::from_output(output))

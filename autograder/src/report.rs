@@ -1,9 +1,9 @@
-use crate::error::Error;
-use crate::score_map::ScoreMap;
-use crate::test_result::TestResult;
+use error::Error;
 use lcov::Record;
+use score_map::ScoreMap;
 use serde::Serializer;
 use serde::{Deserialize, Serialize};
+use test_result::TestResult;
 
 #[derive(Serialize, Deserialize, Clone)]
 #[serde(rename_all = "snake_case")]
@@ -49,7 +49,7 @@ impl Report {
         test_reports: Vec<TestReport>,
         scores: &ScoreMap,
         output: Option<String>,
-    ) -> Result<Self, Error> {
+    ) -> Result<Self> {
         let actual_score: f32 = test_reports.clone().into_iter().map(|r| r.score).sum();
         let max_score: f32 = scores.values().into_iter().sum();
 
@@ -94,11 +94,7 @@ pub fn records_to_string(records: &Vec<Record>) -> String {
 }
 
 impl TestReport {
-    pub fn from_our_tests(
-        result: &TestResult,
-        number: String,
-        scores: &ScoreMap,
-    ) -> Result<Self, Error> {
+    pub fn from_our_tests(result: &TestResult, number: String, scores: &ScoreMap) -> Result<Self> {
         Ok(Self {
             score: if result.passing() {
                 scores.get(&result.name.clone())?
@@ -113,11 +109,7 @@ impl TestReport {
             visibility: None,
         })
     }
-    pub fn from_their_tests(
-        result: &TestResult,
-        number: String,
-        score: f32,
-    ) -> Result<Self, Error> {
+    pub fn from_their_tests(result: &TestResult, number: String, score: f32) -> Result<Self> {
         Ok(Self {
             score: if result.passing() { score } else { 0. },
             max_score: score,
@@ -133,7 +125,7 @@ impl TestReport {
         number: String,
         score: f32,
         output: Option<String>,
-    ) -> Result<Self, Error> {
+    ) -> Result<Self> {
         Ok(Self {
             score: score * line_coverage(records),
             max_score: score,
