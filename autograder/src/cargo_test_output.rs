@@ -30,7 +30,7 @@ pub enum Event {
 }
 
 #[derive(Serialize, Deserialize, Clone)]
-pub struct TestResult {
+pub struct TestOutput {
     #[serde(alias = "type")]
     pub _type: Type,
     pub name: String,
@@ -40,21 +40,22 @@ pub struct TestResult {
     pub score: Option<f32>,
 }
 
-impl TestResult {
+impl TestOutput {
     pub fn passing(&self) -> bool {
         match self.event {
             Event::Ok => true,
             Event::Failed => false,
         }
     }
-    pub fn from_output(test_output: String) -> Vec<TestResult> {
+    pub fn from_output(test_output: String) -> Vec<TestOutput> {
         test_output
             .split("\n")
             .map(serde_json::from_str)
             .filter_map(std::result::Result::ok)
             .collect()
     }
-    pub fn from_path(test_path: &Path) -> Result<Vec<TestResult>> {
+    pub fn from_path(test_path: &Path) -> Result<Vec<TestOutput>> {
+        //let err_msg: String = String::from(format!("Failed to read "));
         let utf8 = fs::read(test_path);
         let output = String::from_utf8_lossy(&utf8?).into_owned();
         Ok(Self::from_output(output))

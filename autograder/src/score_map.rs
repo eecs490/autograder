@@ -1,3 +1,4 @@
+use crate::error::ResultExt;
 use crate::error::{Error, ErrorKind, Result};
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
@@ -27,7 +28,14 @@ impl ScoreMap {
 
     pub fn from_path(path: &Path) -> Result<Self> {
         let string = fs::read_to_string(path)?;
-        Ok(serde_yaml::from_str(&string)?)
+        serde_yaml::from_str(&string).chain_err(|| {
+            format!(
+                "Failed to convert the following string to struct ScoreMap:
+
+{}",
+                string
+            )
+        })
     }
 
     pub fn get(&self, name: &String) -> Result<f32> {

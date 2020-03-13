@@ -1,4 +1,4 @@
-use crate::cargo_test_output::TestResult;
+use crate::cargo_test_output::TestOutput;
 use crate::score_map::ScoreMap;
 use crate::Result;
 use lcov::Record;
@@ -87,7 +87,7 @@ pub fn branch_coverage(records: &Vec<Record>) -> f32 {
 }
 
 impl TestReport {
-    pub fn from_our_tests(result: &TestResult, number: String, scores: &ScoreMap) -> Result<Self> {
+    pub fn from_our_tests(result: &TestOutput, number: String, scores: &ScoreMap) -> Result<Self> {
         Ok(Self {
             score: if result.passing() {
                 scores.get(&result.name.clone())?
@@ -102,7 +102,7 @@ impl TestReport {
             visibility: None,
         })
     }
-    pub fn from_their_tests(result: &TestResult, number: String, score: f32) -> Result<Self> {
+    pub fn from_their_tests(result: &TestOutput, number: String, score: f32) -> Result<Self> {
         Ok(Self {
             score: if result.passing() { score } else { 0. },
             max_score: score,
