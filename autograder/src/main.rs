@@ -173,8 +173,9 @@ fn run() -> Result<()> {
     }
 
     // Read lcov.info file
-    let readers: lcov::reader::Reader<_> = Reader::open_file(lcov_path.clone())?;
-    let records = readers.collect::<std::result::Result<Vec<_>, _>>()?;
+    let lcov_string = fs::read_to_string(lcov_path)?;
+    let reader = Reader::new(lcov_string.as_bytes());
+    let records = reader.collect::<std::result::Result<Vec<_>, _>>()?;
 
     println!("LCov records:");
     for record in records.clone() {
@@ -188,7 +189,7 @@ fn run() -> Result<()> {
     To create an HTML view of LCOV data:
     - navigate to the root of your submission
     - copy LCOV data to a file `lcov.info`
-    - run `mkdir -p /tmp/ccov && genhtml -o /tmp/ccov --show-details --highlight --ignore-errors source --legend lcov.info`", fs::read_to_string(lcov_path)?));
+    - run `mkdir -p /tmp/ccov && genhtml -o /tmp/ccov --show-details --highlight --ignore-errors source --legend lcov.info`", lcov_string));
 
     // Covert TestResults into TestReports
     let num_their_tests = their_test_results.len() as f32;
