@@ -104,18 +104,18 @@ fn run() -> Result<()> {
 
     // parse args
 
-    let _output_path = value_t!(matches, "outpu2t", PathBuf)?;
-    //let _lcov_path = value_t!(matches, "lcov", PathBuf)?;
-    //let _scores_path = value_t!(matches, "scores", PathBuf)?;
-    //let _our_test_results = value_t!(matches, "our_test_results", PathBuf)?;
-    //let _their_test_results = value_t!(matches, "their_test_results", PathBuf)?;
+    let output_path = value_t!(matches, "output", PathBuf)?;
+    let lcov_path = value_t!(matches, "lcov", PathBuf)?;
+    let scores_path = value_t!(matches, "scores", PathBuf)?;
+    let our_test_results = value_t!(matches, "our_test_results", PathBuf)?;
+    let their_test_results = value_t!(matches, "their_test_results", PathBuf)?;
 
     //// coerce to paths
-    //let output_path = output_path.as_path();
-    //let lcov_path = lcov_path.as_path();
-    //let scores_path = scores_path.as_path();
-    //let our_test_results = our_test_results.as_path();
-    //let their_test_results = their_test_results.as_path();
+    let _output_path = output_path.as_path();
+    let _lcov_path = lcov_path.as_path();
+    let _scores_path = scores_path.as_path();
+    let _our_test_results = our_test_results.as_path();
+    let _their_test_results = their_test_results.as_path();
 
     //// assign custom scores to each test function.
     //// The autograder defaults to 1.0 point per test for tests not included in thei HashMap.
