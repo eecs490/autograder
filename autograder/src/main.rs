@@ -9,18 +9,18 @@
 #[macro_use]
 extern crate error_chain;
 //mod error;
-//mod report;
+mod report;
 mod score_map;
 mod test_result;
 use clap::{value_t, App, Arg};
 //use error::Error;
 use lcov::reader::Error::{Io, ParseRecord};
 use lcov::Reader;
-//use report;
-//use report::{Report, TestReport};
+use report::{Report, TestReport};
 use score_map::ScoreMap;
 use serde_json::to_string_pretty;
 use std::collections::HashSet;
+use std::fs;
 //use std::fs::File;
 //use std::io::Write;
 //use std::iter::once;
@@ -173,11 +173,11 @@ fn run() -> Result<()> {
     }
 
     // Read lcov.info file
-    let readers: lcov::reader::Reader<_> = Reader::open_file(lcov_path)?;
+    let readers: lcov::reader::Reader<_> = Reader::open_file(lcov_path.clone())?;
     let records = readers.collect::<std::result::Result<Vec<_>, _>>()?;
 
     println!("LCov records:");
-    for record in records {
+    for record in records.clone() {
         println!("{:?}", record)
     }
     let coverage_output = Some(format!(
@@ -188,10 +188,10 @@ fn run() -> Result<()> {
     To create an HTML view of LCOV data:
     - navigate to the root of your submission
     - copy LCOV data to a file `lcov.info`
-    - run `mkdir -p /tmp/ccov && genhtml -o /tmp/ccov --show-details --highlight --ignore-errors source --legend lcov.info`", 1)); // report::records_to_string(&readers)));
+    - run `mkdir -p /tmp/ccov && genhtml -o /tmp/ccov --show-details --highlight --ignore-errors source --legend lcov.info`", fs::read_to_string(lcov_path)?));
 
-    //// Covert TestResults into TestReports
-    //let num_their_tests = their_test_results.len() as f32;
+    // Covert TestResults into TestReports
+    let num_their_tests = their_test_results.len() as f32;
     //let test_reports = our_test_results
     //.iter()
     //.map(|r| TestReport::from_our_tests(r, "Our tests".into(), &scores))

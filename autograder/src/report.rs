@@ -1,9 +1,9 @@
-use error::Error;
+use crate::score_map::ScoreMap;
+use crate::test_result::TestResult;
+use crate::Result;
 use lcov::Record;
-use score_map::ScoreMap;
 use serde::Serializer;
 use serde::{Deserialize, Serialize};
-use test_result::TestResult;
 
 #[derive(Serialize, Deserialize, Clone)]
 #[serde(rename_all = "snake_case")]
@@ -14,7 +14,7 @@ pub enum Visibility {
     Visible, // default
 }
 
-fn to_str<S, T>(float: &T, s: S) -> Result<S::Ok, S::Error>
+fn to_str<S, T>(float: &T, s: S) -> std::result::Result<S::Ok, S::Error>
 where
     S: Serializer,
     T: std::fmt::Display,
@@ -86,13 +86,6 @@ pub fn branch_coverage(records: &Vec<Record>) -> f32 {
     branches_hit as f32 / branches_found as f32
 }
 
-pub fn records_to_string(records: &Vec<Record>) -> String {
-    records
-        .into_iter()
-        .map(|rec| format!("{}\n", rec))
-        .collect::<String>()
-}
-
 impl TestReport {
     pub fn from_our_tests(result: &TestResult, number: String, scores: &ScoreMap) -> Result<Self> {
         Ok(Self {
@@ -143,7 +136,7 @@ impl TestReport {
         number: String,
         score: f32,
         output: Option<String>,
-    ) -> Result<Self, Error> {
+    ) -> Result<Self> {
         Ok(Self {
             score: score * branch_coverage(records),
             max_score: score,
