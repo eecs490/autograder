@@ -1,5 +1,4 @@
-//mod args;
-
+mod args;
 //mod cargo_test_output;
 mod error;
 //mod report;

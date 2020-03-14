@@ -1,4 +1,7 @@
-use clap::{App, Arg};
+use crate::run::Result;
+use clap::{value_t, App, Arg, ArgMatches};
+use snafu::{ResultExt, Snafu};
+use std::path::{Path, PathBuf};
 
 pub fn args<'a>() -> App<'a, 'a> {
     App::new("MyApp")
@@ -44,4 +47,8 @@ pub fn args<'a>() -> App<'a, 'a> {
                 .takes_value(true)
                 .required(true),
         )
+}
+
+pub fn get_path(matches: ArgMatches, arg: String) -> Result<PathBuf> {
+    value_t!(matches, arg, PathBuf).context(Argument { arg })
 }

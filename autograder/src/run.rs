@@ -1,4 +1,4 @@
-//use crate::args::args;
+use crate::args::args;
 //use crate::cargo_test_output::TestOutput;
 //use crate::error::Error::ReadConfiguration;
 //use crate::error::Result;
@@ -6,7 +6,8 @@
 //use crate::error::{failed_to_read, Error};
 //use crate::report::{Report, TestReport};
 //use crate::score_map::ScoreMap;
-//use clap::value_t;
+use clap;
+use clap::value_t;
 //use lcov::Reader;
 //use serde_json::to_string_pretty;
 //use std::collections::HashSet;
@@ -25,9 +26,9 @@ pub enum MyError {
     WriteResult { source: io::Error, path: PathBuf },
 }
 
-type Result<T, E = MyError> = std::result::Result<T, E>;
+pub type Result<T, E = MyError> = std::result::Result<T, E>;
 
-fn unpack_config(data: &str) -> &str {
+fn unpack_config(_: &str) -> &str {
     "/some/path/that/does/not/exist"
 }
 
@@ -36,13 +37,10 @@ pub fn run() -> Result<()> {
     let configuration = fs::read_to_string(path).context(ReadConfiguration { path })?;
     let path = unpack_config(&configuration);
     fs::write(&path, b"My complex calculation").context(WriteResult { path })?;
-    //let matches = args().get_matches();
+    let matches = args().get_matches();
 
-    //let path = PathBuf::from("config.toml");
-    //let configuration = fs::read_to_string(path).context(ReadConfiguration { path })?;
-    // parse args
-    //let output_path = value_t!(matches, "output", PathBuf).context(ArgumentError {"output" } )?;
-    //let lcov_path = value_t!(matches, "lcov", PathBuf)?;
+    let arg = "lcov";
+    //let lcov_path = value_t!(matches, arg, PathBuf).context(Argument { arg })?;
     //let scores_path = value_t!(matches, "scores", PathBuf)?;
     //let our_test_results = value_t!(matches, "our_test_results", PathBuf)?;
     //let their_test_results = value_t!(matches, "their_test_results", PathBuf)?;
