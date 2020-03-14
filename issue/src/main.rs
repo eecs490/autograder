@@ -1,6 +1,5 @@
 mod error;
-use error::Error::{OpenConfig, SaveConfig, UserIdInvalid};
-use error::Result;
+use error::{OpenConfig, Result, SaveConfig, UserIdInvalid};
 use snafu::{ensure, ErrorCompat, ResultExt};
 use std::{fs, path::Path};
 

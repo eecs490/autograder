@@ -1,6 +1,6 @@
-use crate::error::ResultExt;
-use crate::error::{failed_to_read, Error, ErrorKind, Result};
+use crate::error::{ReadError, Result, ScoreMapParseError};
 use serde::{Deserialize, Serialize};
+use snafu::ResultExt;
 use std::collections::BTreeMap;
 use std::fs;
 use std::iter::once;
@@ -27,7 +27,7 @@ impl ScoreMap {
     }
 
     pub fn from_path(path: &Path) -> Result<Self> {
-        let string = fs::read_to_string(path).chain_err(|| failed_to_read(&path))?;
+        let string = fs::read_to_string(path).context(ReadError { path })?;
         let msg = format!(
             "\
 Failed to convert the following string to struct ScoreMap:
@@ -35,13 +35,13 @@ Failed to convert the following string to struct ScoreMap:
 {}",
             string
         );
-        serde_yaml::from_str(&string).chain_err(|| msg)
+        serde_yaml::from_str(&string).context(ScoreMapParseError { yaml: &string })
     }
 
-    pub fn get(&self, name: &String) -> Result<f32> {
-        match self.our_tests.get(name) {
-            None => Err(Error::from(ErrorKind::ScoreError(name.clone()))),
-            Some(x) => Ok(*x),
-        }
-    }
+    //pub fn get(&self, name: &String) -> Result<f32> {
+    //match self.our_tests.get(name) {
+    //None => Err(Error::from(ErrorKind::ScoreError(name.clone()))),
+    //Some(x) => Ok(*x),
+    //}
+    //}
 }

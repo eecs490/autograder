@@ -1,14 +1,22 @@
-use snafu::ResultExt;
+use clap;
+use serde_yaml;
 use snafu::Snafu;
 use std::{io, path::PathBuf};
 
 #[derive(Debug, Snafu)]
+#[snafu(visibility(pub))]
 pub enum MyError {
-    #[snafu(display("Unable to read configuration from {}: {}", path.display(), source))]
-    ReadConfiguration { source: io::Error, path: PathBuf },
+    #[snafu(display("Failed to read from {}: {}", path.display(), source))]
+    ReadError { source: io::Error, path: PathBuf },
 
-    #[snafu(display("Unable to write result to {}: {}", path.display(), source))]
-    WriteResult { source: io::Error, path: PathBuf },
+    #[snafu(display("Unable to parse yaml to ScoreMap:\n{}\n{}", yaml, source))]
+    ScoreMapParseError {
+        source: serde_yaml::Error,
+        yaml: String,
+    },
+
+    #[snafu(display("Bad arg {}: {}", arg, source))]
+    Argument { source: clap::Error, arg: String },
 }
 
-type Result<T, E = MyError> = std::result::Result<T, E>;
+pub type Result<T, E = MyError> = std::result::Result<T, E>;

@@ -1,59 +1,36 @@
-use crate::args::args;
+use crate::args::Args;
 //use crate::cargo_test_output::TestOutput;
-//use crate::error::Error::ReadConfiguration;
-//use crate::error::Result;
+use crate::error::Result;
 //use crate::error::ResultExt;
 //use crate::error::{failed_to_read, Error};
 //use crate::report::{Report, TestReport};
 //use crate::score_map::ScoreMap;
-use clap;
-use clap::value_t;
+//use clap;
 //use lcov::Reader;
 //use serde_json::to_string_pretty;
 //use std::collections::HashSet;
 //use std::fs::File;
 //use std::io::Write;
 //use std::iter::once;
-use snafu::{ResultExt, Snafu};
-use std::{fs, io, path::PathBuf};
-
-#[derive(Debug, Snafu)]
-pub enum MyError {
-    #[snafu(display("Unable to read configuration from {}: {}", path.display(), source))]
-    ReadConfiguration { source: io::Error, path: PathBuf },
-
-    #[snafu(display("Unable to write result to {}: {}", path.display(), source))]
-    WriteResult { source: io::Error, path: PathBuf },
-}
-
-pub type Result<T, E = MyError> = std::result::Result<T, E>;
-
-fn unpack_config(_: &str) -> &str {
-    "/some/path/that/does/not/exist"
-}
 
 pub fn run() -> Result<()> {
-    let path = "config.toml";
-    let configuration = fs::read_to_string(path).context(ReadConfiguration { path })?;
-    let path = unpack_config(&configuration);
-    fs::write(&path, b"My complex calculation").context(WriteResult { path })?;
-    let matches = args().get_matches();
+    let matches = Args::get();
 
-    let arg = "lcov";
-    //let lcov_path = value_t!(matches, arg, PathBuf).context(Argument { arg })?;
-    //let scores_path = value_t!(matches, "scores", PathBuf)?;
-    //let our_test_results = value_t!(matches, "our_test_results", PathBuf)?;
-    //let their_test_results = value_t!(matches, "their_test_results", PathBuf)?;
+    let output_path = matches.get_path_buf("output")?;
+    let lcov_path = matches.get_path_buf("lcov")?;
+    let scores_path = matches.get_path_buf("scores")?;
+    let our_test_results = matches.get_path_buf("our_test_results")?;
+    let their_test_results = matches.get_path_buf("their_test_results")?;
 
-    //// coerce to paths
-    //let _output_path = output_path.as_path();
-    //let _lcov_path = lcov_path.as_path();
-    //let scores_path = scores_path.as_path();
-    //let our_test_results = our_test_results.as_path();
-    //let their_test_results = their_test_results.as_path();
+    // coerce to paths
+    let output_path = output_path.as_path();
+    let lcov_path = lcov_path.as_path();
+    let scores_path = scores_path.as_path();
+    let our_test_results = our_test_results.as_path();
+    let their_test_results = their_test_results.as_path();
 
-    //// assign custom scores to each test function.
-    //// The autograder defaults to 1.0 point per test for tests not included in thei HashMap.
+    // assign custom scores to each test function.
+    // The autograder defaults to 1.0 point per test for tests not included in thei HashMap.
     //let scores: ScoreMap = ScoreMap::from_path(scores_path)?;
 
     //// deserialize ouputs into TestOutput structs

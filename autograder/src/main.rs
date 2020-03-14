@@ -2,8 +2,8 @@ mod args;
 //mod cargo_test_output;
 mod error;
 //mod report;
-//mod score_map;
 mod run;
+mod score_map;
 use run::run;
 
 fn main() {

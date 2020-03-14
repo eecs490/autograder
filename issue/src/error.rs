@@ -2,6 +2,7 @@ use snafu::{Backtrace, Snafu};
 use std::path::PathBuf;
 
 #[derive(Debug, Snafu)]
+#[snafu(visibility(pub))]
 pub enum Error {
     #[snafu(display("Could not open config from {}: {}", filename.display(), source))]
     OpenConfig {
