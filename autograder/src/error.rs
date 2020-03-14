@@ -1,31 +1,14 @@
-use std::path::Path;
-mod error {
-    error_chain! {}
+use snafu::ResultExt;
+use snafu::Snafu;
+use std::{io, path::PathBuf};
+
+#[derive(Debug, Snafu)]
+pub enum MyError {
+    #[snafu(display("Unable to read configuration from {}: {}", path.display(), source))]
+    ReadConfiguration { source: io::Error, path: PathBuf },
+
+    #[snafu(display("Unable to write result to {}: {}", path.display(), source))]
+    WriteResult { source: io::Error, path: PathBuf },
 }
 
-error_chain! {
-    foreign_links {
-        Clap(::clap::Error);
-        Yaml(::serde_yaml::Error);
-        Json(::serde_json::Error);
-        Io(::std::io::Error);
-    }
-    errors {
-        ScoreError(s: String) {
-            display("Name not found in scores.yaml file: '{}'", s)
-        }
-        LcovReaderError(e: lcov::reader::Error) {
-            display("{}", e)
-        }
-    }
-}
-
-impl From<lcov::reader::Error> for Error {
-    fn from(err: lcov::reader::Error) -> Error {
-        Error::from(ErrorKind::LcovReaderError(err))
-    }
-}
-
-pub fn failed_to_read(path: &Path) -> String {
-    format!("Failed to read {}", path.display())
-}
+type Result<T, E = MyError> = std::result::Result<T, E>;
