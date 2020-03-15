@@ -1,11 +1,11 @@
 use crate::cargo_test_output::TestOutput;
-use crate::error::Result;
 use crate::score_map::ScoreMap;
+use crate::Result;
 use lcov::Record;
 use serde::Serializer;
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 #[serde(rename_all = "snake_case")]
 pub enum Visibility {
     Hidden,
@@ -22,7 +22,7 @@ where
     s.serialize_str(&*float.to_string())
 }
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct TestReport {
     #[serde(serialize_with = "to_str")]
     score: f32,
@@ -34,7 +34,7 @@ pub struct TestReport {
     visibility: Option<Visibility>,
 }
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Report {
     #[serde(serialize_with = "to_str")]
     score: f32,

@@ -1,5 +1,5 @@
 use crate::error::Argument;
-use crate::error::Result;
+use crate::Result;
 use clap::{value_t, App, Arg, ArgMatches};
 use snafu::ResultExt;
 use std::path::PathBuf;
@@ -11,14 +11,14 @@ impl Args<'_> {
         Args(
             App::new("MyApp")
                 .arg(
-                    Arg::with_name("our_test_results")
+                    Arg::with_name("our_test_outputs")
                         .long("our-test-results")
                         .help("path to output of running our tests on their solution")
                         .takes_value(true)
                         .required(true),
                 )
                 .arg(
-                    Arg::with_name("their_test_results")
+                    Arg::with_name("their_test_outputs")
                         .long("their-test-results")
                         .help("path to output of running their tests on our solution")
                         .takes_value(true)

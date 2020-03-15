@@ -1,6 +1,6 @@
 use crate::args::Args;
 //use crate::cargo_test_output::TestOutput;
-use crate::error::Result;
+use crate::Result;
 //use crate::error::ResultExt;
 //use crate::error::{failed_to_read, Error};
 //use crate::report::{Report, TestReport};

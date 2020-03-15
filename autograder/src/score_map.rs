@@ -1,4 +1,5 @@
-use crate::error::{ReadError, Result, ScoreMapKeyError, ScoreMapParseError};
+use crate::error::{ReadError, ScoreMapKeyError, ScoreMapParseError};
+use crate::Result;
 use serde::{Deserialize, Serialize};
 use snafu::OptionExt;
 use snafu::ResultExt;
