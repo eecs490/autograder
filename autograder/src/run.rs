@@ -4,7 +4,7 @@ use crate::error::Result;
 //use crate::error::ResultExt;
 //use crate::error::{failed_to_read, Error};
 //use crate::report::{Report, TestReport};
-//use crate::score_map::ScoreMap;
+use crate::score_map::ScoreMap;
 //use clap;
 //use lcov::Reader;
 //use serde_json::to_string_pretty;
@@ -31,9 +31,9 @@ pub fn run() -> Result<()> {
 
     // assign custom scores to each test function.
     // The autograder defaults to 1.0 point per test for tests not included in thei HashMap.
-    //let scores: ScoreMap = ScoreMap::from_path(scores_path)?;
+    let scores: ScoreMap = ScoreMap::from_path(scores_path)?;
 
-    //// deserialize ouputs into TestOutput structs
+    // deserialize ouputs into TestOutput structs
     //let mut our_test_results: Vec<TestOutput> = TestOutput::from_path(our_test_results)?;
 
     //assert_eq!(

@@ -1,12 +1,13 @@
-use crate::error::{ReadError, Result, ScoreMapParseError};
+use crate::error::{ReadError, Result, ScoreMapKeyError, ScoreMapParseError};
 use serde::{Deserialize, Serialize};
+use snafu::OptionExt;
 use snafu::ResultExt;
 use std::collections::BTreeMap;
 use std::fs;
 use std::iter::once;
 use std::path::Path;
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct ScoreMap {
     pub line_coverage: f32,
     pub their_tests: f32,
@@ -38,10 +39,7 @@ Failed to convert the following string to struct ScoreMap:
         serde_yaml::from_str(&string).context(ScoreMapParseError { yaml: &string })
     }
 
-    //pub fn get(&self, name: &String) -> Result<f32> {
-    //match self.our_tests.get(name) {
-    //None => Err(Error::from(ErrorKind::ScoreError(name.clone()))),
-    //Some(x) => Ok(*x),
-    //}
-    //}
+    pub fn get(&self, key: &String) -> Result<f32> {
+        Ok(*self.our_tests.get(key).context(ScoreMapKeyError { key })?)
+    }
 }

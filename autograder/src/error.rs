@@ -1,7 +1,7 @@
 use clap;
 use serde_yaml;
 use snafu::Snafu;
-use std::{io, path::PathBuf};
+use std::{io, option, path::PathBuf};
 
 #[derive(Debug, Snafu)]
 #[snafu(visibility(pub))]
@@ -14,6 +14,9 @@ pub enum MyError {
         source: serde_yaml::Error,
         yaml: String,
     },
+
+    #[snafu(display("Key {} not found in ScoreMap: ", key))]
+    ScoreMapKeyError { key: String },
 
     #[snafu(display("Bad arg {}: {}", arg, source))]
     Argument { source: clap::Error, arg: String },

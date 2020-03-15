@@ -1,5 +1,6 @@
+#![feature(try_trait)]
 mod args;
-//mod cargo_test_output;
+mod cargo_test_output;
 mod error;
 //mod report;
 mod run;

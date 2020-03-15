@@ -1,6 +1,6 @@
-use crate::error::{failed_to_read, ResultExt};
-use crate::Result;
+use crate::error::{ReadError, Result};
 use serde::{Deserialize, Serialize};
+use snafu::ResultExt;
 use std::fs;
 use std::path::Path;
 //{ "type":"suite", "event": "started", "test_count": 5 }
@@ -55,8 +55,8 @@ impl TestOutput {
             .filter_map(std::result::Result::ok)
             .collect()
     }
-    pub fn from_path(test_path: &Path) -> Result<Vec<TestOutput>> {
-        let utf8: Vec<u8> = fs::read(test_path).chain_err(|| failed_to_read(test_path))?;
+    pub fn from_path(path: &Path) -> Result<Vec<TestOutput>> {
+        let utf8: Vec<u8> = fs::read(path).context(ReadError { path })?;
         let output = String::from_utf8_lossy(&utf8).into_owned();
         Ok(Self::from_output(output))
     }
