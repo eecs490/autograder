@@ -1,6 +1,6 @@
 use crate::cargo_test_output::TestOutput;
+use crate::error::Result;
 use crate::score_map::ScoreMap;
-use crate::Result;
 use lcov::Record;
 use serde::Serializer;
 use serde::{Deserialize, Serialize};

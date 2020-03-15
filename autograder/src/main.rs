@@ -2,7 +2,7 @@
 mod args;
 mod cargo_test_output;
 mod error;
-//mod report;
+mod report;
 mod run;
 mod score_map;
 use run::run;
