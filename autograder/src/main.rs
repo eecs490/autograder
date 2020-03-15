@@ -25,7 +25,13 @@ use std::iter::once;
 
 pub type Result<T, E = MyError> = std::result::Result<T, E>;
 
-fn main() -> Result<()> {
+fn main() {
+    if let Err(e) = run() {
+        eprintln!("An error occurred: {}", e);
+    }
+}
+
+fn run() -> Result<()> {
     let matches = Args::get();
 
     let output_path = matches.get_path_buf("output")?;
@@ -48,14 +54,23 @@ fn main() -> Result<()> {
     // deserialize ouputs into TestOutput structs
     let mut our_test_outputs: Vec<TestOutput> = TestOutput::from_path(our_test_outputs)?;
 
-    ensure!(
-    scores.our_test_names().collect::<HashSet<String>>()
-        == our_test_outputs
-            .iter()
-            .map(|r| r.name.clone())
-            .collect::<HashSet<String>>(),
-    AssertionError {msg: "There is a mismatch between the test names in scores.yaml and the assignment tests that ran and completed on the submission code."}
-    );
+    let score_names = scores.our_test_names().collect::<HashSet<String>>();
+    let our_test_names = our_test_outputs
+        .iter()
+        .map(|r| r.name.clone())
+        .collect::<HashSet<String>>();
+    let formatted_score_names = score_names
+        .clone()
+        .into_iter()
+        .collect::<Vec<_>>()
+        .join("\n");
+    let formatted_test_names = our_test_names
+        .clone()
+        .into_iter()
+        .collect::<Vec<_>>()
+        .join("\n");
+    let msg = format!("There is a mismatch between the test names in scores.yaml:\n{}\nand the assignment tests that ran and completed on the submission code:\n{:?}", formatted_score_names, formatted_test_names);
+    ensure!(score_names == our_test_names, AssertionError { msg });
 
     let their_test_outputs: Vec<TestOutput> = TestOutput::from_path(their_test_outputs)?;
     let mut their_test_outputs: Vec<TestOutput> = their_test_outputs
