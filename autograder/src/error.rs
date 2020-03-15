@@ -1,7 +1,6 @@
 use crate::cargo_test_output::TestOutput;
 use crate::report::{Report, TestReport};
 use clap;
-use lcov;
 use serde_yaml;
 use snafu::Snafu;
 use std::{io, path::PathBuf};
@@ -25,19 +24,19 @@ pub enum MyError {
     },
 
     #[snafu(display("Unable to serialize struct to json:\n{:?}\n{}", output, source))]
-    TestOutputSerializationError {
+    TestOutputError {
         source: serde_json::Error,
         output: TestOutput,
     },
 
     #[snafu(display("Unable to serialize struct to json:\n{:?}\n{}", report, source))]
-    TestReportSerializationError {
+    TestReportError {
         source: serde_json::Error,
         report: TestReport,
     },
 
     #[snafu(display("Unable to serialize struct to json:\n{:?}\n{}", report, source))]
-    ReportSerializationError {
+    ReportError {
         source: serde_json::Error,
         report: Report,
     },

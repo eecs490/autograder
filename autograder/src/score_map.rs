@@ -29,15 +29,8 @@ impl ScoreMap {
     }
 
     pub fn from_path(path: &Path) -> Result<Self> {
-        let string = fs::read_to_string(path).context(ReadError { path })?;
-        let msg = format!(
-            "\
-Failed to convert the following string to struct ScoreMap:
-
-{}",
-            string
-        );
-        serde_yaml::from_str(&string).context(ScoreMapParseError { yaml: &string })
+        let yaml = fs::read_to_string(path).context(ReadError { path })?;
+        serde_yaml::from_str(&yaml).context(ScoreMapParseError { yaml })
     }
 
     pub fn get(&self, key: &String) -> Result<f32> {

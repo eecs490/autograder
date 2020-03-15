@@ -8,8 +8,8 @@ use args::Args;
 use cargo_test_output::TestOutput;
 use clap;
 use error::{
-    AssertionError, FileCreationError, LcovReadError, MyError, ReadError, ReportSerializationError,
-    TestOutputSerializationError, TestReportSerializationError, WriteError,
+    AssertionError, FileCreationError, LcovReadError, MyError, ReadError, ReportError,
+    TestOutputError, TestReportError, WriteError,
 };
 use lcov::Reader;
 use report::{Report, TestReport};
@@ -70,14 +70,14 @@ fn main() -> Result<()> {
     for output in our_test_outputs.clone() {
         println!(
             "{}",
-            to_string_pretty(&output).context(TestOutputSerializationError { output })?
+            to_string_pretty(&output).context(TestOutputError { output })?
         );
     }
     println!("Their TestOutput structs:");
     for output in their_test_outputs.clone() {
         println!(
             "{}",
-            to_string_pretty(&output).context(TestOutputSerializationError { output })?
+            to_string_pretty(&output).context(TestOutputError { output })?
         );
     }
 
@@ -104,7 +104,7 @@ fn main() -> Result<()> {
     To create an HTML view of LCOV data:
     - navigate to the root of your submission
     - copy LCOV data to a file `lcov.info`
-    - run `mkdir -p /tmp/ccov && genhtml -o /tmp/ccov --show-details --highlight --ignore-errors source --legend lcov.info`", lcov_string.clone()));
+    - run `mkdir -p /tmp/ccov && genhtml -o /tmp/ccov --show-details --highlight --ignore-errors source --legend lcov.info`", &lcov_string));
 
     // Covert TestOutputs into TestReports
     let num_their_tests = their_test_outputs.len() as f32;
@@ -123,7 +123,7 @@ fn main() -> Result<()> {
             &records,
             "".into(),
             scores.line_coverage,
-            coverage_output.clone(),
+            coverage_output,
         )))
         .collect::<Result<Vec<_>>>()?;
 
@@ -132,7 +132,7 @@ fn main() -> Result<()> {
     for report in test_reports.clone() {
         println!(
             "{}",
-            to_string_pretty(&report).context(TestReportSerializationError { report })?
+            to_string_pretty(&report).context(TestReportError { report })?
         );
     }
 
@@ -141,7 +141,7 @@ fn main() -> Result<()> {
     println!("Gradescope Report:");
     println!(
         "{}",
-        to_string_pretty(&report).context(ReportSerializationError {
+        to_string_pretty(&report.clone()).context(ReportError {
             report: report.clone()
         })?
     );
@@ -151,7 +151,7 @@ fn main() -> Result<()> {
     buffer
         .write(
             &serde_json::to_string(&report)
-                .context(ReportSerializationError { report })?
+                .context(ReportError { report })?
                 .as_bytes(),
         )
         .context(WriteError { path: output_path })?;
