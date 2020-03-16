@@ -87,27 +87,12 @@ pub fn branch_coverage(records: &Vec<Record>) -> f32 {
 }
 
 impl TestReport {
-    pub fn from_our_tests(result: &TestOutput, number: String, scores: &ScoreMap) -> Result<Self> {
-        Ok(Self {
-            score: if result.passing() {
-                scores.get(&result.name.clone())?
-            } else {
-                0.
-            },
-            max_score: scores.get(&result.name.clone())?,
-            name: result.name.clone(),
-            number: number,
-            output: result.stdout.clone().or(result.message.clone()),
-            tags: None,
-            visibility: None,
-        })
-    }
-    pub fn from_their_tests(result: &TestOutput, number: String, score: f32) -> Result<Self> {
+    pub fn from_tests(result: &TestOutput, label: String, score: f32) -> Result<Self> {
         Ok(Self {
             score: if result.passing() { score } else { 0. },
             max_score: score,
             name: result.name.clone(),
-            number: number,
+            number: label,
             output: result.stdout.clone().or(result.message.clone()),
             tags: None,
             visibility: None,
@@ -115,7 +100,6 @@ impl TestReport {
     }
     pub fn line_coverage(
         records: &Vec<Record>,
-        number: String,
         score: f32,
         output: Option<String>,
     ) -> Result<Self> {
@@ -123,7 +107,7 @@ impl TestReport {
             score: score * line_coverage(records),
             max_score: score,
             name: "line coverage".into(),
-            number: number,
+            number: "".into(),
             output: output,
             tags: None,
             visibility: None,

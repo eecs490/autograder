@@ -1,6 +1,8 @@
 use crate::error::ReadError;
+use crate::report::TestReport;
 use crate::score_map::ScoreMap;
 use crate::Result;
+use either::{Either, Left, Right};
 use serde::{Deserialize, Serialize};
 use snafu::ResultExt;
 use std::fs;
@@ -101,11 +103,25 @@ impl TestOutputs {
     {
         self.0.sort_by(compare)
     }
+
+    pub fn into_test_reports<'a>(
+        &'a self,
+        label: String,
+        scoring: Either<f32, &'a ScoreMap>,
+    ) -> impl Iterator<Item = Result<TestReport>> + 'a {
+        self.clone().into_iter().map(move |r| {
+            let score: f32 = match scoring {
+                Left(score) => score,
+                Right(score_map) => score_map.get(&r.name)?,
+            };
+            TestReport::from_tests(&r, label.clone(), score)
+        })
+    }
 }
 
 impl IntoIterator for TestOutputs {
     type Item = TestOutput;
-    type IntoIter = std::vec::IntoIter<Self::Item>;
+    type IntoIter = std::vec::IntoIter<TestOutput>;
 
     fn into_iter(self) -> Self::IntoIter {
         self.0.into_iter()

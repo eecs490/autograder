@@ -7,6 +7,7 @@ mod score_map;
 use args::Args;
 use cargo_test_output::TestOutputs;
 use clap;
+use either::{Left, Right};
 use error::{
     AssertionError, FileCreationError, LcovReadError, MyError, ReadError, ReportError,
     TestOutputError, TestReportError, WriteError,
@@ -98,8 +99,8 @@ fn run() -> Result<()> {
     for record in records.clone() {
         println!("{:?}", record)
     }
-    let coverage_output = Some(format!(
-    "\
+    let coverage_output = format!(
+        "\
     Score is based on the following LCOV coverage data output:
 
     {}
@@ -107,26 +108,21 @@ fn run() -> Result<()> {
     To create an HTML view of LCOV data:
     - navigate to the root of your submission
     - copy LCOV data to a file `lcov.info`
-    - run `mkdir -p /tmp/ccov && genhtml -o /tmp/ccov --show-details --highlight --ignore-errors source --legend lcov.info`", &lcov_string));
+    - run `mkdir -p /tmp/ccov && genhtml -o /tmp/ccov --show-details --highlight --ignore-errors source --legend lcov.info`", &lcov_string);
 
     // Covert TestOutputs into TestReports
     let num_their_tests = their_test_outputs.len() as f32;
     let test_reports = our_test_outputs
-        .into_iter()
-        .map(|r| TestReport::from_our_tests(&r, "Our tests".into(), &scores))
-        .chain(their_test_outputs.into_iter().map(|r| {
-            TestReport::from_their_tests(
-                &r,
-                "Your tests".into(),
-                scores.their_tests / num_their_tests,
-            )
-        }))
+        .into_test_reports("Our tests".into(), Right(&scores))
+        .chain(their_test_outputs.into_test_reports(
+            "Your tests".into(),
+            Left(scores.their_tests / num_their_tests),
+        ))
         // Convert lcov records into TestReports and append to test_reports vec
         .chain(once(TestReport::line_coverage(
             &records,
-            "".into(),
             scores.line_coverage,
-            coverage_output,
+            Some(coverage_output),
         )))
         .collect::<Result<Vec<_>>>()?;
 
