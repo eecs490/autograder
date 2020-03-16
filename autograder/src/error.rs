@@ -44,7 +44,7 @@ pub enum MyError {
     #[snafu(display("Key {} not found in ScoreMap: ", key))]
     ScoreMapKeyError { key: String },
 
-    #[snafu(display("Bad arg {}: {}", arg, source))]
+    #[snafu(display("Bad argument {}: {}", arg, source))]
     Argument { source: clap::Error, arg: String },
 
     #[snafu(display("Unable to parse lcov string:\n{}", string))]

@@ -16,6 +16,7 @@ use report::{Report, TestReport};
 use score_map::ScoreMap;
 use serde_json::to_string_pretty;
 use snafu::ensure;
+use snafu::IntoError;
 use snafu::ResultExt;
 use std::collections::HashSet;
 use std::fs;
@@ -84,13 +85,14 @@ fn run() -> Result<()> {
 
     // Read lcov.info file
     let lcov_string = fs::read_to_string(&lcov_path).context(ReadError { path: lcov_path })?;
-    let reader = Reader::new(lcov_string.as_bytes());
-    let records = reader.collect::<std::result::Result<Vec<_>, lcov::reader::Error>>();
-    let records = records
-        .map_err(|_| snafu::NoneError)
-        .context(LcovReadError {
+    let records = Reader::new(lcov_string.as_bytes())
+        .collect::<std::result::Result<Vec<_>, lcov::reader::Error>>();
+    let records = records.map_err(|_| {
+        LcovReadError {
             string: lcov_string.clone(),
-        })?;
+        }
+        .into_error(snafu::NoneError)
+    })?;
 
     println!("LCov records:");
     for record in records.clone() {
