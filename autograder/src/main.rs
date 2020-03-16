@@ -5,7 +5,7 @@ mod error;
 mod report;
 mod score_map;
 use args::Args;
-use cargo_test_output::TestOutput;
+use cargo_test_output::TestOutputs;
 use clap;
 use error::{
     AssertionError, FileCreationError, LcovReadError, MyError, ReadError, ReportError,
@@ -48,35 +48,21 @@ fn run() -> Result<()> {
     let their_test_outputs = their_test_outputs.as_path();
 
     // assign custom scores to each test function.
-    // The autograder defaults to 1.0 point per test for tests not included in thei HashMap.
     let scores: ScoreMap = ScoreMap::from_path(scores_path)?;
 
     // deserialize ouputs into TestOutput structs
-    let mut our_test_outputs: Vec<TestOutput> = TestOutput::from_path(our_test_outputs)?;
+    let mut our_test_outputs: TestOutputs = TestOutputs::from_path(our_test_outputs)?;
 
-    let score_names = scores.our_test_names().collect::<HashSet<String>>();
-    let our_test_names = our_test_outputs
-        .iter()
-        .map(|r| r.name.clone())
-        .collect::<HashSet<String>>();
-    let formatted_score_names = score_names
-        .clone()
-        .into_iter()
-        .collect::<Vec<_>>()
-        .join("\n");
-    let formatted_test_names = our_test_names
-        .clone()
-        .into_iter()
-        .collect::<Vec<_>>()
-        .join("\n");
+    let formatted_test_names = our_test_outputs.names().collect::<Vec<_>>().join("\n");
+    let our_test_names = our_test_outputs.names().collect::<HashSet<_>>();
+    let score_names = scores.our_test_names().collect::<HashSet<_>>();
+    let formatted_score_names = scores.our_test_names().collect::<Vec<_>>().join("\n");
+    let assertion = our_test_names == score_names;
     let msg = format!("There is a mismatch between the test names in scores.yaml:\n{}\nand the assignment tests that ran and completed on the submission code:\n{:?}", formatted_score_names, formatted_test_names);
-    ensure!(score_names == our_test_names, AssertionError { msg });
+    ensure!(assertion, AssertionError { msg });
 
-    let their_test_outputs: Vec<TestOutput> = TestOutput::from_path(their_test_outputs)?;
-    let mut their_test_outputs: Vec<TestOutput> = their_test_outputs
-        .iter()
-        .map(|r| r.assign_score(scores.their_tests))
-        .collect();
+    let their_test_outputs: TestOutputs = TestOutputs::from_path(their_test_outputs)?;
+    let mut their_test_outputs: TestOutputs = their_test_outputs.assign_scores(&scores);
 
     our_test_outputs.sort_by(|r1, r2| r1.name.cmp(&r2.name));
     their_test_outputs.sort_by(|r1, r2| r1.name.cmp(&r2.name));
@@ -124,9 +110,9 @@ fn run() -> Result<()> {
     // Covert TestOutputs into TestReports
     let num_their_tests = their_test_outputs.len() as f32;
     let test_reports = our_test_outputs
-        .iter()
-        .map(|r| TestReport::from_our_tests(r, "Our tests".into(), &scores))
-        .chain(their_test_outputs.iter().map(|r| {
+        .into_iter()
+        .map(|r| TestReport::from_our_tests(&r, "Our tests".into(), &scores))
+        .chain(their_test_outputs.into_iter().map(|r| {
             TestReport::from_their_tests(
                 &r,
                 "Your tests".into(),

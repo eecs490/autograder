@@ -1,4 +1,5 @@
 use crate::error::ReadError;
+use crate::score_map::ScoreMap;
 use crate::Result;
 use serde::{Deserialize, Serialize};
 use snafu::ResultExt;
@@ -42,6 +43,9 @@ pub struct TestOutput {
     pub score: Option<f32>,
 }
 
+#[derive(Clone, Debug)]
+pub struct TestOutputs(Vec<TestOutput>);
+
 impl TestOutput {
     pub fn passing(&self) -> bool {
         match self.event {
@@ -49,22 +53,61 @@ impl TestOutput {
             Event::Failed => false,
         }
     }
-    pub fn from_output(test_output: String) -> Vec<TestOutput> {
-        test_output
-            .split("\n")
-            .map(serde_json::from_str)
-            .filter_map(std::result::Result::ok)
-            .collect()
-    }
-    pub fn from_path(path: &Path) -> Result<Vec<TestOutput>> {
-        let utf8: Vec<u8> = fs::read(path).context(ReadError { path })?;
-        let output = String::from_utf8_lossy(&utf8).into_owned();
-        Ok(Self::from_output(output))
-    }
     pub fn assign_score(&self, score: f32) -> Self {
         Self {
             score: Some(score),
             ..self.clone()
         }
+    }
+}
+use std::cmp::Ordering;
+
+impl TestOutputs {
+    pub fn from_output(test_output: String) -> Self {
+        Self(
+            test_output
+                .split("\n")
+                .map(serde_json::from_str)
+                .filter_map(std::result::Result::ok)
+                .collect(),
+        )
+    }
+    pub fn from_path(path: &Path) -> Result<Self> {
+        let utf8: Vec<u8> = fs::read(path).context(ReadError { path })?;
+        let output = String::from_utf8_lossy(&utf8).into_owned();
+        Ok(Self::from_output(output))
+    }
+
+    pub fn assign_scores(&self, scores: &ScoreMap) -> Self {
+        Self(
+            self.0
+                .iter()
+                .map(|r| r.assign_score(scores.their_tests))
+                .collect(),
+        )
+    }
+
+    pub fn len(&self) -> usize {
+        self.0.len()
+    }
+
+    pub fn names(&self) -> impl Iterator<Item = String> + '_ {
+        self.0.iter().map(|r| r.name.clone())
+    }
+
+    pub fn sort_by<F>(&mut self, compare: F)
+    where
+        F: FnMut(&TestOutput, &TestOutput) -> Ordering,
+    {
+        self.0.sort_by(compare)
+    }
+}
+
+impl IntoIterator for TestOutputs {
+    type Item = TestOutput;
+    type IntoIter = std::vec::IntoIter<Self::Item>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.0.into_iter()
     }
 }
