@@ -52,6 +52,13 @@ impl Args<'_> {
                         .takes_value(true)
                         .required(true),
                 )
+                .arg(
+                    Arg::with_name("labels")
+                        .help("path to labels.yaml")
+                        .long("scores")
+                        .takes_value(true)
+                        .required(true),
+                )
                 .get_matches(),
         )
     }
