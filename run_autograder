@@ -27,4 +27,5 @@ cargo run --manifest-path $AUTOGRADER -- \
   --submission=$SUBMISSION \
   --output=$OUTPUT \
   --lcov=$LCOV \
-  --scores=$SCORES
+  --scores=$SCORES \
+  --labels=$LABELS

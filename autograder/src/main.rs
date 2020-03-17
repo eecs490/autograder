@@ -2,6 +2,7 @@
 mod args;
 mod cargo_test_output;
 mod error;
+mod labels;
 mod report;
 mod score_map;
 use args::Args;
@@ -12,6 +13,7 @@ use error::{
     AssertionError, FileCreationError, LcovReadError, MyError, ReadError, ReportError,
     TestOutputError, TestReportError, WriteError,
 };
+use labels::Labels;
 use lcov::Reader;
 use report::{Report, TestReport};
 use score_map::ScoreMap;
@@ -39,6 +41,7 @@ fn run() -> Result<()> {
     let output_path = matches.get_path_buf("output")?;
     let lcov_path = matches.get_path_buf("lcov")?;
     let scores_path = matches.get_path_buf("scores")?;
+    let labels_path = matches.get_path_buf("labels")?;
     let our_test_outputs = matches.get_path_buf("our_test_outputs")?;
     let their_test_outputs = matches.get_path_buf("their_test_outputs")?;
 
@@ -46,11 +49,13 @@ fn run() -> Result<()> {
     let output_path = output_path.as_path();
     let lcov_path = lcov_path.as_path();
     let scores_path = scores_path.as_path();
+    let labels_path = labels_path.as_path();
     let our_test_outputs = our_test_outputs.as_path();
     let their_test_outputs = their_test_outputs.as_path();
 
     // assign custom scores to each test function.
     let scores: ScoreMap = ScoreMap::from_path(scores_path)?;
+    let labels: Labels = Labels::from_path(labels_path)?;
 
     // deserialize ouputs into TestOutput structs
     let mut our_test_outputs: TestOutputs = TestOutputs::from_path(our_test_outputs)?;
@@ -113,15 +118,16 @@ fn run() -> Result<()> {
     // Covert TestOutputs into TestReports
     let num_their_tests = their_test_outputs.len() as f32;
     let test_reports = our_test_outputs
-        .into_test_reports("Our tests".into(), Right(&scores))
+        .into_test_reports(labels.our_tests, Right(&scores))
         .chain(their_test_outputs.into_test_reports(
-            "Your tests".into(),
+            labels.their_tests,
             Left(scores.their_tests / num_their_tests),
         ))
         // Convert lcov records into TestReports and append to test_reports vec
         .chain(once(TestReport::line_coverage(
             &records,
             scores.line_coverage,
+            labels.line_coverage,
             Some(coverage_output),
         )))
         .collect::<Result<Vec<_>>>()?;

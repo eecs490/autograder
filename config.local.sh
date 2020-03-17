@@ -9,6 +9,7 @@ THEIR_TEST_RESULTS=/tmp/their_test_results
 OUTPUT=/tmp/results.json
 LCOV=/tmp/lcov.info
 SCORES=scores.yaml
+LABELS=labels.yaml
 OUR_SOLUTION=assignment/src/solution.rs
 THEIR_SOLUTION=submission/src/solution.rs
 

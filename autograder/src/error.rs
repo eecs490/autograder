@@ -23,6 +23,12 @@ pub enum MyError {
         yaml: String,
     },
 
+    #[snafu(display("Unable to parse yaml to Labels:\n{}\n{}", yaml, source))]
+    LabelsParseError {
+        source: serde_yaml::Error,
+        yaml: String,
+    },
+
     #[snafu(display("Unable to serialize struct to json:\n{:?}\n{}", output, source))]
     TestOutputError {
         source: serde_json::Error,

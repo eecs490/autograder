@@ -55,7 +55,7 @@ impl Args<'_> {
                 .arg(
                     Arg::with_name("labels")
                         .help("path to labels.yaml")
-                        .long("scores")
+                        .long("labels")
                         .takes_value(true)
                         .required(true),
                 )

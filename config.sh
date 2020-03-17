@@ -16,6 +16,7 @@ THEIR_TEST_RESULTS=/autograder/their_test_results
 OUTPUT=/autograder/results/results.json
 LCOV=/autograder/submission/ccov/lcov.info
 SCORES=/autograder/scores.yaml
+LABELS=/autograder/labels.yaml
 OUR_SOLUTION=/autograder/assignment/src/solution.rs
 THEIR_SOLUTION=/autograder/submission/src/solution.rs
 

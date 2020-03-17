@@ -28,7 +28,8 @@ pub struct TestReport {
     score: f32,
     max_score: f32,
     pub name: String,
-    number: String,
+    #[serde(rename = "number")]
+    label: Option<String>,
     output: Option<String>,
     tags: Option<std::vec::Vec<String>>,
     visibility: Option<Visibility>,
@@ -92,7 +93,7 @@ impl TestReport {
             score: if result.passing() { score } else { 0. },
             max_score: score,
             name: result.name.clone(),
-            number: label,
+            label: Some(label),
             output: result.stdout.clone().or(result.message.clone()),
             tags: None,
             visibility: None,
@@ -101,13 +102,14 @@ impl TestReport {
     pub fn line_coverage(
         records: &Vec<Record>,
         score: f32,
+        name: String,
         output: Option<String>,
     ) -> Result<Self> {
         Ok(Self {
             score: score * line_coverage(records),
             max_score: score,
-            name: "line coverage".into(),
-            number: "".into(),
+            name,
+            label: None,
             output: output,
             tags: None,
             visibility: None,
@@ -117,7 +119,7 @@ impl TestReport {
     #[allow(dead_code)]
     pub fn branch_coverage(
         records: &Vec<Record>,
-        number: String,
+        label: String,
         score: f32,
         output: Option<String>,
     ) -> Result<Self> {
@@ -125,7 +127,7 @@ impl TestReport {
             score: score * branch_coverage(records),
             max_score: score,
             name: "branch coverage".into(),
-            number: number,
+            label: Some(label),
             output: output,
             tags: None,
             visibility: None,
