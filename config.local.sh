@@ -4,8 +4,8 @@
 AUTOGRADER=autograder/Cargo.toml
 ASSIGNMENT=assignment/Cargo.toml
 SUBMISSION=submission/Cargo.toml
-OUR_TEST_RESULTS=/tmp/our_test_results
-THEIR_TEST_RESULTS=/tmp/their_test_results
+OUR_TEST_OUTPUTS=/tmp/our_test_outputs
+THEIR_TEST_OUTPUTS=/tmp/their_test_outputs
 OUTPUT=/tmp/results.json
 LCOV=/tmp/lcov.info
 SCORES=scores.yaml

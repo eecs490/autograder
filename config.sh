@@ -11,8 +11,8 @@ export RUSTFLAGS="-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-c
 AUTOGRADER=/autograder/autograder/Cargo.toml
 ASSIGNMENT=/autograder/assignment/Cargo.toml
 SUBMISSION=/autograder/submission/Cargo.toml
-OUR_TEST_RESULTS=/autograder/our_test_results
-THEIR_TEST_RESULTS=/autograder/their_test_results
+OUR_TEST_OUTPUTS=/autograder/our_test_outputs
+THEIR_TEST_OUTPUTS=/autograder/their_test_outputs
 OUTPUT=/autograder/results/results.json
 LCOV=/autograder/submission/ccov/lcov.info
 SCORES=/autograder/scores.yaml

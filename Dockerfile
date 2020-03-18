@@ -99,6 +99,7 @@ COPY assignment/ /autograder/assignment
 RUN cargo build --manifest-path assignment/Cargo.toml
 
 COPY scores.yaml .
+COPY labels.yaml .
 COPY config.sh .
 COPY run_autograder .
 #CMD ./run_autograder

@@ -12,18 +12,18 @@ zip -0 $ccov/ccov.zip $(find . \( -name "submission*.gc*" \) -print)
 grcov $ccov/ccov.zip -s . -t lcov --llvm --branch --ignore-not-existing -o $LCOV
 
 # run our tests on their solution
-cargo test --manifest-path $ASSIGNMENT -- -Z unstable-options --format json >&1 | tee $OUR_TEST_RESULTS
+cargo test --manifest-path $ASSIGNMENT -- -Z unstable-options --format json >&1 | tee $OUR_TEST_OUTPUTS
 
 # run their tests on our solution
 cp $OUR_SOLUTION $THEIR_SOLUTION
 cargo clean --manifest-path $SUBMISSION
-cargo test --manifest-path $SUBMISSION -- -Z unstable-options --format json >&1 | tee $THEIR_TEST_RESULTS
+cargo test --manifest-path $SUBMISSION -- -Z unstable-options --format json >&1 | tee $THEIR_TEST_OUTPUTS
 
 # process into results.json
 mkdir -p $(dirname $OUTPUT)
 cargo run --manifest-path $AUTOGRADER -- \
-  --our-test-results=$OUR_TEST_RESULTS \
-  --their-test-results=$THEIR_TEST_RESULTS \
+  --our-test-outputs=$OUR_TEST_OUTPUTS \
+  --their-test-outputs=$THEIR_TEST_OUTPUTS \
   --submission=$SUBMISSION \
   --output=$OUTPUT \
   --lcov=$LCOV \
