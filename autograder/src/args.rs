@@ -1,70 +1,40 @@
-use crate::error::Argument;
-use crate::Result;
-use clap::{value_t, App, Arg, ArgMatches};
-use snafu::ResultExt;
 use std::path::PathBuf;
+use structopt::StructOpt;
 
-pub struct Args<'a>(ArgMatches<'a>);
+#[derive(StructOpt)]
+pub struct Opt {
+    /// path to output of running our tests on their solution
+    #[structopt(long)]
+    our_test_outputs: PathBuf,
 
-impl Args<'_> {
-    pub fn get() -> Self {
-        Args(
-            App::new("MyApp")
-                .arg(
-                    Arg::with_name("our_test_outputs")
-                        .long("our-test-results")
-                        .help("path to output of running our tests on their solution")
-                        .takes_value(true)
-                        .required(true),
-                )
-                .arg(
-                    Arg::with_name("their_test_outputs")
-                        .long("their-test-results")
-                        .help("path to output of running their tests on our solution")
-                        .takes_value(true)
-                        .required(true),
-                )
-                .arg(
-                    Arg::with_name("submission")
-                        .long("submission")
-                        .help("path to submission/Cargo.toml")
-                        .takes_value(true)
-                        .required(true),
-                )
-                .arg(
-                    Arg::with_name("output")
-                        .long("output")
-                        .help("path where results.json will be written")
-                        .takes_value(true)
-                        .required(true),
-                )
-                .arg(
-                    Arg::with_name("lcov")
-                        .long("lcov")
-                        .help("path to lcov.info")
-                        .takes_value(true)
-                        .required(true),
-                )
-                .arg(
-                    Arg::with_name("scores")
-                        .help("path to scores.yaml")
-                        .long("scores")
-                        .takes_value(true)
-                        .required(true),
-                )
-                .arg(
-                    Arg::with_name("labels")
-                        .help("path to labels.yaml")
-                        .long("labels")
-                        .takes_value(true)
-                        .required(true),
-                )
-                .get_matches(),
-        )
-    }
+    /// path to output of running their tests on our solution
+    #[structopt(long)]
+    their_test_outputs: PathBuf,
 
-    pub fn get_path_buf(&self, arg: &str) -> Result<PathBuf> {
-        let matches: &clap::ArgMatches = &self.0;
-        value_t!(matches, arg.clone(), PathBuf).context(Argument { arg })
-    }
+    /// path to submission/Cargo.toml
+    #[structopt(long)]
+    submission: PathBuf,
+
+    /// path where results.json will be written
+    #[structopt(long)]
+    output: PathBuf,
+
+    /// path to lcov.info
+    #[structopt(long)]
+    lcov: PathBuf,
+
+    /// path to scores.yaml
+    #[structopt(long)]
+    scores: PathBuf,
+
+    /// path to labels.yaml
+    #[structopt(long)]
+    labels: PathBuf,
 }
+
+//impl Opt {
+//pub fn get_path_buf(&self, arg: &str) -> Result<PathBuf> {
+//let matches: &clap::ArgMatches = &self.0;
+//value_t!(matches, arg.clone(), PathBuf).context(Argument { arg })
+//}
+//}

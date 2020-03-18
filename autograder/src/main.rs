@@ -5,9 +5,7 @@ mod error;
 mod labels;
 mod report;
 mod score_map;
-use args::Args;
 use cargo_test_output::TestOutputs;
-use clap;
 use either::{Left, Right};
 use error::{
     AssertionError, FileCreationError, LcovReadError, MyError, ReadError, ReportError,
@@ -26,6 +24,39 @@ use std::fs;
 use std::fs::File;
 use std::io::Write;
 use std::iter::once;
+use std::path::PathBuf;
+use structopt::StructOpt;
+
+#[derive(StructOpt, Debug)]
+pub struct Opt {
+    /// path to output of running our tests on their solution
+    #[structopt(long)]
+    our_test_outputs: PathBuf,
+
+    /// path to output of running their tests on our solution
+    #[structopt(long)]
+    their_test_outputs: PathBuf,
+
+    /// path to submission/Cargo.toml
+    #[structopt(long)]
+    submission: PathBuf,
+
+    /// path where results.json will be written
+    #[structopt(long)]
+    output: PathBuf,
+
+    /// path to lcov.info
+    #[structopt(long)]
+    lcov: PathBuf,
+
+    /// path to scores.yaml
+    #[structopt(long)]
+    scores: PathBuf,
+
+    /// path to labels.yaml
+    #[structopt(long)]
+    labels: PathBuf,
+}
 
 pub type Result<T, E = MyError> = std::result::Result<T, E>;
 
@@ -36,22 +67,15 @@ fn main() {
 }
 
 fn run() -> Result<()> {
-    let matches = Args::get();
-
-    let output_path = matches.get_path_buf("output")?;
-    let lcov_path = matches.get_path_buf("lcov")?;
-    let scores_path = matches.get_path_buf("scores")?;
-    let labels_path = matches.get_path_buf("labels")?;
-    let our_test_outputs = matches.get_path_buf("our_test_outputs")?;
-    let their_test_outputs = matches.get_path_buf("their_test_outputs")?;
+    let opt = Opt::from_args();
 
     // coerce to paths
-    let output_path = output_path.as_path();
-    let lcov_path = lcov_path.as_path();
-    let scores_path = scores_path.as_path();
-    let labels_path = labels_path.as_path();
-    let our_test_outputs = our_test_outputs.as_path();
-    let their_test_outputs = their_test_outputs.as_path();
+    let output_path = opt.output.as_path();
+    let lcov_path = opt.lcov.as_path();
+    let scores_path = opt.scores.as_path();
+    let labels_path = opt.labels.as_path();
+    let our_test_outputs = opt.our_test_outputs.as_path();
+    let their_test_outputs = opt.their_test_outputs.as_path();
 
     // assign custom scores to each test function.
     let scores: ScoreMap = ScoreMap::from_path(scores_path)?;
@@ -105,7 +129,7 @@ fn run() -> Result<()> {
         println!("{:?}", record)
     }
     let coverage_output = format!(
-        "\
+    "\
     Score is based on the following LCOV coverage data output:
 
     {}

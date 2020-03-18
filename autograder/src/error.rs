@@ -1,6 +1,5 @@
 use crate::cargo_test_output::TestOutput;
 use crate::report::{Report, TestReport};
-use clap;
 use serde_yaml;
 use snafu::Snafu;
 use std::{io, path::PathBuf};
@@ -49,9 +48,6 @@ pub enum MyError {
 
     #[snafu(display("Key {} not found in ScoreMap: ", key))]
     ScoreMapKeyError { key: String },
-
-    #[snafu(display("Bad argument {}: {}", arg, source))]
-    Argument { source: clap::Error, arg: String },
 
     #[snafu(display("Unable to parse lcov string:\n{}", string))]
     LcovReadError { string: String },
