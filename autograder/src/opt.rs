@@ -1,40 +1,33 @@
 use std::path::PathBuf;
 use structopt::StructOpt;
 
-#[derive(StructOpt)]
+#[derive(StructOpt, Debug)]
 pub struct Opt {
     /// path to output of running our tests on their solution
     #[structopt(long)]
-    our_test_outputs: PathBuf,
+    pub our_test_outputs: PathBuf,
 
     /// path to output of running their tests on our solution
     #[structopt(long)]
-    their_test_outputs: PathBuf,
+    pub their_test_outputs: PathBuf,
 
     /// path to submission/Cargo.toml
     #[structopt(long)]
-    submission: PathBuf,
+    pub submission: PathBuf,
 
     /// path where results.json will be written
     #[structopt(long)]
-    output: PathBuf,
+    pub output: PathBuf,
 
     /// path to lcov.info
     #[structopt(long)]
-    lcov: PathBuf,
+    pub lcov: PathBuf,
 
     /// path to scores.yaml
     #[structopt(long)]
-    scores: PathBuf,
+    pub scores: PathBuf,
 
     /// path to labels.yaml
     #[structopt(long)]
-    labels: PathBuf,
+    pub labels: PathBuf,
 }
-
-//impl Opt {
-//pub fn get_path_buf(&self, arg: &str) -> Result<PathBuf> {
-//let matches: &clap::ArgMatches = &self.0;
-//value_t!(matches, arg.clone(), PathBuf).context(Argument { arg })
-//}
-//}

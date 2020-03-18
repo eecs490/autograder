@@ -1,8 +1,8 @@
 #![feature(try_trait)]
-mod args;
 mod cargo_test_output;
 mod error;
 mod labels;
+mod opt;
 mod report;
 mod score_map;
 use cargo_test_output::TestOutputs;
@@ -13,6 +13,7 @@ use error::{
 };
 use labels::Labels;
 use lcov::Reader;
+use opt::Opt;
 use report::{Report, TestReport};
 use score_map::ScoreMap;
 use serde_json::to_string_pretty;
@@ -24,39 +25,7 @@ use std::fs;
 use std::fs::File;
 use std::io::Write;
 use std::iter::once;
-use std::path::PathBuf;
 use structopt::StructOpt;
-
-#[derive(StructOpt, Debug)]
-pub struct Opt {
-    /// path to output of running our tests on their solution
-    #[structopt(long)]
-    our_test_outputs: PathBuf,
-
-    /// path to output of running their tests on our solution
-    #[structopt(long)]
-    their_test_outputs: PathBuf,
-
-    /// path to submission/Cargo.toml
-    #[structopt(long)]
-    submission: PathBuf,
-
-    /// path where results.json will be written
-    #[structopt(long)]
-    output: PathBuf,
-
-    /// path to lcov.info
-    #[structopt(long)]
-    lcov: PathBuf,
-
-    /// path to scores.yaml
-    #[structopt(long)]
-    scores: PathBuf,
-
-    /// path to labels.yaml
-    #[structopt(long)]
-    labels: PathBuf,
-}
 
 pub type Result<T, E = MyError> = std::result::Result<T, E>;
 
