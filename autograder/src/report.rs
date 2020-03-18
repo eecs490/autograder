@@ -99,35 +99,17 @@ impl TestReport {
             visibility: None,
         })
     }
-    pub fn line_coverage(
-        records: &Vec<Record>,
+    pub fn coverage_result(
+        coverage: f32,
         score: f32,
         name: String,
         output: Option<String>,
     ) -> Result<Self> {
         Ok(Self {
-            score: score * line_coverage(records),
+            score: score * coverage,
             max_score: score,
             name,
             label: None,
-            output: output,
-            tags: None,
-            visibility: None,
-        })
-    }
-
-    #[allow(dead_code)]
-    pub fn branch_coverage(
-        records: &Vec<Record>,
-        label: String,
-        score: f32,
-        output: Option<String>,
-    ) -> Result<Self> {
-        Ok(Self {
-            score: score * branch_coverage(records),
-            max_score: score,
-            name: "branch coverage".into(),
-            label: Some(label),
             output: output,
             tags: None,
             visibility: None,

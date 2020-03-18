@@ -14,7 +14,7 @@ use error::{
 use labels::Labels;
 use lcov::Reader;
 use opt::Opt;
-use report::{Report, TestReport};
+use report::{line_coverage, Report, TestReport};
 use score_map::ScoreMap;
 use serde_json::to_string_pretty;
 use snafu::ensure;
@@ -117,8 +117,8 @@ fn run() -> Result<()> {
             Left(scores.their_tests / num_their_tests),
         ))
         // Convert lcov records into TestReports and append to test_reports vec
-        .chain(once(TestReport::line_coverage(
-            &records,
+        .chain(once(TestReport::coverage_result(
+            line_coverage(&records),
             scores.line_coverage,
             labels.line_coverage,
             Some(coverage_output),

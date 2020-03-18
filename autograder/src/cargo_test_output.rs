@@ -5,6 +5,7 @@ use crate::Result;
 use either::{Either, Left, Right};
 use serde::{Deserialize, Serialize};
 use snafu::ResultExt;
+use std::cmp::Ordering;
 use std::fs;
 use std::path::Path;
 //{ "type":"suite", "event": "started", "test_count": 5 }
@@ -62,7 +63,6 @@ impl TestOutput {
         }
     }
 }
-use std::cmp::Ordering;
 
 impl TestOutputs {
     pub fn from_output(test_output: String) -> Self {
@@ -89,6 +89,20 @@ impl TestOutputs {
         )
     }
 
+    pub fn into_test_reports<'a>(
+        &'a self,
+        label: String,
+        scoring: Either<f32, &'a ScoreMap>,
+    ) -> impl Iterator<Item = Result<TestReport>> + 'a {
+        self.clone().into_iter().map(move |r| {
+            let score: f32 = match scoring {
+                Left(score) => score,
+                Right(score_map) => score_map.get(&r.name)?,
+            };
+            TestReport::from_tests(&r, label.clone(), score)
+        })
+    }
+
     pub fn len(&self) -> usize {
         self.0.len()
     }
@@ -102,20 +116,6 @@ impl TestOutputs {
         F: FnMut(&TestOutput, &TestOutput) -> Ordering,
     {
         self.0.sort_by(compare)
-    }
-
-    pub fn into_test_reports<'a>(
-        &'a self,
-        label: String,
-        scoring: Either<f32, &'a ScoreMap>,
-    ) -> impl Iterator<Item = Result<TestReport>> + 'a {
-        self.clone().into_iter().map(move |r| {
-            let score: f32 = match scoring {
-                Left(score) => score,
-                Right(score_map) => score_map.get(&r.name)?,
-            };
-            TestReport::from_tests(&r, label.clone(), score)
-        })
     }
 }
 
