@@ -13,8 +13,7 @@ grcov $ccov/ccov.zip -s . -t lcov --llvm --branch --ignore-not-existing -o $LCOV
 
 # run our tests on their solution
 cargo test --manifest-path $ASSIGNMENT -- -Z unstable-options --format json >&1 | tee $OUR_TEST_OUTPUTS
-if [[ ! -s $OUR_TEST_OUTPUTS ]]
-then
+if [[ ! -s $OUR_TEST_OUTPUTS ]]; then
 	echo "Failed to run our tests on your code. 
 1. Check Cargo.toml to make sure you have named your package 'submission'.
 2. Check that your solution (the code that we are testing) exists in a file named 'solution.rs'.
@@ -31,10 +30,10 @@ cargo test --manifest-path $SUBMISSION -- -Z unstable-options --format json >&1 
 # process into results.json
 mkdir -p $(dirname $OUTPUT)
 cargo run --manifest-path $AUTOGRADER -- \
-  --our-test-outputs=$OUR_TEST_OUTPUTS \
-  --their-test-outputs=$THEIR_TEST_OUTPUTS \
-  --submission=$SUBMISSION \
-  --output=$OUTPUT \
-  --lcov=$LCOV \
-  --scores=$SCORES \
-  --labels=$LABELS
+	--our-test-outputs=$OUR_TEST_OUTPUTS \
+	--their-test-outputs=$THEIR_TEST_OUTPUTS \
+	--submission=$SUBMISSION \
+	--output=$OUTPUT \
+	--lcov=$LCOV \
+	--scores=$SCORES \
+	--labels=$LABELS
