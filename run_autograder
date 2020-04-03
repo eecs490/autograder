@@ -13,6 +13,15 @@ grcov $ccov/ccov.zip -s . -t lcov --llvm --branch --ignore-not-existing -o $LCOV
 
 # run our tests on their solution
 cargo test --manifest-path $ASSIGNMENT -- -Z unstable-options --format json >&1 | tee $OUR_TEST_OUTPUTS
+if [[ ! -s $OUR_TEST_OUTPUTS ]]
+then
+	echo "Failed to run our tests on your code. 
+1. Check Cargo.toml to make sure you have named your package 'submission'.
+2. Check that your solution (the code that we are testing) exists in a file named 'solution.rs'.
+3. Check that this file is declared a public module at the top of 'lib.rs': 'pub mod solution;'.
+"
+	exit
+fi
 
 # run their tests on our solution
 cp $OUR_SOLUTION $THEIR_SOLUTION

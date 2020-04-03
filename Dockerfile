@@ -89,10 +89,10 @@ COPY autograder/ /autograder/autograder
     #cargo build --manifest-path /autograder/autograder/Cargo.toml
 RUN cargo build --manifest-path autograder/Cargo.toml
 
-COPY submission/ /autograder/submission
+COPY assignment/submission/ /autograder/submission
 RUN cargo build --manifest-path submission/Cargo.toml
 
-COPY assignment/ /autograder/assignment
+COPY assignment/assignment /autograder/assignment
 #RUN --mount=type=cache,target=/usr/local/cargo,from=rust,source=/usr/local/cargo \
     #--mount=type=cache,target=target \
     #cargo build --manifest-path /autograder/assignment/Cargo.toml

@@ -1,5 +1,5 @@
 line_coverage: 10
-their_tests: 21
+their_tests: 20
 our_tests:
-  panic: 20
-  random: 20.0
+  tests::test_identity: 20
+  tests::test_fib: 20.0
