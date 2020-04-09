@@ -88,13 +88,13 @@ pub fn branch_coverage(records: &Vec<Record>) -> f32 {
 }
 
 impl TestReport {
-    pub fn from_tests(result: &TestOutput, label: String, score: f32) -> Result<Self> {
+    pub fn from_tests(passing: bool, name: String, output: String) -> Result<Self> {
         Ok(Self {
-            score: if result.passing() { score } else { 0. },
-            max_score: score,
-            name: result.name.clone(),
-            label: Some(label),
-            output: result.stdout.clone().or(result.message.clone()),
+            score: if passing { 1. } else { 0. },
+            max_score: 1.,
+            name: name,
+            label: None,
+            output: Some(output),
             tags: None,
             visibility: None,
         })
