@@ -1,5 +1,0 @@
-line_coverage: 10
-their_tests: 20
-our_tests:
-  tests::test_identity: 20
-  tests::test_fib: 20.0
