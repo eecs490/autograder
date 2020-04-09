@@ -58,6 +58,13 @@ RUN set -ex; \
 	; \
 	rm -rf /var/lib/apt/lists/*
 
+RUN  add-apt-repository ppa:deadsnakes/ppa; \
+      apt-get update; \
+      apt-get install -y python3.8; \
+    rm -rf /var/lib/apt/lists/*
+
+
+
 ENV RUSTUP_HOME=/usr/local/rustup \
     CARGO_HOME=/usr/local/cargo \
     PATH=/usr/local/cargo/bin:$PATH
@@ -76,30 +83,13 @@ RUN set -eux; \
 
 # end FROM rustlang/rust:nightly
 
-RUN cargo install grcov
-
-ENV CARGO_INCREMENTAL=0 \
-    RUSTFLAGS="-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Zno-landing-pads"
-
 WORKDIR /autograder
 
-COPY autograder/ /autograder/autograder
-#RUN --mount=type=cache,target=/usr/local/cargo,from=rust,source=/usr/local/cargo \
-    #--mount=type=cache,target=target \
-    #cargo build --manifest-path /autograder/autograder/Cargo.toml
-RUN cargo build --manifest-path autograder/Cargo.toml
-
+COPY replace_lines.py /autograder/replace_lines.py
 COPY assignment/submission/ /autograder/submission
-RUN cargo build --manifest-path submission/Cargo.toml
-
 COPY assignment/assignment /autograder/assignment
-#RUN --mount=type=cache,target=/usr/local/cargo,from=rust,source=/usr/local/cargo \
-    #--mount=type=cache,target=target \
-    #cargo build --manifest-path /autograder/assignment/Cargo.toml
-RUN cargo build --manifest-path assignment/Cargo.toml
 
-COPY scores.yaml .
-COPY labels.yaml .
 COPY config.sh .
+COPY autograder.py .
 COPY run_autograder .
 #CMD ./run_autograder

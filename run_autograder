@@ -3,9 +3,10 @@ set -x
 config=${1:-config.sh}
 source $config
 mkdir outputs/
+mkdir results/
 for i in $(seq 1 6)
 do
-  python replace_lines \
+  python3 replace_lines.py \
     --from-path submission/src/main.rs \
     --to-path assignment/src/solution.rs \
     --output assignment/src/main.rs \
@@ -15,7 +16,7 @@ do
   echo "$?" >> output_codes.txt
 done
 
-python autograder.py \
+python3 autograder.py \
   --build-output-paths $(ls -d outputs/*) \
-  --scores-paths output_codes.txt \
+  --scores-path output_codes.txt \
   --output results/results.json
