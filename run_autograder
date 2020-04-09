@@ -12,7 +12,7 @@ do
     --output assignment/src/main.rs \
     --replace-start "// Problem $i: change something here to make this compile:" \
     --replace-end "// Do not change any lines until the next comment"
-  cargo build --manifest-path assignment/Cargo.toml > "outputs/$i"
+  cargo build --manifest-path assignment/Cargo.toml &> "outputs/$i"
   echo "$?" >> output_codes.txt
 done
 
