@@ -20,7 +20,7 @@ def main(build_output_paths: List[Path], scores_path: Path, output: Path):
                     yield TestReport(
                         score=1 if int(score) == 0 else 0,
                         max_score=1,
-                        name=f"Problem {i}",
+                        name=f"Problem {i + 1}",
                         label="",
                         output=output_file.read(),
                     )
