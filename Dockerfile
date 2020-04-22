@@ -90,6 +90,9 @@ COPY assignment/submission/ /autograder/submission
 COPY assignment/assignment /autograder/assignment
 
 COPY config.sh .
+COPY sed_script.sh .
+COPY replace_start.txt .
+COPY replace_end.txt .
 COPY autograder.py .
 COPY run_autograder .
 #CMD ./run_autograder

@@ -4,13 +4,14 @@ config=${1:-config.sh}
 source $config
 mkdir outputs/
 mkdir results/
+./sed_script.sh assignment/src/solution.rs > tmp.rs
 for i in $(seq 1 6)
 do
   python3 replace_lines.py \
     --from-path submission/src/main.rs \
-    --to-path assignment/src/solution.rs \
+    --to-path tmp.rs \
     --output assignment/src/main.rs \
-    --replace-start "// Problem $i: change something here to make this compile:" \
+    --replace-start "// Problem $i: change this code to fix compilation errors:" \
     --replace-end "// Do not change any lines until the next comment"
   cargo build --manifest-path assignment/Cargo.toml &> "outputs/$i"
   echo "$?" >> output_codes.txt
